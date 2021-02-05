@@ -1,0 +1,53 @@
+name: rsdns-ci
+
+on:
+  - push
+  - pull_request
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+          - 1.42.0  # minimal supported version
+        runs_on:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+          components: rustfmt, clippy
+
+      - uses: actions-rs/cargo@v1
+        name: Build
+        with:
+          command: build
+
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+
+      - uses: actions-rs/cargo@v1
+        name: Format
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - uses: actions-rs/cargo@v1
+        name: Lint
+        with:
+          command: clippy
+          args: -- -D warnings
