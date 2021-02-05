@@ -1,0 +1,16 @@
+[package]
+name = "rsdns"
+version = "0.1.0"
+authors = ["Rafael Buchbinder <rafi@rbk.io>"]
+edition = "2018"
+description = "DNS client in Rust"
+license-file = "../LICENSE"
+keywords = ["dns", "client", "async", "tokio", "async-std", "resolver"]
+categories = ["asynchronous", "network-programming", "parser-implementations"]
+homepage = "https://github.com/r-bk/rsdns"
+repository = "https://github.com/r-bk/rsdns"
+
+[dependencies]
+thiserror = "1.0"
+strum = "0.20"
+strum_macros = "0.20"
