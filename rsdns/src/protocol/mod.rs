@@ -1,3 +1,4 @@
+//! DNS protocol implementation.
 #[macro_use]
 mod macros;
 mod constants;

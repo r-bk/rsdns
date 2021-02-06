@@ -2,13 +2,23 @@ use crate::RsDnsError;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
+/// DNS response CODE.
+///
+/// [RFC1045 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum Rcode {
+    /// No error condition
     NOERROR = 0,
+    /// Format error - the name server was unable to interpret the query.
     FORMERR = 1,
+    /// Server failure - the name server was unable to process this query
+    /// due to a problem with the name server.
     SERVFAIL = 2,
+    /// Name error - domain name does not exist.
     NXDOMAIN = 3,
+    /// Not implemented - the name server doesn't support the requested kind of query.
     NOTIMP = 4,
+    /// Refused - the name server refuses to perform the specified operation for policy reasons.
     REFUSED = 5,
 }
 

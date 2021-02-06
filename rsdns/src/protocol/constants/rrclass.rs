@@ -2,11 +2,18 @@ use crate::RsDnsError;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
+/// Resource record CLASS.
+///
+/// [RFC1045 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum RrClass {
+    /// the internet
     IN = 1,
+    /// the CSNET class (obsolete)
     CS = 2,
+    /// the CHAOS class
     CH = 3,
+    /// Hesiod
     HS = 4,
 }
 

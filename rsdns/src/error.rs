@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+/// Errors returned by this library.
+#[allow(missing_docs)]
 #[derive(Error, Debug)]
 pub enum RsDnsError {
     #[error("protocol: unknown TYPE: {0}")]
@@ -18,4 +20,5 @@ pub enum RsDnsError {
     IoError(#[from] std::io::Error),
 }
 
+/// Result returned by this library.
 pub type Result<T> = std::result::Result<T, RsDnsError>;

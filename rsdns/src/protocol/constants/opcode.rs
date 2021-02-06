@@ -2,10 +2,17 @@ use crate::RsDnsError;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
+/// DNS query OPCODE.
+///
+/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
+#[allow(missing_docs)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum Opcode {
+    /// a standard query
     QUERY = 0,
+    /// an inverse query
     IQUERY = 1,
+    /// a server status request
     STATUS = 2,
 }
 

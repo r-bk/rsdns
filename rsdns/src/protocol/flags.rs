@@ -4,81 +4,124 @@ use crate::{
 };
 use std::convert::TryFrom;
 
+/// DNS message header flags.
+///
+/// [RFC1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Default, Eq, PartialEq)]
 pub struct Flags {
     flags: u16,
 }
 
 impl Flags {
+    /// Creates new Flags out of on-wire representation.
     pub fn new(flags: u16) -> Flags {
         Flags { flags }
     }
 
+    /// Converts to underlying primitive type.
     pub fn as_u16(&self) -> u16 {
         self.flags
     }
 
+    /// Returns the **QR** flag.
+    ///
+    /// The flag indicates if the message is a **QUERY** (`false`) or a **RESPONSE** (`true`).
     pub fn qr(&self) -> bool {
         get_bit!(self.flags, 15)
     }
 
+    /// Sets the **QR** flag.
+    ///
+    /// **QUERY** = `false`
+    /// **RESPONSE** = `true`
     pub fn set_qr(&mut self, value: bool) {
         set_bit!(self.flags, 15, value);
     }
 
+    /// Returns the message **OPCODE**.
     pub fn opcode(&self) -> Result<Opcode> {
         Opcode::try_from(((self.flags & 0b0111_1000_0000_0000) >> 11) as u8)
     }
 
+    /// Sets the **OPCODE**.
     pub fn set_opcode(&mut self, opcode: Opcode) {
         let mask = 0b0111_1000_0000_0000;
         self.flags = (self.flags & !mask) | (opcode as u16) << 11;
     }
 
+    /// Returns the **AA** flag.
+    ///
+    /// AA - authoritative answer.
+    /// This bit is valid in responses, and specifies that
+    /// the responding name server is an authority for the domain name in question section.
     pub fn aa(&self) -> bool {
         get_bit!(self.flags, 10)
     }
 
+    /// Sets the **AA** flag.
     pub fn set_aa(&mut self, value: bool) {
         set_bit!(self.flags, 10, value);
     }
 
+    /// Returns the **TC** flag.
+    ///
+    /// TC specifies that the message was truncated due to length greater than that permitted on the
+    /// transmission channel.
     pub fn tc(&self) -> bool {
         get_bit!(self.flags, 9)
     }
 
+    /// Sets the TC flag.
     pub fn set_tc(&mut self, value: bool) {
         set_bit!(self.flags, 9, value);
     }
 
+    /// Returns the RD flag.
+    ///
+    /// RD - recursion desired.
+    /// This flag may be set in a query and is copied into the response. If RD is set, it directs
+    /// the name server to pursue the query recursively. Recursive query support is optional.
     pub fn rd(&self) -> bool {
         get_bit!(self.flags, 8)
     }
 
+    /// Sets the RD flag.
     pub fn set_rd(&mut self, value: bool) {
         set_bit!(self.flags, 8, value);
     }
 
+    /// Returns the RA flag.
+    ///
+    /// RA - recursion available.
+    /// This flag is set or cleared in a response, and denotes whether recursive query support is
+    /// available in the name server.
     pub fn ra(&self) -> bool {
         get_bit!(self.flags, 7)
     }
 
+    /// Sets the RA flag.
     pub fn set_ra(&mut self, value: bool) {
         set_bit!(self.flags, 7, value);
     }
 
+    /// Returns the Z field.
+    ///
+    /// Z - reserved for future use
     pub fn z(&self) -> u8 {
         (self.flags >> 4) as u8
     }
 
+    /// Sets the Z field.
     pub fn set_z(&mut self, value: u8) {
         self.flags |= ((value & 0b0000_0111) << 4) as u16;
     }
 
+    /// Returns the RCODE.
     pub fn rcode(&self) -> Result<Rcode> {
         Rcode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
     }
 
+    /// Sets the RCODE.
     pub fn set_rcode(&mut self, rcode: Rcode) {
         self.flags |= rcode as u16;
     }

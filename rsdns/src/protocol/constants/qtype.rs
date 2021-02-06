@@ -2,28 +2,51 @@ use crate::RsDnsError;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
+/// DNS query TYPE.
+///
+/// [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum QType {
     // rfc 1035
+    /// a host address
     A = 1,
+    /// an authoritative name server
     NS = 2,
+    /// a mail destination (obsolete - use [`QType::MX`])
     MD = 3,
+    /// a mail forwarder (obsolete - use [`QType::MX`])
     MF = 4,
+    /// the canonical name of an alias
     CNAME = 5,
+    /// marks the start of a zone authority
     SOA = 6,
+    /// a mailbox domain name
     MB = 7,
+    /// a mail group member
     MG = 8,
+    /// a mail rename domain name
     MR = 9,
+    /// a NULL RR
     NULL = 10,
+    /// a well known service description
     WKS = 11,
+    /// a domain name pointer
     PTR = 12,
+    /// host information
     HINFO = 13,
+    /// mailbox or mail list information
     MINFO = 14,
+    /// mail exchange
     MX = 15,
+    /// text strings
     TXT = 16,
+    /// a request for a transfer of an entire zone
     AXFR = 252,
+    /// a request for mailbox-related records (MB, MG or MR)
     MAILB = 253,
+    /// a request for mail agent RRs (Obsolete - see [`QType::MX`])
     MAILA = 254,
+    /// a request for all records
     ANY = 255,
 }
 
