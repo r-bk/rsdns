@@ -19,14 +19,14 @@ impl Flags {
     }
 
     /// Converts to underlying primitive type.
-    pub fn as_u16(&self) -> u16 {
+    pub fn as_u16(self) -> u16 {
         self.flags
     }
 
     /// Returns the **QR** flag.
     ///
     /// The flag indicates if the message is a **QUERY** (`false`) or a **RESPONSE** (`true`).
-    pub fn qr(&self) -> bool {
+    pub fn qr(self) -> bool {
         get_bit!(self.flags, 15)
     }
 
@@ -39,7 +39,7 @@ impl Flags {
     }
 
     /// Returns the message **OPCODE**.
-    pub fn opcode(&self) -> Result<OpCode> {
+    pub fn opcode(self) -> Result<OpCode> {
         OpCode::try_from(((self.flags & 0b0111_1000_0000_0000) >> 11) as u8)
     }
 
@@ -54,7 +54,7 @@ impl Flags {
     /// AA - authoritative answer.
     /// This bit is valid in responses, and specifies that
     /// the responding name server is an authority for the domain name in question section.
-    pub fn aa(&self) -> bool {
+    pub fn aa(self) -> bool {
         get_bit!(self.flags, 10)
     }
 
@@ -67,7 +67,7 @@ impl Flags {
     ///
     /// TC specifies that the message was truncated due to length greater than that permitted on the
     /// transmission channel.
-    pub fn tc(&self) -> bool {
+    pub fn tc(self) -> bool {
         get_bit!(self.flags, 9)
     }
 
@@ -81,7 +81,7 @@ impl Flags {
     /// RD - recursion desired.
     /// This flag may be set in a query and is copied into the response. If RD is set, it directs
     /// the name server to pursue the query recursively. Recursive query support is optional.
-    pub fn rd(&self) -> bool {
+    pub fn rd(self) -> bool {
         get_bit!(self.flags, 8)
     }
 
@@ -95,7 +95,7 @@ impl Flags {
     /// RA - recursion available.
     /// This flag is set or cleared in a response, and denotes whether recursive query support is
     /// available in the name server.
-    pub fn ra(&self) -> bool {
+    pub fn ra(self) -> bool {
         get_bit!(self.flags, 7)
     }
 
@@ -107,7 +107,7 @@ impl Flags {
     /// Returns the Z field.
     ///
     /// Z - reserved for future use
-    pub fn z(&self) -> u8 {
+    pub fn z(self) -> u8 {
         (self.flags >> 4) as u8
     }
 
@@ -117,7 +117,7 @@ impl Flags {
     }
 
     /// Returns the RCODE.
-    pub fn rcode(&self) -> Result<RCode> {
+    pub fn rcode(self) -> Result<RCode> {
         RCode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
     }
 
@@ -133,20 +133,20 @@ mod tests {
     use crate::RsDnsError;
     use strum::IntoEnumIterator;
 
-    type FlagGet = fn(&Flags) -> bool;
+    type FlagGet = fn(Flags) -> bool;
     type FlagSet = fn(&mut Flags, bool);
 
     fn test_bool_flag(get: FlagGet, set: FlagSet, mask: u16) {
         let mut f = Flags::default();
         assert_eq!(f.as_u16(), 0);
-        assert_eq!(get(&f), false);
+        assert_eq!(get(f), false);
 
         set(&mut f, true);
-        assert_eq!(get(&f), true);
+        assert_eq!(get(f), true);
         assert_eq!(f.as_u16(), mask);
 
         set(&mut f, false);
-        assert_eq!(get(&f), false);
+        assert_eq!(get(f), false);
         assert_eq!(f.as_u16(), 0);
     }
 
