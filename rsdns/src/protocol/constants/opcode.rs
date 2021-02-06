@@ -7,7 +7,7 @@ use strum_macros::EnumIter;
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[allow(missing_docs)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
-pub enum Opcode {
+pub enum OpCode {
     /// a standard query
     QUERY = 0,
     /// an inverse query
@@ -16,15 +16,15 @@ pub enum Opcode {
     STATUS = 2,
 }
 
-impl TryFrom<u8> for Opcode {
+impl TryFrom<u8> for OpCode {
     type Error = RsDnsError;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => Opcode::QUERY,
-            1 => Opcode::IQUERY,
-            2 => Opcode::STATUS,
-            _ => return Err(RsDnsError::ProtocolUnknownOpcode(value)),
+            0 => OpCode::QUERY,
+            1 => OpCode::IQUERY,
+            2 => OpCode::STATUS,
+            _ => return Err(RsDnsError::ProtocolUnknownOpCode(value)),
         };
 
         Ok(me)
@@ -38,13 +38,13 @@ mod tests {
 
     #[test]
     fn test_try_from() {
-        for opcode in Opcode::iter() {
-            assert_eq!(opcode, Opcode::try_from(opcode as u8).unwrap());
+        for opcode in OpCode::iter() {
+            assert_eq!(opcode, OpCode::try_from(opcode as u8).unwrap());
         }
 
         assert!(matches!(
-            Opcode::try_from(128),
-            Err(RsDnsError::ProtocolUnknownOpcode(128))
+            OpCode::try_from(128),
+            Err(RsDnsError::ProtocolUnknownOpCode(128))
         ));
     }
 }

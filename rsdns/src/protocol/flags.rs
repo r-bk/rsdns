@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{Opcode, Rcode},
+    protocol::{OpCode, Rcode},
     Result,
 };
 use std::convert::TryFrom;
@@ -39,12 +39,12 @@ impl Flags {
     }
 
     /// Returns the message **OPCODE**.
-    pub fn opcode(&self) -> Result<Opcode> {
-        Opcode::try_from(((self.flags & 0b0111_1000_0000_0000) >> 11) as u8)
+    pub fn opcode(&self) -> Result<OpCode> {
+        OpCode::try_from(((self.flags & 0b0111_1000_0000_0000) >> 11) as u8)
     }
 
     /// Sets the **OPCODE**.
-    pub fn set_opcode(&mut self, opcode: Opcode) {
+    pub fn set_opcode(&mut self, opcode: OpCode) {
         let mask = 0b0111_1000_0000_0000;
         self.flags = (self.flags & !mask) | (opcode as u16) << 11;
     }
@@ -161,7 +161,7 @@ mod tests {
 
     #[test]
     fn test_opcode() {
-        for opcode in Opcode::iter() {
+        for opcode in OpCode::iter() {
             let f = Flags {
                 flags: (opcode as u16) << 11,
             };
@@ -176,12 +176,12 @@ mod tests {
         }
 
         for i in 0..16 {
-            if Opcode::iter().find(|oc| *oc as u16 == i).is_none() {
+            if OpCode::iter().find(|oc| *oc as u16 == i).is_none() {
                 let f = Flags {
                     flags: (i << 11) as u16,
                 };
                 match f.opcode() {
-                    Err(RsDnsError::ProtocolUnknownOpcode(v)) => assert_eq!(v, i as u8),
+                    Err(RsDnsError::ProtocolUnknownOpCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }

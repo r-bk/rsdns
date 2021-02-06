@@ -13,7 +13,7 @@ pub enum RsDnsError {
     #[error("protocol: unknown QCLASS: {0}")]
     ProtocolUnknownQClass(u16),
     #[error("protocol: unknown OPCODE: {0}")]
-    ProtocolUnknownOpcode(u8),
+    ProtocolUnknownOpCode(u8),
     #[error("protocol: unknown RCODE: {0}")]
     ProtocolUnknownRcode(u8),
     #[error("io error")]
