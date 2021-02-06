@@ -15,7 +15,7 @@ pub enum RsDnsError {
     #[error("protocol: unknown OPCODE: {0}")]
     ProtocolUnknownOpCode(u8),
     #[error("protocol: unknown RCODE: {0}")]
-    ProtocolUnknownRcode(u8),
+    ProtocolUnknownRCode(u8),
     #[error("io error")]
     IoError(#[from] std::io::Error),
 }

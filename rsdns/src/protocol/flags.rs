@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{OpCode, Rcode},
+    protocol::{OpCode, RCode},
     Result,
 };
 use std::convert::TryFrom;
@@ -117,12 +117,12 @@ impl Flags {
     }
 
     /// Returns the RCODE.
-    pub fn rcode(&self) -> Result<Rcode> {
-        Rcode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
+    pub fn rcode(&self) -> Result<RCode> {
+        RCode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
     }
 
     /// Sets the RCODE.
-    pub fn set_rcode(&mut self, rcode: Rcode) {
+    pub fn set_rcode(&mut self, rcode: RCode) {
         self.flags |= rcode as u16;
     }
 }
@@ -190,7 +190,7 @@ mod tests {
 
     #[test]
     fn test_rcode() {
-        for rcode in Rcode::iter() {
+        for rcode in RCode::iter() {
             let f = Flags {
                 flags: rcode as u16,
             };
@@ -205,10 +205,10 @@ mod tests {
         }
 
         for i in 0..16 {
-            if Rcode::iter().find(|rc| *rc as u16 == i).is_none() {
+            if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { flags: i as u16 };
                 match f.rcode() {
-                    Err(RsDnsError::ProtocolUnknownRcode(v)) => assert_eq!(v, i as u8),
+                    Err(RsDnsError::ProtocolUnknownRCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }

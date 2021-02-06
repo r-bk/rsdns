@@ -6,7 +6,7 @@ use strum_macros::EnumIter;
 ///
 /// [RFC1045 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
-pub enum Rcode {
+pub enum RCode {
     /// No error condition
     NOERROR = 0,
     /// Format error - the name server was unable to interpret the query.
@@ -22,18 +22,18 @@ pub enum Rcode {
     REFUSED = 5,
 }
 
-impl TryFrom<u8> for Rcode {
+impl TryFrom<u8> for RCode {
     type Error = RsDnsError;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => Rcode::NOERROR,
-            1 => Rcode::FORMERR,
-            2 => Rcode::SERVFAIL,
-            3 => Rcode::NXDOMAIN,
-            4 => Rcode::NOTIMP,
-            5 => Rcode::REFUSED,
-            _ => return Err(RsDnsError::ProtocolUnknownRcode(value)),
+            0 => RCode::NOERROR,
+            1 => RCode::FORMERR,
+            2 => RCode::SERVFAIL,
+            3 => RCode::NXDOMAIN,
+            4 => RCode::NOTIMP,
+            5 => RCode::REFUSED,
+            _ => return Err(RsDnsError::ProtocolUnknownRCode(value)),
         };
 
         Ok(me)
@@ -47,13 +47,13 @@ mod tests {
 
     #[test]
     fn test_try_from() {
-        for r_code in Rcode::iter() {
-            assert_eq!(r_code, Rcode::try_from(r_code as u8).unwrap());
+        for r_code in RCode::iter() {
+            assert_eq!(r_code, RCode::try_from(r_code as u8).unwrap());
         }
 
         assert!(matches!(
-            Rcode::try_from(128),
-            Err(RsDnsError::ProtocolUnknownRcode(128))
+            RCode::try_from(128),
+            Err(RsDnsError::ProtocolUnknownRCode(128))
         ));
     }
 }
