@@ -16,7 +16,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.42.0  # minimal supported version
+          - 1.45.0  # minimal supported version
         runs_on:
           - ubuntu-latest
           - windows-latest
