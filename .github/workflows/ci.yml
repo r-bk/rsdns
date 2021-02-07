@@ -1,4 +1,4 @@
-name: rsdns-ci
+name: ci
 
 on:
   - push
