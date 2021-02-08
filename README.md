@@ -1,4 +1,4 @@
 # rsdns
-DNS client in Rust
+DNS client library in Rust
 
 **!!! UNDER CONSTRUCTION !!!**
