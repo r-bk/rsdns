@@ -48,6 +48,14 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         name: Lint
+        if: ${{ matrix.rust == 'stable' || matrix.rust == '1.45.0' }}
         with:
           command: clippy
           args: -- -D warnings
+
+      - uses: actions-rs/cargo@v1
+        name: Lint
+        if: ${{ matrix.rust != 'stable' && matrix.rust != '1.45.0' }}
+        with:
+          command: clippy
+          args: -- -D warnings -A clippy::upper_case_acronyms
