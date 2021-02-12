@@ -10,7 +10,7 @@ build:
 clippy:
 	cargo clippy --all-features
 
-.PHONY:
+.PHONY: doc
 doc:
 	RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features --open
 
