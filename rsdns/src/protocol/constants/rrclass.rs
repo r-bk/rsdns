@@ -4,7 +4,7 @@ use strum_macros::EnumIter;
 
 /// Resource record CLASS.
 ///
-/// [RFC1045 ~4.1.2](https://tools.ietf.org/html/rfc1035)
+/// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum RrClass {
     /// the internet

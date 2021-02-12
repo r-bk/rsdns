@@ -6,7 +6,7 @@ use std::convert::TryFrom;
 
 /// DNS message header flags.
 ///
-/// [RFC1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
+/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Default, Eq, PartialEq)]
 pub struct Flags {
     flags: u16,

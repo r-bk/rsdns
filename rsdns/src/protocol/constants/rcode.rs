@@ -4,7 +4,7 @@ use strum_macros::EnumIter;
 
 /// DNS response CODE.
 ///
-/// [RFC1045 ~4.1.1](https://tools.ietf.org/html/rfc1035)
+/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum RCode {
     /// No error condition

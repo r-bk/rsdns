@@ -2,7 +2,7 @@ use crate::protocol::Flags;
 
 /// DNS message header.
 ///
-/// [RFC1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
+/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Default)]
 pub struct Header {
     /// An identifier assigned by the program that generates any kind of query.
