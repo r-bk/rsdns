@@ -18,6 +18,14 @@ pub enum RsDnsError {
     ProtocolUnknownRCode(u8),
     #[error("io error")]
     IoError(#[from] std::io::Error),
+    #[error("domain name label invalid character")]
+    DomainNameLabelInvalidChar,
+    #[error("domain name label is malformed")]
+    DomainNameLabelMalformed,
+    #[error("domain name label length exceeds allowed limit 63: {0}")]
+    DomainNameLabelTooLong(usize),
+    #[error("domain name length exceeds allowed limit")]
+    DomainNameTooLong,
 }
 
 /// Result returned by this library.
