@@ -1,4 +1,7 @@
-use crate::protocol::Flags;
+use crate::{
+    protocol::{constants::HEADER_LENGTH, message::Cursor, Flags},
+    Result, RsDnsError,
+};
 
 /// DNS message header.
 ///
@@ -19,4 +22,23 @@ pub struct Header {
     pub ns_count: u16,
     /// Number of resource records in the additional records section.
     pub ar_count: u16,
+}
+
+impl Header {
+    pub(crate) fn from_cursor(cursor: &mut Cursor) -> Result<Header> {
+        if cursor.len() >= HEADER_LENGTH {
+            unsafe {
+                Ok(Header {
+                    id: cursor.u16_be_unchecked(),
+                    flags: Flags::new(cursor.u16_be_unchecked()),
+                    qd_count: cursor.u16_be_unchecked(),
+                    an_count: cursor.u16_be_unchecked(),
+                    ns_count: cursor.u16_be_unchecked(),
+                    ar_count: cursor.u16_be_unchecked(),
+                })
+            }
+        } else {
+            Err(RsDnsError::EndOfBuffer)
+        }
+    }
 }

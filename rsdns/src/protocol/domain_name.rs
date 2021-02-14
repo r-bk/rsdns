@@ -21,10 +21,10 @@ type ArrayType = ArrayString<[u8; DOMAIN_NAME_MAX_LENGTH]>;
 ///
 /// Domain name max length, as defined in
 /// [RFC 1035](https://tools.ietf.org/html/rfc1035#section-3.1), is 255 bytes.
-/// This includes all label length bytes, and the terminating zero length byte. Hence, the effective
-/// max length of a domain name without the trailing period is 253 bytes.
+/// This includes all label length bytes, and the terminating zero length byte. Hence the effective
+/// max length of a domain name without the root zone is 253 bytes.
 ///
-/// Domain name is case insensitive. Hence implementation of `PartialEq` converts each side to
+/// Domain name is case insensitive. Hence the implementation of `PartialEq` converts each side to
 /// ASCII lowercase. Use [`DomainName::as_str`] when exact match is required.
 ///
 /// Specifications:
@@ -53,6 +53,23 @@ impl DomainName {
     #[inline(always)]
     pub fn new() -> Self {
         Default::default()
+    }
+
+    /// Creates the root `DomainName`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rsdns::protocol::DomainName;
+    ///
+    /// let dn = DomainName::new_root();
+    /// assert_eq!(dn.len(), 1);
+    /// assert_eq!(dn.as_str(), ".");
+    /// ```
+    pub fn new_root() -> Self {
+        let mut dn = Self::default();
+        dn.set_root();
+        dn
     }
 
     /// Creates a `DomainName` from a string slice.
@@ -84,7 +101,7 @@ impl DomainName {
 
         if last_byte != b'.' {
             // check_name verifies the length of the string and ensures that
-            // trailing period can be accommodated.
+            // the root zone can be accommodated.
             // Thus the following push is sound and will not panic.
             dn.arr.push('.');
         }
@@ -171,10 +188,7 @@ impl DomainName {
             let byte = unsafe { *name.get_unchecked(j) };
             if byte == b'.' {
                 let label = unsafe { name.get_unchecked(i..j) };
-                let res = Self::check_label_bytes(label);
-                if res.is_err() {
-                    return res;
-                }
+                Self::check_label_bytes(label)?;
                 i = j + 1;
             }
         }
@@ -226,7 +240,7 @@ impl DomainName {
     /// assert_eq!(dn.len(), 0);
     ///
     /// let dn = DomainName::from("example.com").unwrap();
-    /// assert_eq!(dn.len(), 12); // includes the trailing period
+    /// assert_eq!(dn.len(), 12); // includes the root zone
     /// ```
     #[inline(always)]
     pub fn len(&self) -> usize {
@@ -360,6 +374,30 @@ impl DomainName {
         }
 
         Ok(())
+    }
+
+    /// Sets this domain name to be the root zone domain name `.`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use rsdns::protocol::DomainName;
+    ///
+    /// let mut dn = DomainName::new();
+    /// assert!(dn.is_empty());
+    ///
+    /// dn.set_root();
+    /// assert_eq!(dn.as_str(), ".");
+    ///
+    /// dn = DomainName::from("example.com").unwrap();
+    /// assert_eq!(dn.as_str(), "example.com.");
+    ///
+    /// dn.set_root();
+    /// assert_eq!(dn.as_str(), ".");
+    /// ```
+    pub fn set_root(&mut self) {
+        self.arr.clear();
+        self.arr.push('.');
     }
 }
 

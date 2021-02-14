@@ -21,3 +21,8 @@ pub const DOMAIN_NAME_MAX_LENGTH: usize = 255;
 ///
 /// [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
 pub const DOMAIN_NAME_LABEL_MAX_LENGTH: usize = 63;
+
+/// DNS message header length.
+///
+/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035#section-4.1.1)
+pub const HEADER_LENGTH: usize = 12;

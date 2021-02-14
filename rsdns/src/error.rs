@@ -26,6 +26,16 @@ pub enum RsDnsError {
     DomainNameLabelTooLong(usize),
     #[error("domain name length exceeds allowed limit")]
     DomainNameTooLong,
+    #[error("domain name pointer loop detected")]
+    DomainNamePointerLoop,
+    #[error("domain name pointer count exceeds allowed limit")]
+    DomainNameTooMuchPointers,
+    #[error("domain name label invalid type")]
+    DomainNameInvalidLabelType,
+    #[error("domain name invalid pointer")]
+    DomainNameInvalidPointer,
+    #[error("buffer limit reached")]
+    EndOfBuffer,
 }
 
 /// Result returned by this library.
