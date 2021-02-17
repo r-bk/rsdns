@@ -170,7 +170,8 @@ impl DomainName {
         for j in 0..len {
             let byte = unsafe { *name.get_unchecked(j) };
             if byte == b'.' {
-                let res = Self::check_label_bytes(&name[i..j]);
+                let label = unsafe { name.get_unchecked(i..j) };
+                let res = Self::check_label_bytes(label);
                 if res.is_err() {
                     return res;
                 }
@@ -543,6 +544,7 @@ mod tests {
         let malformed: &[&[u8]] = &[
             b"",
             b"..",
+            b"example.com..",
             b"example..com",
             b"sub..example.com",
             b"1xample.com",
