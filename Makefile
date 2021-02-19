@@ -4,11 +4,11 @@ all: build
 
 .PHONY: build
 build:
-	cargo build
+	cargo build --all-features
 
 .PHONY: test
 test:
-	cargo test
+	cargo test --all-features
 
 .PHONY: clippy
 clippy:
