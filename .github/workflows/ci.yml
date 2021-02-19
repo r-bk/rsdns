@@ -61,3 +61,20 @@ jobs:
         with:
           command: clippy
           args: --all-features -- -D warnings -A clippy::upper_case_acronyms
+
+  doc-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - uses: actions-rs/cargo@v1
+        name: Doc
+        env:
+          RUSTDOCFLAGS: "--cfg docsrs"
+        with:
+          command: doc
+          args: --all-features --no-deps
