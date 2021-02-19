@@ -16,5 +16,5 @@ clippy:
 
 .PHONY: doc
 doc:
-	RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features --open
+	RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features --no-deps --open
 
