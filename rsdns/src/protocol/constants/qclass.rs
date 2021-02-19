@@ -29,7 +29,7 @@ impl TryFrom<u16> for QClass {
             3 => QClass::CH,
             4 => QClass::HS,
             255 => QClass::ANY,
-            _ => return Err(RsDnsError::ProtocolUnknownQClass(value)),
+            _ => return Err(RsDnsError::UnknownQClass(value)),
         };
 
         Ok(me)
@@ -49,7 +49,7 @@ mod tests {
 
         assert!(matches!(
             QClass::try_from(0),
-            Err(RsDnsError::ProtocolUnknownQClass(0))
+            Err(RsDnsError::UnknownQClass(0))
         ));
     }
 }

@@ -4,18 +4,18 @@ use thiserror::Error;
 #[allow(missing_docs)]
 #[derive(Error, Debug)]
 pub enum RsDnsError {
-    #[error("protocol: unknown TYPE: {0}")]
-    ProtocolUnknownRrType(u16),
-    #[error("protocol: unknown QTYPE: {0}")]
-    ProtocolUnknownQType(u16),
-    #[error("protocol: unknown CLASS: {0}")]
-    ProtocolUnknownRrClass(u16),
-    #[error("protocol: unknown QCLASS: {0}")]
-    ProtocolUnknownQClass(u16),
-    #[error("protocol: unknown OPCODE: {0}")]
-    ProtocolUnknownOpCode(u8),
-    #[error("protocol: unknown RCODE: {0}")]
-    ProtocolUnknownRCode(u8),
+    #[error("unknown RR TYPE: {0}")]
+    UnknownRrType(u16),
+    #[error("unknown QTYPE: {0}")]
+    UnknownQType(u16),
+    #[error("unknown RR CLASS: {0}")]
+    UnknownRrClass(u16),
+    #[error("unknown QCLASS: {0}")]
+    UnknownQClass(u16),
+    #[error("unknown OPCODE: {0}")]
+    UnknownOpCode(u8),
+    #[error("unknown RCODE: {0}")]
+    UnknownRCode(u8),
     #[error("io error")]
     IoError(#[from] std::io::Error),
     #[error("domain name label invalid character")]

@@ -63,7 +63,7 @@ impl TryFrom<u16> for RrType {
             14 => RrType::MINFO,
             15 => RrType::MX,
             16 => RrType::TXT,
-            _ => return Err(RsDnsError::ProtocolUnknownRrType(value)),
+            _ => return Err(RsDnsError::UnknownRrType(value)),
         };
 
         Ok(me)
@@ -83,7 +83,7 @@ mod tests {
 
         assert!(matches!(
             RrType::try_from(0),
-            Err(RsDnsError::ProtocolUnknownRrType(0))
+            Err(RsDnsError::UnknownRrType(0))
         ));
     }
 }

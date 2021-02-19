@@ -181,7 +181,7 @@ mod tests {
                     flags: (i << 11) as u16,
                 };
                 match f.opcode() {
-                    Err(RsDnsError::ProtocolUnknownOpCode(v)) => assert_eq!(v, i as u8),
+                    Err(RsDnsError::UnknownOpCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }
@@ -208,7 +208,7 @@ mod tests {
             if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { flags: i as u16 };
                 match f.rcode() {
-                    Err(RsDnsError::ProtocolUnknownRCode(v)) => assert_eq!(v, i as u8),
+                    Err(RsDnsError::UnknownRCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }

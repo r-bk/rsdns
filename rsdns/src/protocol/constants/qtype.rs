@@ -75,7 +75,7 @@ impl TryFrom<u16> for QType {
             253 => QType::MAILB,
             254 => QType::MAILA,
             255 => QType::ANY,
-            _ => return Err(RsDnsError::ProtocolUnknownQType(value)),
+            _ => return Err(RsDnsError::UnknownQType(value)),
         };
 
         Ok(me)
@@ -95,7 +95,7 @@ mod tests {
 
         assert!(matches!(
             QType::try_from(0),
-            Err(RsDnsError::ProtocolUnknownQType(0))
+            Err(RsDnsError::UnknownQType(0))
         ));
     }
 }

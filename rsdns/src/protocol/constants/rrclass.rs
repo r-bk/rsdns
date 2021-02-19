@@ -26,7 +26,7 @@ impl TryFrom<u16> for RrClass {
             2 => RrClass::CS,
             3 => RrClass::CH,
             4 => RrClass::HS,
-            _ => return Err(RsDnsError::ProtocolUnknownRrClass(value)),
+            _ => return Err(RsDnsError::UnknownRrClass(value)),
         };
 
         Ok(me)
@@ -46,7 +46,7 @@ mod tests {
 
         assert!(matches!(
             RrClass::try_from(0),
-            Err(RsDnsError::ProtocolUnknownRrClass(0))
+            Err(RsDnsError::UnknownRrClass(0))
         ));
     }
 }

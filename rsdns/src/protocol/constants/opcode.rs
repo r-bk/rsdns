@@ -24,7 +24,7 @@ impl TryFrom<u8> for OpCode {
             0 => OpCode::QUERY,
             1 => OpCode::IQUERY,
             2 => OpCode::STATUS,
-            _ => return Err(RsDnsError::ProtocolUnknownOpCode(value)),
+            _ => return Err(RsDnsError::UnknownOpCode(value)),
         };
 
         Ok(me)
@@ -44,7 +44,7 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from(128),
-            Err(RsDnsError::ProtocolUnknownOpCode(128))
+            Err(RsDnsError::UnknownOpCode(128))
         ));
     }
 }

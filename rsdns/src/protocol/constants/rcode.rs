@@ -33,7 +33,7 @@ impl TryFrom<u8> for RCode {
             3 => RCode::NXDOMAIN,
             4 => RCode::NOTIMP,
             5 => RCode::REFUSED,
-            _ => return Err(RsDnsError::ProtocolUnknownRCode(value)),
+            _ => return Err(RsDnsError::UnknownRCode(value)),
         };
 
         Ok(me)
@@ -53,7 +53,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from(128),
-            Err(RsDnsError::ProtocolUnknownRCode(128))
+            Err(RsDnsError::UnknownRCode(128))
         ));
     }
 }
