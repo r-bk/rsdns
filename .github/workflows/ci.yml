@@ -34,11 +34,13 @@ jobs:
         name: Build
         with:
           command: build
+          args: --all-features
 
       - uses: actions-rs/cargo@v1
         name: Test
         with:
           command: test
+          args: --all-features
 
       - uses: actions-rs/cargo@v1
         name: Format
@@ -51,11 +53,11 @@ jobs:
         if: ${{ matrix.rust == 'stable' || matrix.rust == '1.45.0' }}
         with:
           command: clippy
-          args: -- -D warnings
+          args: --all-features -- -D warnings
 
       - uses: actions-rs/cargo@v1
         name: Lint
         if: ${{ matrix.rust != 'stable' && matrix.rust != '1.45.0' }}
         with:
           command: clippy
-          args: -- -D warnings -A clippy::upper_case_acronyms
+          args: --all-features -- -D warnings -A clippy::upper_case_acronyms
