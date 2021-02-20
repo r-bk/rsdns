@@ -36,6 +36,8 @@ pub enum Error {
     EndOfBuffer,
     #[error("buffer is not large enough")]
     BufferTooShort,
+    #[error("operation timed-out")]
+    Timeout,
 }
 
 /// Result returned by this library.
