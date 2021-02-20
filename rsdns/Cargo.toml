@@ -13,7 +13,7 @@ repository = "https://github.com/r-bk/rsdns"
 [features]
 default = ["net-std"]
 net-std = []
-net-tokio = ["tokio/rt", "tokio/net"]
+net-tokio = ["tokio/rt", "tokio/net", "tokio/time"]
 net-async-std = ["async-std"]
 net-smol = ["smol"]
 
