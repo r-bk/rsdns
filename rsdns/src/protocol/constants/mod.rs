@@ -26,3 +26,11 @@ pub const DOMAIN_NAME_LABEL_MAX_LENGTH: usize = 63;
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035#section-4.1.1)
 pub const HEADER_LENGTH: usize = 12;
+
+/// Maximal length of a DNS message.
+///
+/// This value corresponds to the maximal possible length of a DNS
+/// message when retrieved over TCP.
+///
+/// Defined in [RFC 1035 ~4.2.2](https://tools.ietf.org/html/rfc1035#section-4.2.2).
+pub const DNS_MESSAGE_MAX_LENGTH: usize = std::u16::MAX as usize;
