@@ -34,8 +34,9 @@ impl Flags {
     ///
     /// **QUERY** = `false`
     /// **RESPONSE** = `true`
-    pub fn set_qr(&mut self, value: bool) {
+    pub fn set_qr(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 15, value);
+        *self
     }
 
     /// Returns the message **OPCODE**.
@@ -44,9 +45,10 @@ impl Flags {
     }
 
     /// Sets the **OPCODE**.
-    pub fn set_opcode(&mut self, opcode: OpCode) {
+    pub fn set_opcode(&mut self, opcode: OpCode) -> Self {
         let mask = 0b0111_1000_0000_0000;
         self.flags = (self.flags & !mask) | (opcode as u16) << 11;
+        *self
     }
 
     /// Returns the **AA** flag.
@@ -59,8 +61,9 @@ impl Flags {
     }
 
     /// Sets the **AA** flag.
-    pub fn set_aa(&mut self, value: bool) {
+    pub fn set_aa(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 10, value);
+        *self
     }
 
     /// Returns the **TC** flag.
@@ -72,8 +75,9 @@ impl Flags {
     }
 
     /// Sets the TC flag.
-    pub fn set_tc(&mut self, value: bool) {
+    pub fn set_tc(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 9, value);
+        *self
     }
 
     /// Returns the RD flag.
@@ -86,8 +90,9 @@ impl Flags {
     }
 
     /// Sets the RD flag.
-    pub fn set_rd(&mut self, value: bool) {
+    pub fn set_rd(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 8, value);
+        *self
     }
 
     /// Returns the RA flag.
@@ -100,8 +105,9 @@ impl Flags {
     }
 
     /// Sets the RA flag.
-    pub fn set_ra(&mut self, value: bool) {
+    pub fn set_ra(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 7, value);
+        *self
     }
 
     /// Returns the Z field.
@@ -112,8 +118,9 @@ impl Flags {
     }
 
     /// Sets the Z field.
-    pub fn set_z(&mut self, value: u8) {
+    pub fn set_z(&mut self, value: u8) -> Self {
         self.flags |= ((value & 0b0000_0111) << 4) as u16;
+        *self
     }
 
     /// Returns the RCODE.
@@ -122,8 +129,15 @@ impl Flags {
     }
 
     /// Sets the RCODE.
-    pub fn set_rcode(&mut self, rcode: RCode) {
+    pub fn set_rcode(&mut self, rcode: RCode) -> Self {
         self.flags |= rcode as u16;
+        *self
+    }
+}
+
+impl std::fmt::Debug for Flags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:#b}", self.flags)
     }
 }
 
@@ -134,7 +148,7 @@ mod tests {
     use strum::IntoEnumIterator;
 
     type FlagGet = fn(Flags) -> bool;
-    type FlagSet = fn(&mut Flags, bool);
+    type FlagSet = fn(&mut Flags, bool) -> Flags;
 
     fn test_bool_flag(get: FlagGet, set: FlagSet, mask: u16) {
         let mut f = Flags::default();
