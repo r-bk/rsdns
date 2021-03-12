@@ -27,6 +27,9 @@ tokio = { version = "^1", optional = true }
 async-std  = { version = "^1", optional = true }
 smol = { version = "^1", optional = true }
 
+[dev-dependencies]
+rand = "0.8"
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]

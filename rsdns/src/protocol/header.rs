@@ -1,12 +1,16 @@
 use crate::{
-    protocol::{constants::HEADER_LENGTH, message::Cursor, Flags},
+    protocol::{
+        constants::HEADER_LENGTH,
+        message::{Cursor, WCursor},
+        Flags,
+    },
     Result, RsDnsError,
 };
 
 /// DNS message header.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(Default)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct Header {
     /// An identifier assigned by the program that generates any kind of query.
     /// This identifier is copied to the corresponding reply and can be used by the requester to
@@ -40,5 +44,94 @@ impl Header {
         } else {
             Err(RsDnsError::EndOfBuffer)
         }
+    }
+
+    #[allow(dead_code)]
+    pub(crate) fn to_cursor(&self, cursor: &mut WCursor) -> Result<()> {
+        if cursor.len() >= HEADER_LENGTH {
+            unsafe {
+                cursor.u16_be_unchecked(self.id);
+                cursor.u16_be_unchecked(self.flags.as_u16());
+                cursor.u16_be_unchecked(self.qd_count);
+                cursor.u16_be_unchecked(self.an_count);
+                cursor.u16_be_unchecked(self.ns_count);
+                cursor.u16_be_unchecked(self.ar_count);
+                Ok(())
+            }
+        } else {
+            Err(RsDnsError::EndOfBuffer)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::protocol::{OpCode, RCode};
+    use rand::seq::IteratorRandom;
+    use strum::IntoEnumIterator;
+
+    #[test]
+    fn test_serialization() {
+        let mut rng = rand::thread_rng();
+
+        let flags = Flags::new(0)
+            .set_qr(rand::random())
+            .set_aa(rand::random())
+            .set_ra(rand::random())
+            .set_rd(rand::random())
+            .set_tc(rand::random())
+            .set_opcode(OpCode::iter().choose(&mut rng).unwrap())
+            .set_rcode(RCode::iter().choose(&mut rng).unwrap());
+
+        let header = Header {
+            id: rand::random::<u16>(),
+            flags,
+            qd_count: rand::random::<u16>(),
+            an_count: rand::random::<u16>(),
+            ns_count: rand::random::<u16>(),
+            ar_count: rand::random::<u16>(),
+        };
+
+        let mut buf = [0u8; HEADER_LENGTH];
+
+        {
+            let mut wcursor = WCursor::new(&mut buf[..]);
+            header.to_cursor(&mut wcursor).unwrap();
+        }
+
+        let mut cursor = Cursor::new(&buf[..]);
+
+        let another = Header::from_cursor(&mut cursor).unwrap();
+
+        assert_eq!(header, another);
+    }
+
+    #[test]
+    fn test_serializaton_end_of_buffer() {
+        let mut empty_arr = [0u8; 0];
+        let mut small_arr = [0u8; HEADER_LENGTH - 1];
+
+        assert!(matches!(
+            Header::from_cursor(&mut Cursor::new(&empty_arr[..])),
+            Err(RsDnsError::EndOfBuffer)
+        ));
+
+        assert!(matches!(
+            Header::from_cursor(&mut Cursor::new(&small_arr[..])),
+            Err(RsDnsError::EndOfBuffer)
+        ));
+
+        let header = Header::default();
+
+        assert!(matches!(
+            header.to_cursor(&mut WCursor::new(&mut empty_arr[..])),
+            Err(RsDnsError::EndOfBuffer)
+        ));
+
+        assert!(matches!(
+            header.to_cursor(&mut WCursor::new(&mut small_arr[..])),
+            Err(RsDnsError::EndOfBuffer)
+        ));
     }
 }
