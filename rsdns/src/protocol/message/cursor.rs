@@ -1,4 +1,4 @@
-use crate::{protocol::message::BytesReader, Result, RsDnsError};
+use crate::{protocol::message::Bytes, Result, RsDnsError};
 use std::mem::size_of;
 
 #[derive(Clone, Debug)]
@@ -68,13 +68,13 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn u16_be(&mut self) -> Result<u16> {
-        let v = BytesReader::u16_be(self.as_bytes())?;
+        let v = Bytes::rbe_u16(self.as_bytes())?;
         self.pos += size_of::<u16>();
         Ok(v)
     }
 
     pub unsafe fn u16_be_unchecked(&mut self) -> u16 {
-        let v = BytesReader::u16_be_unchecked(self.buf.get_unchecked(self.pos..));
+        let v = Bytes::rbe_u16_unchecked(self.buf.get_unchecked(self.pos..));
         self.pos += size_of::<u16>();
         v
     }
