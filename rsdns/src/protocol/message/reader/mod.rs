@@ -1,3 +1,5 @@
+//! Defines entities for parsing a raw DNS message.
+
 mod domain_name_reader;
 mod message_reader;
 mod questions;

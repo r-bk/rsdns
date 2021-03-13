@@ -1,6 +1,6 @@
 use crate::{
     protocol::{
-        message::{Cursor, DomainNameReader},
+        message::{reader::DomainNameReader, Cursor},
         DomainName, QClass, QType,
     },
     Result,
