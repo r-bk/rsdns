@@ -95,7 +95,7 @@ impl<'a> QuestionsReader<'a> {
             return Ok(None);
         }
 
-        match Question::from_cursor(&mut self.cursor) {
+        match Question::read(&mut self.cursor) {
             Ok(q) => {
                 self.qd_read += 1;
                 Ok(Some(q))

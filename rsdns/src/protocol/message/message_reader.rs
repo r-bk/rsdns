@@ -19,7 +19,7 @@ impl<'a> MessageReader<'a> {
     /// Creates a `MessageReader` for a DNS message contained in `buf`.
     pub fn new(buf: &'a [u8]) -> Result<MessageReader<'a>> {
         let mut cursor = Cursor::new(buf);
-        let header = Header::from_cursor(&mut cursor)?;
+        let header = Header::read(&mut cursor)?;
         let an_offset = Self::find_an_offset(cursor, header.qd_count as usize)?;
         Ok(MessageReader {
             buf,

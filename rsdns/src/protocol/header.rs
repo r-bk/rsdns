@@ -29,7 +29,7 @@ pub struct Header {
 }
 
 impl Header {
-    pub(crate) fn from_cursor(cursor: &mut Cursor) -> Result<Header> {
+    pub(crate) fn read(cursor: &mut Cursor) -> Result<Header> {
         if cursor.len() >= HEADER_LENGTH {
             unsafe {
                 Ok(Header {
@@ -47,7 +47,7 @@ impl Header {
     }
 
     #[allow(dead_code)]
-    pub(crate) fn to_cursor(&self, cursor: &mut WCursor) -> Result<()> {
+    pub(crate) fn write(&self, cursor: &mut WCursor) -> Result<()> {
         if cursor.len() >= HEADER_LENGTH {
             unsafe {
                 cursor.u16_be_unchecked(self.id);
@@ -97,12 +97,12 @@ mod tests {
 
         {
             let mut wcursor = WCursor::new(&mut buf[..]);
-            header.to_cursor(&mut wcursor).unwrap();
+            header.write(&mut wcursor).unwrap();
         }
 
         let mut cursor = Cursor::new(&buf[..]);
 
-        let another = Header::from_cursor(&mut cursor).unwrap();
+        let another = Header::read(&mut cursor).unwrap();
 
         assert_eq!(header, another);
     }
@@ -113,24 +113,24 @@ mod tests {
         let mut small_arr = [0u8; HEADER_LENGTH - 1];
 
         assert!(matches!(
-            Header::from_cursor(&mut Cursor::new(&empty_arr[..])),
+            Header::read(&mut Cursor::new(&empty_arr[..])),
             Err(RsDnsError::EndOfBuffer)
         ));
 
         assert!(matches!(
-            Header::from_cursor(&mut Cursor::new(&small_arr[..])),
+            Header::read(&mut Cursor::new(&small_arr[..])),
             Err(RsDnsError::EndOfBuffer)
         ));
 
         let header = Header::default();
 
         assert!(matches!(
-            header.to_cursor(&mut WCursor::new(&mut empty_arr[..])),
+            header.write(&mut WCursor::new(&mut empty_arr[..])),
             Err(RsDnsError::EndOfBuffer)
         ));
 
         assert!(matches!(
-            header.to_cursor(&mut WCursor::new(&mut small_arr[..])),
+            header.write(&mut WCursor::new(&mut small_arr[..])),
             Err(RsDnsError::EndOfBuffer)
         ));
     }

@@ -19,7 +19,7 @@ pub struct Question {
 }
 
 impl Question {
-    pub(crate) fn from_cursor(cursor: &mut Cursor) -> Result<Question> {
+    pub(crate) fn read(cursor: &mut Cursor) -> Result<Question> {
         Ok(Question {
             qname: DomainNameReader::read(cursor)?,
             qtype: QType::try_from(cursor.u16_be()?)?,
