@@ -1,8 +1,6 @@
-use thiserror::Error;
-
 /// Errors returned by this library.
 #[allow(missing_docs)]
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum RsDnsError {
     #[error("unknown RR TYPE: {0}")]
     UnknownRrType(u16),
