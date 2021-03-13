@@ -1,6 +1,6 @@
 use crate::{
     protocol::{message::Cursor, DomainName},
-    Result, RsDnsError,
+    Error, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
@@ -62,12 +62,12 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(RsDnsError::DomainNameInvalidPointer);
+                    return Err(Error::DomainNameInvalidPointer);
                 }
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(RsDnsError::DomainNameInvalidLabelType);
+                return Err(Error::DomainNameInvalidLabelType);
             }
         }
 
@@ -93,12 +93,12 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(RsDnsError::DomainNameInvalidPointer);
+                    return Err(Error::DomainNameInvalidPointer);
                 }
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(RsDnsError::DomainNameInvalidLabelType);
+                return Err(Error::DomainNameInvalidLabelType);
             }
         }
 
@@ -129,11 +129,11 @@ impl<'a> DomainNameReader<'a> {
     fn remember_offset(&mut self, offset: u16) -> Result<()> {
         for o in &self.seen_offsets {
             if *o == offset {
-                return Err(RsDnsError::DomainNamePointerLoop);
+                return Err(Error::DomainNamePointerLoop);
             }
         }
         if self.seen_offsets.is_full() {
-            return Err(RsDnsError::DomainNameTooMuchPointers);
+            return Err(Error::DomainNameTooMuchPointers);
         }
         unsafe { self.seen_offsets.push_unchecked(offset) };
         Ok(())
@@ -180,7 +180,7 @@ mod tests {
         let mut dn = DomainName::new();
         assert!(matches!(
             DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 5), &mut dn),
-            Err(RsDnsError::DomainNameInvalidPointer)
+            Err(Error::DomainNameInvalidPointer)
         ));
     }
 
@@ -191,7 +191,7 @@ mod tests {
         let mut dn = DomainName::new();
         assert!(matches!(
             DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 15), &mut dn),
-            Err(RsDnsError::DomainNamePointerLoop)
+            Err(Error::DomainNamePointerLoop)
         ));
     }
 
@@ -202,7 +202,7 @@ mod tests {
         let mut dn = DomainName::new();
         assert!(matches!(
             DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 15), &mut dn),
-            Err(RsDnsError::DomainNameInvalidLabelType)
+            Err(Error::DomainNameInvalidLabelType)
         ));
     }
 
@@ -238,7 +238,7 @@ mod tests {
                     &mut Cursor::with_pos(packet.as_ref(), packet.len() - 2),
                     &mut dn
                 ),
-                Err(RsDnsError::DomainNameTooMuchPointers)
+                Err(Error::DomainNameTooMuchPointers)
             ));
         }
     }

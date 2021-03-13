@@ -1,4 +1,4 @@
-use crate::{protocol::message::Bytes, Result, RsDnsError};
+use crate::{protocol::message::Bytes, Error, Result};
 use std::mem::size_of;
 
 #[derive(Debug)]
@@ -44,7 +44,7 @@ impl<'a> WCursor<'a> {
         if self.len() >= size {
             Ok(unsafe { self.buf.get_unchecked_mut(self.pos..self.pos + size) })
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }
 

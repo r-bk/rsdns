@@ -4,7 +4,7 @@ use crate::{
         message::{Cursor, WCursor},
         Flags,
     },
-    Result, RsDnsError,
+    Error, Result,
 };
 
 /// DNS message header.
@@ -42,7 +42,7 @@ impl Header {
                 })
             }
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }
 
@@ -59,7 +59,7 @@ impl Header {
                 Ok(())
             }
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }
 }
@@ -114,24 +114,24 @@ mod tests {
 
         assert!(matches!(
             Header::read(&mut Cursor::new(&empty_arr[..])),
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         ));
 
         assert!(matches!(
             Header::read(&mut Cursor::new(&small_arr[..])),
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         ));
 
         let header = Header::default();
 
         assert!(matches!(
             header.write(&mut WCursor::new(&mut empty_arr[..])),
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         ));
 
         assert!(matches!(
             header.write(&mut WCursor::new(&mut small_arr[..])),
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         ));
     }
 }

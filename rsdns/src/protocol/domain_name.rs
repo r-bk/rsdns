@@ -1,6 +1,6 @@
 use crate::{
     protocol::{DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH},
-    Result, RsDnsError,
+    Error, Result,
 };
 use arrayvec::ArrayString;
 use std::{
@@ -133,18 +133,18 @@ impl DomainName {
     /// Checks if a byte slice is a valid domain name label.
     pub fn check_label_bytes(label: &[u8]) -> Result<()> {
         if label.is_empty() {
-            return Err(RsDnsError::DomainNameLabelMalformed);
+            return Err(Error::DomainNameLabelMalformed);
         }
 
         let len = label.len();
 
         if len > DOMAIN_NAME_LABEL_MAX_LENGTH {
-            return Err(RsDnsError::DomainNameLabelTooLong(len));
+            return Err(Error::DomainNameLabelTooLong(len));
         }
 
         for b in label.iter().cloned() {
             if !(b.is_ascii_alphanumeric() || b == b'-') {
-                return Err(RsDnsError::DomainNameLabelInvalidChar);
+                return Err(Error::DomainNameLabelInvalidChar);
             }
         }
 
@@ -152,10 +152,10 @@ impl DomainName {
         // so it is sound to access it unchecked at the first and last bytes
         unsafe {
             if !label.get_unchecked(0).is_ascii_alphabetic() {
-                return Err(RsDnsError::DomainNameLabelMalformed);
+                return Err(Error::DomainNameLabelMalformed);
             }
             if !label.get_unchecked(len - 1).is_ascii_alphanumeric() {
-                return Err(RsDnsError::DomainNameLabelMalformed);
+                return Err(Error::DomainNameLabelMalformed);
             }
         }
 
@@ -173,7 +173,7 @@ impl DomainName {
     /// Checks if a byte slice is a valid domain name.
     pub fn check_name_bytes(name: &[u8]) -> Result<()> {
         if name.is_empty() {
-            return Err(RsDnsError::DomainNameLabelMalformed);
+            return Err(Error::DomainNameLabelMalformed);
         }
 
         // root domain name
@@ -202,7 +202,7 @@ impl DomainName {
         };
 
         if len > effective_max_length {
-            return Err(RsDnsError::DomainNameTooLong);
+            return Err(Error::DomainNameTooLong);
         }
 
         Ok(())
@@ -335,11 +335,11 @@ impl DomainName {
         let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
 
         if self.arr.try_push_str(label_as_str).is_err() {
-            return Err(RsDnsError::DomainNameTooLong);
+            return Err(Error::DomainNameTooLong);
         }
 
         if self.arr.try_push('.').is_err() {
-            return Err(RsDnsError::DomainNameTooLong);
+            return Err(Error::DomainNameTooLong);
         }
 
         Ok(())
@@ -366,11 +366,11 @@ impl DomainName {
         Self::check_label(label)?;
 
         if self.arr.try_push_str(label).is_err() {
-            return Err(RsDnsError::DomainNameTooLong);
+            return Err(Error::DomainNameTooLong);
         }
 
         if self.arr.try_push('.').is_err() {
-            return Err(RsDnsError::DomainNameTooLong);
+            return Err(Error::DomainNameTooLong);
         }
 
         Ok(())
@@ -402,7 +402,7 @@ impl DomainName {
 }
 
 impl TryFrom<&str> for DomainName {
-    type Error = RsDnsError;
+    type Error = Error;
 
     fn try_from(value: &str) -> Result<Self> {
         Self::from(value)
@@ -410,7 +410,7 @@ impl TryFrom<&str> for DomainName {
 }
 
 impl FromStr for DomainName {
-    type Err = RsDnsError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
         Self::from(s)
@@ -532,29 +532,29 @@ mod tests {
 
         for m in malformed {
             let res = DomainName::check_label_bytes(m);
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
 
             let res = DomainName::check_label(std::str::from_utf8(m).unwrap());
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
         }
 
         let invalid_char: &[&[u8]] = &[b"la.el", b"\tabel"];
         for ic in invalid_char {
             let res = DomainName::check_label_bytes(ic);
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelInvalidChar)));
+            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
 
             let res = DomainName::check_label(std::str::from_utf8(ic).unwrap());
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelInvalidChar)));
+            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
         }
 
         let l_64 = "a".repeat(64);
         let too_large = &[l_64.as_bytes()];
         for tl in too_large {
             let res = DomainName::check_label_bytes(tl);
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelTooLong(l)) if l == tl.len()));
+            assert!(matches!(res, Err(Error::DomainNameLabelTooLong(l)) if l == tl.len()));
 
             let res = DomainName::check_label(std::str::from_utf8(tl).unwrap());
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelTooLong(l)) if l == tl.len()));
+            assert!(matches!(res, Err(Error::DomainNameLabelTooLong(l)) if l == tl.len()));
         }
 
         let l_63 = "a".repeat(63);
@@ -592,20 +592,20 @@ mod tests {
 
         for m in malformed {
             let res = DomainName::check_name_bytes(m);
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
 
             let res = DomainName::check_name(std::str::from_utf8(m).unwrap());
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
         }
 
         let invalid_char: &[&[u8]] = &[b"examp|e.com."];
 
         for ic in invalid_char {
             let res = DomainName::check_name_bytes(ic);
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelInvalidChar)));
+            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
 
             let res = DomainName::check_name(std::str::from_utf8(ic).unwrap());
-            assert!(matches!(res, Err(RsDnsError::DomainNameLabelInvalidChar)));
+            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
         }
 
         let l_63 = "a".repeat(63);
@@ -621,10 +621,10 @@ mod tests {
         let too_long = &[dn_254.as_str()];
         for tl in too_long {
             let res = DomainName::check_name(tl);
-            assert!(matches!(res, Err(RsDnsError::DomainNameTooLong)));
+            assert!(matches!(res, Err(Error::DomainNameTooLong)));
 
             let res = DomainName::check_name_bytes(tl.as_bytes());
-            assert!(matches!(res, Err(RsDnsError::DomainNameTooLong)));
+            assert!(matches!(res, Err(Error::DomainNameTooLong)));
         }
     }
 
@@ -662,12 +662,12 @@ mod tests {
             dn.push_label("small").unwrap();
 
             let res = dn.push_label(&l_63);
-            assert!(matches!(res, Err(RsDnsError::DomainNameTooLong)));
+            assert!(matches!(res, Err(Error::DomainNameTooLong)));
         }
 
         // test total size == 255
         let res = dn.clone().push_label(&l_63);
-        assert!(matches!(res, Err(RsDnsError::DomainNameTooLong)));
+        assert!(matches!(res, Err(Error::DomainNameTooLong)));
 
         dn.push_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);

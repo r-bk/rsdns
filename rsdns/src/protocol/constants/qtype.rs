@@ -1,4 +1,4 @@
-use crate::RsDnsError;
+use crate::Error;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
@@ -51,7 +51,7 @@ pub enum QType {
 }
 
 impl TryFrom<u16> for QType {
-    type Error = RsDnsError;
+    type Error = Error;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
@@ -75,7 +75,7 @@ impl TryFrom<u16> for QType {
             253 => QType::MAILB,
             254 => QType::MAILA,
             255 => QType::ANY,
-            _ => return Err(RsDnsError::UnknownQType(value)),
+            _ => return Err(Error::UnknownQType(value)),
         };
 
         Ok(me)
@@ -93,9 +93,6 @@ mod tests {
             assert_eq!(qtype, QType::try_from(qtype as u16).unwrap());
         }
 
-        assert!(matches!(
-            QType::try_from(0),
-            Err(RsDnsError::UnknownQType(0))
-        ));
+        assert!(matches!(QType::try_from(0), Err(Error::UnknownQType(0))));
     }
 }

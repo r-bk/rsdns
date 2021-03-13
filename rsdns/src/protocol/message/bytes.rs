@@ -1,4 +1,4 @@
-use crate::{Result, RsDnsError};
+use crate::{Error, Result};
 
 pub struct Bytes;
 
@@ -18,7 +18,7 @@ macro_rules! r_be {
             let v = unsafe { ptr.read_unaligned() };
             Ok(v.to_be())
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }};
 }
@@ -38,7 +38,7 @@ macro_rules! w_be {
             unsafe { ptr.write_unaligned($val.to_be()) };
             Ok(())
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }};
 }

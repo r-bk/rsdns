@@ -1,4 +1,4 @@
-use crate::RsDnsError;
+use crate::Error;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
@@ -23,7 +23,7 @@ pub enum RCode {
 }
 
 impl TryFrom<u8> for RCode {
-    type Error = RsDnsError;
+    type Error = Error;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
@@ -33,7 +33,7 @@ impl TryFrom<u8> for RCode {
             3 => RCode::NXDOMAIN,
             4 => RCode::NOTIMP,
             5 => RCode::REFUSED,
-            _ => return Err(RsDnsError::UnknownRCode(value)),
+            _ => return Err(Error::UnknownRCode(value)),
         };
 
         Ok(me)
@@ -53,7 +53,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from(128),
-            Err(RsDnsError::UnknownRCode(128))
+            Err(Error::UnknownRCode(128))
         ));
     }
 }

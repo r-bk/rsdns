@@ -1,7 +1,7 @@
 /// Errors returned by this library.
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
-pub enum RsDnsError {
+pub enum Error {
     #[error("unknown RR TYPE: {0}")]
     UnknownRrType(u16),
     #[error("unknown QTYPE: {0}")]
@@ -37,4 +37,4 @@ pub enum RsDnsError {
 }
 
 /// Result returned by this library.
-pub type Result<T> = std::result::Result<T, RsDnsError>;
+pub type Result<T> = std::result::Result<T, Error>;

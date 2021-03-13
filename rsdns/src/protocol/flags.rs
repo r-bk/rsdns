@@ -144,7 +144,7 @@ impl std::fmt::Debug for Flags {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::RsDnsError;
+    use crate::Error;
     use strum::IntoEnumIterator;
 
     type FlagGet = fn(Flags) -> bool;
@@ -195,7 +195,7 @@ mod tests {
                     flags: (i << 11) as u16,
                 };
                 match f.opcode() {
-                    Err(RsDnsError::UnknownOpCode(v)) => assert_eq!(v, i as u8),
+                    Err(Error::UnknownOpCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }
@@ -222,7 +222,7 @@ mod tests {
             if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { flags: i as u16 };
                 match f.rcode() {
-                    Err(RsDnsError::UnknownRCode(v)) => assert_eq!(v, i as u8),
+                    Err(Error::UnknownRCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }

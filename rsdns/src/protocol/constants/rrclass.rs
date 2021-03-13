@@ -1,4 +1,4 @@
-use crate::RsDnsError;
+use crate::Error;
 use std::convert::TryFrom;
 use strum_macros::EnumIter;
 
@@ -18,7 +18,7 @@ pub enum RrClass {
 }
 
 impl TryFrom<u16> for RrClass {
-    type Error = RsDnsError;
+    type Error = Error;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
@@ -26,7 +26,7 @@ impl TryFrom<u16> for RrClass {
             2 => RrClass::CS,
             3 => RrClass::CH,
             4 => RrClass::HS,
-            _ => return Err(RsDnsError::UnknownRrClass(value)),
+            _ => return Err(Error::UnknownRrClass(value)),
         };
 
         Ok(me)
@@ -46,7 +46,7 @@ mod tests {
 
         assert!(matches!(
             RrClass::try_from(0),
-            Err(RsDnsError::UnknownRrClass(0))
+            Err(Error::UnknownRrClass(0))
         ));
     }
 }

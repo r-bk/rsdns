@@ -6,5 +6,5 @@
 mod error;
 pub mod protocol;
 
+pub use error::Error;
 pub use error::Result;
-pub use error::RsDnsError;

@@ -1,4 +1,4 @@
-use crate::{protocol::message::Bytes, Result, RsDnsError};
+use crate::{protocol::message::Bytes, Error, Result};
 use std::mem::size_of;
 
 #[derive(Clone, Debug)]
@@ -39,7 +39,7 @@ impl<'a> Cursor<'a> {
             self.pos += distance;
             Ok(())
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }
 
@@ -85,7 +85,7 @@ impl<'a> Cursor<'a> {
             self.pos += 1;
             Ok(v)
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }
 
@@ -95,7 +95,7 @@ impl<'a> Cursor<'a> {
             self.pos += size;
             Ok(unsafe { self.buf.get_unchecked(pos..pos + size) })
         } else {
-            Err(RsDnsError::EndOfBuffer)
+            Err(Error::EndOfBuffer)
         }
     }
 }
