@@ -1,4 +1,4 @@
 # rsdns
-DNS client library in Rust
+DNS Stub Resolver
 
 **!!! UNDER CONSTRUCTION !!!**
