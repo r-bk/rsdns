@@ -4,14 +4,14 @@ use crate::{
 };
 
 /// A reader of the questions section of a DNS message.
-pub struct QuestionsReader<'a> {
+pub struct Questions<'a> {
     cursor: Cursor<'a>,
     err: bool,
     qd_count: u16,
     qd_read: u16,
 }
 
-impl<'a> QuestionsReader<'a> {
+impl<'a> Questions<'a> {
     pub(crate) fn new(cursor: Cursor<'a>, qd_count: u16) -> Self {
         Self {
             cursor,
@@ -46,9 +46,9 @@ impl<'a> QuestionsReader<'a> {
     ///
     /// fn print_questions(buf: &[u8]) -> Result<()> {
     ///     let mut message_reader = MessageReader::new(buf)?;
-    ///     let mut questions_reader = message_reader.questions();
+    ///     let mut questions = message_reader.questions();
     ///
-    ///     for question in questions_reader.read()? {
+    ///     for question in questions.read()? {
     ///         println!(
     ///             "{} {} {}",
     ///             question.qname.as_str(),
@@ -74,10 +74,10 @@ impl<'a> QuestionsReader<'a> {
     ///
     /// fn print_questions(buf: &[u8]) -> Result<()> {
     ///     let mut message_reader = MessageReader::new(buf)?;
-    ///     let mut questions_reader = message_reader.questions();
+    ///     let mut questions = message_reader.questions();
     ///
     ///     loop {
-    ///         match questions_reader.read() {
+    ///         match questions.read() {
     ///             Ok(Some(question)) => println!("{:?}", question),
     ///             Ok(None) => break,
     ///             Err(e) => {

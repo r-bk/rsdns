@@ -1,7 +1,7 @@
 use crate::{
     protocol::{
         constants::HEADER_LENGTH,
-        message::{Cursor, DomainNameReader, QuestionsReader},
+        message::{Cursor, DomainNameReader, Questions},
         Header,
     },
     Result,
@@ -34,8 +34,8 @@ impl<'a> MessageReader<'a> {
     }
 
     /// Returns a reader for the questions section of the DNS message.
-    pub fn questions(&self) -> QuestionsReader {
-        QuestionsReader::new(
+    pub fn questions(&self) -> Questions {
+        Questions::new(
             Cursor::with_pos(self.buf, HEADER_LENGTH),
             self.header.qd_count,
         )
