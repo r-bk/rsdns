@@ -1,7 +1,7 @@
 use crate::{
     protocol::{
+        bytes::{Cursor, WCursor},
         constants::HEADER_LENGTH,
-        message::{Cursor, WCursor},
         Flags,
     },
     Error, Result,

@@ -1,10 +1,8 @@
 use crate::{
     protocol::{
+        bytes::Cursor,
         constants::HEADER_LENGTH,
-        message::{
-            reader::{DomainNameReader, Questions},
-            Cursor,
-        },
+        message::reader::{DomainNameReader, Questions},
         Header,
     },
     Result,

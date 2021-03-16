@@ -1,4 +1,4 @@
-use crate::{protocol::message::Bytes, Error, Result};
+use crate::{protocol::bytes::Bytes, Error, Result};
 use std::mem::size_of;
 
 #[derive(Debug)]

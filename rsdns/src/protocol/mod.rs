@@ -1,6 +1,7 @@
 //! DNS protocol implementation.
 #[macro_use]
 mod macros;
+pub(crate) mod bytes;
 mod constants;
 mod domain_name;
 mod flags;

@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{message::Cursor, Question},
+    protocol::{bytes::Cursor, Question},
     Result,
 };
 

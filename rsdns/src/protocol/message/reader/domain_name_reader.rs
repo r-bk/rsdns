@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{message::Cursor, DomainName},
+    protocol::{bytes::Cursor, DomainName},
     Error, Result,
 };
 
