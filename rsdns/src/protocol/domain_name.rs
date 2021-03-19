@@ -40,7 +40,7 @@ pub struct DomainName {
 impl DomainName {
     /// Creates an empty `DomainName`.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -57,7 +57,7 @@ impl DomainName {
 
     /// Creates the root `DomainName`.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -74,7 +74,7 @@ impl DomainName {
 
     /// Creates a `DomainName` from a string slice.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -111,7 +111,7 @@ impl DomainName {
 
     /// Returns the `DomainName` as a string slice.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -212,7 +212,7 @@ impl DomainName {
     ///
     /// This is a string slice equivalent of [`DomainName::check_name_bytes`].
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -231,7 +231,7 @@ impl DomainName {
 
     /// Returns the length of the `DomainName`.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -251,7 +251,7 @@ impl DomainName {
     ///
     /// This is a convenience method. The capacity equals [`DOMAIN_NAME_MAX_LENGTH`].
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::{DOMAIN_NAME_MAX_LENGTH, DomainName};
@@ -269,7 +269,7 @@ impl DomainName {
     ///
     /// **Note**: empty domain name is not valid.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -288,7 +288,7 @@ impl DomainName {
 
     /// Make the `DomainName` empty.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -314,7 +314,7 @@ impl DomainName {
     /// This function is dedicated to a parser which needs to construct
     /// a domain name label by label, as they are read from the DNS on-wire representation.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -349,7 +349,7 @@ impl DomainName {
     ///
     /// This is a string slice equivalent of [`DomainName::push_label_bytes`].
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
@@ -378,7 +378,7 @@ impl DomainName {
 
     /// Sets this domain name to be the root zone domain name `.`.
     ///
-    /// # Example
+    /// # Examples
     ///
     /// ```
     /// use rsdns::protocol::DomainName;
