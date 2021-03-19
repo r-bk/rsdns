@@ -62,12 +62,12 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(Error::DomainNameInvalidPointer);
+                    return Err(Error::DomainNameBadPointer);
                 }
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(Error::DomainNameInvalidLabelType);
+                return Err(Error::DomainNameBadLabelType);
             }
         }
 
@@ -93,12 +93,12 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(Error::DomainNameInvalidPointer);
+                    return Err(Error::DomainNameBadPointer);
                 }
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(Error::DomainNameInvalidLabelType);
+                return Err(Error::DomainNameBadLabelType);
             }
         }
 
@@ -180,7 +180,7 @@ mod tests {
         let mut dn = DomainName::new();
         assert!(matches!(
             DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 5), &mut dn),
-            Err(Error::DomainNameInvalidPointer)
+            Err(Error::DomainNameBadPointer)
         ));
     }
 
@@ -202,7 +202,7 @@ mod tests {
         let mut dn = DomainName::new();
         assert!(matches!(
             DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 15), &mut dn),
-            Err(Error::DomainNameInvalidLabelType)
+            Err(Error::DomainNameBadLabelType)
         ));
     }
 

@@ -28,11 +28,11 @@ pub enum Error {
     DomainNamePointerLoop,
     #[error("domain name pointer count exceeds allowed limit")]
     DomainNameTooMuchPointers,
-    #[error("domain name label invalid type")]
-    DomainNameInvalidLabelType,
-    #[error("domain name invalid pointer")]
-    DomainNameInvalidPointer,
-    #[error("buffer limit reached")]
+    #[error("domain name label type is invalid")]
+    DomainNameBadLabelType,
+    #[error("domain name label pointer is invalid")]
+    DomainNameBadPointer,
+    #[error("buffer end unexpectedly reached")]
     EndOfBuffer,
 }
 
