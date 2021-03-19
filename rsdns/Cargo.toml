@@ -22,13 +22,11 @@ thiserror = "1.0"
 strum = "0.20"
 strum_macros = "0.20"
 arrayvec = { version = "0.5", features = ["array-sizes-129-255"] }
+rand = "0.8"
 
 tokio = { version = "^1", optional = true }
 async-std  = { version = "^1", optional = true }
 smol = { version = "^1", optional = true }
-
-[dev-dependencies]
-rand = "0.8"
 
 [package.metadata.docs.rs]
 all-features = true
