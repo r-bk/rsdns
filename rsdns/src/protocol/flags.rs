@@ -13,12 +13,12 @@ pub struct Flags {
 }
 
 impl Flags {
-    /// Creates new Flags out of on-wire representation.
-    pub fn new(flags: u16) -> Flags {
-        Flags { flags }
+    /// Creates new (zero) Flags.
+    pub fn new() -> Flags {
+        Flags { flags: 0 }
     }
 
-    /// Converts to underlying primitive type.
+    /// Converts to the underlying primitive type.
     pub fn as_u16(self) -> u16 {
         self.flags
     }
@@ -138,6 +138,13 @@ impl Flags {
 impl std::fmt::Debug for Flags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:#b}", self.flags)
+    }
+}
+
+impl std::convert::From<u16> for Flags {
+    #[inline]
+    fn from(flags: u16) -> Flags {
+        Flags { flags }
     }
 }
 

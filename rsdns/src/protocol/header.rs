@@ -34,7 +34,7 @@ impl Header {
             unsafe {
                 Ok(Header {
                     id: cursor.u16_be_unchecked(),
-                    flags: Flags::new(cursor.u16_be_unchecked()),
+                    flags: Flags::from(cursor.u16_be_unchecked()),
                     qd_count: cursor.u16_be_unchecked(),
                     an_count: cursor.u16_be_unchecked(),
                     ns_count: cursor.u16_be_unchecked(),
@@ -75,7 +75,7 @@ mod tests {
     fn test_serialization() {
         let mut rng = rand::thread_rng();
 
-        let flags = Flags::new(0)
+        let flags = Flags::new()
             .set_qr(rand::random())
             .set_aa(rand::random())
             .set_ra(rand::random())
