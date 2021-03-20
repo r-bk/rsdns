@@ -15,19 +15,13 @@ pub struct DomainNameReader<'a> {
     seen_offsets: OffsetsArray,
 }
 
-#[allow(dead_code)]
 impl<'a> DomainNameReader<'a> {
     pub fn read(cursor: &mut Cursor<'a>) -> Result<DomainName> {
         let mut dn = DomainName::new();
-        Self::read_into(cursor, &mut dn)?;
-        Ok(dn)
-    }
-
-    pub fn read_into(cursor: &mut Cursor<'a>, dn: &mut DomainName) -> Result<()> {
         let mut dnr = Self::new(cursor.clone());
-        dnr.read_impl(dn)?;
+        dnr.read_impl(&mut dn)?;
         cursor.set_pos(dnr.max_pos);
-        Ok(())
+        Ok(dn)
     }
 
     pub fn skip(cursor: &mut Cursor<'a>) -> Result<()> {
@@ -147,8 +141,7 @@ mod tests {
     #[test]
     fn test_basic_flow() {
         let packet = b"\x03sub\x07example\x03com\x00";
-        let mut dn = DomainName::new();
-        DomainNameReader::read_into(&mut Cursor::new(&packet[..]), &mut dn).unwrap();
+        let dn = DomainNameReader::read(&mut Cursor::new(&packet[..])).unwrap();
 
         assert_eq!(dn.as_str(), "sub.example.com.");
     }
@@ -157,8 +150,7 @@ mod tests {
     fn test_root_domain_name() {
         let packet = b"\x00";
 
-        let mut dn = DomainName::new();
-        DomainNameReader::read_into(&mut Cursor::new(&packet[..]), &mut dn).unwrap();
+        let dn = DomainNameReader::read(&mut Cursor::new(&packet[..])).unwrap();
 
         assert_eq!(dn.as_str(), ".");
     }
@@ -167,8 +159,7 @@ mod tests {
     fn test_basic_flow_with_pointers() {
         let packet = b"\x03com\x00\x07example\xC0\x00\x03sub\xC0\x05";
 
-        let mut dn = DomainName::new();
-        DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 15), &mut dn).unwrap();
+        let dn = DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)).unwrap();
 
         assert_eq!(dn.as_str(), "sub.example.com.");
     }
@@ -177,9 +168,8 @@ mod tests {
     fn test_invalid_pointer() {
         let packet = b"\x03com\x00\x07example\xC0\x13\x03sub\xC0\x05";
 
-        let mut dn = DomainName::new();
         assert!(matches!(
-            DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 5), &mut dn),
+            DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 5)),
             Err(Error::DomainNameBadPointer)
         ));
     }
@@ -188,9 +178,8 @@ mod tests {
     fn test_pointer_loop() {
         let packet = b"\x03com\x00\x07example\xC0\x0F\x03sub\xC0\x05";
 
-        let mut dn = DomainName::new();
         assert!(matches!(
-            DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 15), &mut dn),
+            DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
             Err(Error::DomainNamePointerLoop)
         ));
     }
@@ -199,9 +188,8 @@ mod tests {
     fn test_invalid_label_type() {
         let packet = b"\x03com\x00\x07example\xC0\x0F\x03sub\xA0\x05";
 
-        let mut dn = DomainName::new();
         assert!(matches!(
-            DomainNameReader::read_into(&mut Cursor::with_pos(&packet[..], 15), &mut dn),
+            DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
             Err(Error::DomainNameBadLabelType)
         ));
     }
@@ -218,14 +206,10 @@ mod tests {
             packet.push(offset as u8);
         }
 
-        let mut dn = DomainName::new();
-
         {
-            DomainNameReader::read_into(
-                &mut Cursor::with_pos(packet.as_ref(), packet.len() - 2),
-                &mut dn,
-            )
-            .unwrap();
+            let dn =
+                DomainNameReader::read(&mut Cursor::with_pos(packet.as_ref(), packet.len() - 2))
+                    .unwrap();
             assert_eq!(dn.as_str(), "example.com.");
         }
 
@@ -234,10 +218,7 @@ mod tests {
             packet.push((start + 2 * (MAX_POINTERS - 1)) as u8);
 
             assert!(matches!(
-                DomainNameReader::read_into(
-                    &mut Cursor::with_pos(packet.as_ref(), packet.len() - 2),
-                    &mut dn
-                ),
+                DomainNameReader::read(&mut Cursor::with_pos(packet.as_ref(), packet.len() - 2)),
                 Err(Error::DomainNameTooMuchPointers)
             ));
         }
