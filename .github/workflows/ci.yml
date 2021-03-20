@@ -18,7 +18,7 @@ jobs:
           - stable
           - beta
           - nightly
-          - 1.45.0  # minimal supported version
+          - 1.46.0  # MSRV
         runs_on:
           - ubuntu-latest
           - windows-latest
@@ -52,14 +52,14 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         name: Lint
-        if: ${{ matrix.rust == 'stable' || matrix.rust == '1.45.0' }}
+        if: ${{ matrix.rust == 'stable' || matrix.rust == '1.46.0' }}
         with:
           command: clippy
           args: --all-features -- -D warnings
 
       - uses: actions-rs/cargo@v1
         name: Lint
-        if: ${{ matrix.rust != 'stable' && matrix.rust != '1.45.0' }}
+        if: ${{ matrix.rust != 'stable' && matrix.rust != '1.46.0' }}
         with:
           command: clippy
           args: --all-features -- -D warnings -A clippy::upper_case_acronyms
