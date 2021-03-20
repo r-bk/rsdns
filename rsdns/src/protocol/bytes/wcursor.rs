@@ -44,7 +44,7 @@ impl<'a> WCursor<'a> {
         if self.len() >= size {
             Ok(unsafe { self.buf.get_unchecked_mut(self.pos..self.pos + size) })
         } else {
-            Err(Error::EndOfBuffer)
+            Err(Error::BufferTooShort)
         }
     }
 

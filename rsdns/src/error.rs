@@ -32,8 +32,10 @@ pub enum Error {
     DomainNameBadLabelType,
     #[error("domain name label pointer is invalid")]
     DomainNameBadPointer,
-    #[error("buffer end unexpectedly reached")]
+    #[error("buffer end reached unexpectedly")]
     EndOfBuffer,
+    #[error("buffer is not large enough")]
+    BufferTooShort,
 }
 
 /// Result returned by this library.

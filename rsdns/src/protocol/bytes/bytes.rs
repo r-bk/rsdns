@@ -38,7 +38,7 @@ macro_rules! w_be {
             unsafe { ptr.write_unaligned($val.to_be()) };
             Ok(())
         } else {
-            Err(Error::EndOfBuffer)
+            Err(Error::BufferTooShort)
         }
     }};
 }
