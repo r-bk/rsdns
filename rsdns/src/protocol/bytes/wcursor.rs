@@ -79,18 +79,17 @@ impl<'a> WCursor<'a> {
 
     #[inline]
     pub fn bytes(&mut self, buf: &[u8]) -> Result<()> {
-        let size = buf.len();
-        let slice = self.slice(size)?;
+        let slice = self.slice(buf.len())?;
         slice.copy_from_slice(buf);
-        self.pos += size;
+        self.pos += buf.len();
         Ok(())
     }
 
     #[inline]
     pub unsafe fn bytes_unchecked(&mut self, buf: &[u8]) {
-        let size = buf.len();
         self.buf
-            .get_unchecked_mut(self.pos..self.pos + size)
+            .get_unchecked_mut(self.pos..self.pos + buf.len())
             .copy_from_slice(buf);
+        self.pos += buf.len();
     }
 }
