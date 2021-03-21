@@ -182,6 +182,7 @@ impl DomainName {
         }
 
         let len = name.len();
+        let mut domain_start: Option<usize> = None;
 
         let mut i = 0;
         for j in 0..len {
@@ -190,7 +191,17 @@ impl DomainName {
                 let label = unsafe { name.get_unchecked(i..j) };
                 Self::check_label_bytes(label)?;
                 i = j + 1;
+                domain_start = Some(i);
             }
+        }
+
+        match domain_start {
+            Some(ds) if len - ds > 0 => {
+                let label = unsafe { name.get_unchecked(ds..len) };
+                Self::check_label_bytes(label)?;
+            }
+            None => Self::check_label_bytes(name)?,
+            _ => (),
         }
 
         let last_byte = unsafe { *name.get_unchecked(len - 1) };
@@ -486,6 +497,7 @@ mod tests {
         .join(".");
 
         let success_cases = &[
+            "com",
             "example.com",
             "sub.example.com",
             ".",
@@ -511,6 +523,8 @@ mod tests {
         let failure_cases = &[
             "",
             "..",
+            "3om",
+            "co-",
             "example..com",
             "sub..example.com",
             "1xample.com",
@@ -569,6 +583,7 @@ mod tests {
     fn test_check_name() {
         let good: &[&[u8]] = &[
             b".",
+            b"com",
             b"example.com",
             b"exampl0.com.",
             b"exam-3le.com",
@@ -582,6 +597,8 @@ mod tests {
         let malformed: &[&[u8]] = &[
             b"",
             b"..",
+            b"3om",
+            b"co-",
             b"example.com..",
             b"example..com",
             b"sub..example.com",
