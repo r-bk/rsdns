@@ -1,6 +1,6 @@
 use crate::{
     protocol::{
-        bytes::{Cursor, WCursor},
+        bytes::{Cursor, Reader, WCursor, Writer},
         constants::HEADER_LENGTH,
         Flags,
     },
@@ -28,35 +28,36 @@ pub struct Header {
     pub ar_count: u16,
 }
 
-impl Header {
-    pub(crate) fn read(cursor: &mut Cursor) -> Result<Header> {
-        if cursor.len() >= HEADER_LENGTH {
+impl Writer<Header> for WCursor<'_> {
+    fn write(&mut self, h: &Header) -> Result<usize> {
+        if self.len() >= HEADER_LENGTH {
             unsafe {
-                Ok(Header {
-                    id: cursor.u16_be_unchecked(),
-                    flags: Flags::from(cursor.u16_be_unchecked()),
-                    qd_count: cursor.u16_be_unchecked(),
-                    an_count: cursor.u16_be_unchecked(),
-                    ns_count: cursor.u16_be_unchecked(),
-                    ar_count: cursor.u16_be_unchecked(),
-                })
+                self.u16_be_unchecked(h.id);
+                self.u16_be_unchecked(h.flags.as_u16());
+                self.u16_be_unchecked(h.qd_count);
+                self.u16_be_unchecked(h.an_count);
+                self.u16_be_unchecked(h.ns_count);
+                self.u16_be_unchecked(h.ar_count);
             }
+            Ok(HEADER_LENGTH)
         } else {
             Err(Error::EndOfBuffer)
         }
     }
+}
 
-    #[allow(dead_code)]
-    pub(crate) fn write(&self, cursor: &mut WCursor) -> Result<()> {
-        if cursor.len() >= HEADER_LENGTH {
+impl Reader<Header> for Cursor<'_> {
+    fn read(&mut self) -> Result<Header> {
+        if self.len() >= HEADER_LENGTH {
             unsafe {
-                cursor.u16_be_unchecked(self.id);
-                cursor.u16_be_unchecked(self.flags.as_u16());
-                cursor.u16_be_unchecked(self.qd_count);
-                cursor.u16_be_unchecked(self.an_count);
-                cursor.u16_be_unchecked(self.ns_count);
-                cursor.u16_be_unchecked(self.ar_count);
-                Ok(())
+                Ok(Header {
+                    id: self.u16_be_unchecked(),
+                    flags: Flags::from(self.u16_be_unchecked()),
+                    qd_count: self.u16_be_unchecked(),
+                    an_count: self.u16_be_unchecked(),
+                    ns_count: self.u16_be_unchecked(),
+                    ar_count: self.u16_be_unchecked(),
+                })
             }
         } else {
             Err(Error::EndOfBuffer)
@@ -97,12 +98,12 @@ mod tests {
 
         {
             let mut wcursor = WCursor::new(&mut buf[..]);
-            header.write(&mut wcursor).unwrap();
+            wcursor.write(&header).unwrap();
         }
 
         let mut cursor = Cursor::new(&buf[..]);
 
-        let another = Header::read(&mut cursor).unwrap();
+        let another = cursor.read().unwrap();
 
         assert_eq!(header, another);
     }
@@ -112,25 +113,21 @@ mod tests {
         let mut empty_arr = [0u8; 0];
         let mut small_arr = [0u8; HEADER_LENGTH - 1];
 
-        assert!(matches!(
-            Header::read(&mut Cursor::new(&empty_arr[..])),
-            Err(Error::EndOfBuffer)
-        ));
+        let res: Result<Header> = Cursor::new(&empty_arr[..]).read();
+        assert!(matches!(res, Err(Error::EndOfBuffer)));
 
-        assert!(matches!(
-            Header::read(&mut Cursor::new(&small_arr[..])),
-            Err(Error::EndOfBuffer)
-        ));
+        let res: Result<Header> = Cursor::new(&small_arr[..]).read();
+        assert!(matches!(res, Err(Error::EndOfBuffer)));
 
         let header = Header::default();
 
         assert!(matches!(
-            header.write(&mut WCursor::new(&mut empty_arr[..])),
+            WCursor::new(&mut empty_arr[..]).write(&header),
             Err(Error::EndOfBuffer)
         ));
 
         assert!(matches!(
-            header.write(&mut WCursor::new(&mut small_arr[..])),
+            WCursor::new(&mut small_arr[..]).write(&header),
             Err(Error::EndOfBuffer)
         ));
     }
