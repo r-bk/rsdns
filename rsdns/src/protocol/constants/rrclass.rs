@@ -8,13 +8,13 @@ use strum_macros::EnumIter;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum RrClass {
     /// the internet
-    IN = 1,
+    In = 1,
     /// the CSNET class (obsolete)
-    CS = 2,
+    Cs = 2,
     /// the CHAOS class
-    CH = 3,
+    Ch = 3,
     /// Hesiod
-    HS = 4,
+    Hs = 4,
 }
 
 impl TryFrom<u16> for RrClass {
@@ -22,10 +22,10 @@ impl TryFrom<u16> for RrClass {
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
-            1 => RrClass::IN,
-            2 => RrClass::CS,
-            3 => RrClass::CH,
-            4 => RrClass::HS,
+            1 => RrClass::In,
+            2 => RrClass::Cs,
+            3 => RrClass::Ch,
+            4 => RrClass::Hs,
             _ => return Err(Error::UnknownRrClass(value)),
         };
 

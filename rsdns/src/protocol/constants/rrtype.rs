@@ -11,35 +11,35 @@ pub enum RrType {
     /// a host address
     A = 1,
     /// an authoritative name server
-    NS = 2,
+    Ns = 2,
     /// a mail destination (obsolete - use MX)
-    MD = 3,
+    Md = 3,
     /// a mail forwarder (obsolete - use MX)
-    MF = 4,
+    Mf = 4,
     /// the canonical name of an alias
-    CNAME = 5,
+    Cname = 5,
     /// marks the start of a zone authority
-    SOA = 6,
+    Soa = 6,
     /// a mailbox domain name
-    MB = 7,
+    Mb = 7,
     /// a mail group member
-    MG = 8,
+    Mg = 8,
     /// a mail rename domain name
-    MR = 9,
+    Mr = 9,
     /// a NULL RR
-    NULL = 10,
+    Null = 10,
     /// a well known service description
-    WKS = 11,
+    Wks = 11,
     /// a domain name pointer
-    PTR = 12,
+    Ptr = 12,
     /// host information
-    HINFO = 13,
+    Hinfo = 13,
     /// mailbox or mail list information
-    MINFO = 14,
+    Minfo = 14,
     /// mail exchange
-    MX = 15,
+    Mx = 15,
     /// text strings
-    TXT = 16,
+    Txt = 16,
 }
 
 impl TryFrom<u16> for RrType {
@@ -48,21 +48,21 @@ impl TryFrom<u16> for RrType {
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
             1 => RrType::A,
-            2 => RrType::NS,
-            3 => RrType::MD,
-            4 => RrType::MF,
-            5 => RrType::CNAME,
-            6 => RrType::SOA,
-            7 => RrType::MB,
-            8 => RrType::MG,
-            9 => RrType::MR,
-            10 => RrType::NULL,
-            11 => RrType::WKS,
-            12 => RrType::PTR,
-            13 => RrType::HINFO,
-            14 => RrType::MINFO,
-            15 => RrType::MX,
-            16 => RrType::TXT,
+            2 => RrType::Ns,
+            3 => RrType::Md,
+            4 => RrType::Mf,
+            5 => RrType::Cname,
+            6 => RrType::Soa,
+            7 => RrType::Mb,
+            8 => RrType::Mg,
+            9 => RrType::Mr,
+            10 => RrType::Null,
+            11 => RrType::Wks,
+            12 => RrType::Ptr,
+            13 => RrType::Hinfo,
+            14 => RrType::Minfo,
+            15 => RrType::Mx,
+            16 => RrType::Txt,
             _ => return Err(Error::UnknownRrType(value)),
         };
 

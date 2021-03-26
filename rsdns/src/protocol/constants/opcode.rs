@@ -9,11 +9,11 @@ use strum_macros::EnumIter;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum OpCode {
     /// a standard query
-    QUERY = 0,
+    Query = 0,
     /// an inverse query
-    IQUERY = 1,
+    Iquery = 1,
     /// a server status request
-    STATUS = 2,
+    Status = 2,
 }
 
 impl TryFrom<u8> for OpCode {
@@ -21,9 +21,9 @@ impl TryFrom<u8> for OpCode {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => OpCode::QUERY,
-            1 => OpCode::IQUERY,
-            2 => OpCode::STATUS,
+            0 => OpCode::Query,
+            1 => OpCode::Iquery,
+            2 => OpCode::Status,
             _ => return Err(Error::UnknownOpCode(value)),
         };
 

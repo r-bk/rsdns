@@ -11,43 +11,43 @@ pub enum QType {
     /// a host address
     A = 1,
     /// an authoritative name server
-    NS = 2,
-    /// a mail destination (obsolete - use [`QType::MX`])
-    MD = 3,
-    /// a mail forwarder (obsolete - use [`QType::MX`])
-    MF = 4,
+    Ns = 2,
+    /// a mail destination (obsolete - use [`QType::Mx`])
+    Md = 3,
+    /// a mail forwarder (obsolete - use [`QType::Mx`])
+    Mf = 4,
     /// the canonical name of an alias
-    CNAME = 5,
+    Cname = 5,
     /// marks the start of a zone authority
-    SOA = 6,
+    Soa = 6,
     /// a mailbox domain name
-    MB = 7,
+    Mb = 7,
     /// a mail group member
-    MG = 8,
+    Mg = 8,
     /// a mail rename domain name
-    MR = 9,
+    Mr = 9,
     /// a NULL RR
-    NULL = 10,
+    Null = 10,
     /// a well known service description
-    WKS = 11,
+    Wks = 11,
     /// a domain name pointer
-    PTR = 12,
+    Ptr = 12,
     /// host information
-    HINFO = 13,
+    Hinfo = 13,
     /// mailbox or mail list information
-    MINFO = 14,
+    Minfo = 14,
     /// mail exchange
-    MX = 15,
+    Mx = 15,
     /// text strings
-    TXT = 16,
+    Txt = 16,
     /// a request for a transfer of an entire zone
-    AXFR = 252,
+    Axfr = 252,
     /// a request for mailbox-related records (MB, MG or MR)
-    MAILB = 253,
-    /// a request for mail agent RRs (Obsolete - see [`QType::MX`])
-    MAILA = 254,
+    MailB = 253,
+    /// a request for mail agent RRs (Obsolete - see [`QType::Mx`])
+    MailA = 254,
     /// a request for all records
-    ANY = 255,
+    Any = 255,
 }
 
 impl TryFrom<u16> for QType {
@@ -56,25 +56,25 @@ impl TryFrom<u16> for QType {
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
             1 => QType::A,
-            2 => QType::NS,
-            3 => QType::MD,
-            4 => QType::MF,
-            5 => QType::CNAME,
-            6 => QType::SOA,
-            7 => QType::MB,
-            8 => QType::MG,
-            9 => QType::MR,
-            10 => QType::NULL,
-            11 => QType::WKS,
-            12 => QType::PTR,
-            13 => QType::HINFO,
-            14 => QType::MINFO,
-            15 => QType::MX,
-            16 => QType::TXT,
-            252 => QType::AXFR,
-            253 => QType::MAILB,
-            254 => QType::MAILA,
-            255 => QType::ANY,
+            2 => QType::Ns,
+            3 => QType::Md,
+            4 => QType::Mf,
+            5 => QType::Cname,
+            6 => QType::Soa,
+            7 => QType::Mb,
+            8 => QType::Mg,
+            9 => QType::Mr,
+            10 => QType::Null,
+            11 => QType::Wks,
+            12 => QType::Ptr,
+            13 => QType::Hinfo,
+            14 => QType::Minfo,
+            15 => QType::Mx,
+            16 => QType::Txt,
+            252 => QType::Axfr,
+            253 => QType::MailB,
+            254 => QType::MailA,
+            255 => QType::Any,
             _ => return Err(Error::UnknownQType(value)),
         };
 

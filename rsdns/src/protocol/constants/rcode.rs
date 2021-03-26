@@ -8,18 +8,18 @@ use strum_macros::EnumIter;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
 pub enum RCode {
     /// No error condition
-    NOERROR = 0,
+    NoError = 0,
     /// Format error - the name server was unable to interpret the query.
-    FORMERR = 1,
+    FormErr = 1,
     /// Server failure - the name server was unable to process this query
     /// due to a problem with the name server.
-    SERVFAIL = 2,
+    ServFail = 2,
     /// Name error - domain name does not exist.
-    NXDOMAIN = 3,
+    NxDomain = 3,
     /// Not implemented - the name server doesn't support the requested kind of query.
-    NOTIMP = 4,
+    NotImp = 4,
     /// Refused - the name server refuses to perform the specified operation for policy reasons.
-    REFUSED = 5,
+    Refused = 5,
 }
 
 impl TryFrom<u8> for RCode {
@@ -27,12 +27,12 @@ impl TryFrom<u8> for RCode {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => RCode::NOERROR,
-            1 => RCode::FORMERR,
-            2 => RCode::SERVFAIL,
-            3 => RCode::NXDOMAIN,
-            4 => RCode::NOTIMP,
-            5 => RCode::REFUSED,
+            0 => RCode::NoError,
+            1 => RCode::FormErr,
+            2 => RCode::ServFail,
+            3 => RCode::NxDomain,
+            4 => RCode::NotImp,
+            5 => RCode::Refused,
             _ => return Err(Error::UnknownRCode(value)),
         };
 
