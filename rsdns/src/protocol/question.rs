@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{bytes::Cursor, message::reader::DomainNameReader, DomainName, QClass, QType},
+    protocol::{bytes::Cursor, domain_name::DomainNameReader, DomainName, QClass, QType},
     Result,
 };
 use std::convert::TryFrom;

@@ -2,7 +2,8 @@ use crate::{
     protocol::{
         bytes::{Cursor, Reader},
         constants::HEADER_LENGTH,
-        message::reader::{DomainNameReader, Questions},
+        domain_name::DomainNameReader,
+        message::reader::Questions,
         Header,
     },
     Result,

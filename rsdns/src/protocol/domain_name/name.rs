@@ -516,7 +516,7 @@ impl WCursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::{bytes::Cursor, message::reader::DomainNameReader, DomainName};
+    use crate::protocol::{bytes::Cursor, domain_name::DomainNameReader, DomainName};
     use std::collections::HashSet;
 
     #[test]
