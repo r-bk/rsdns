@@ -3,7 +3,6 @@ use crate::{
     Error, Result,
 };
 
-#[allow(dead_code)]
 impl WCursor<'_> {
     #[inline]
     fn write_label(&mut self, label: &[u8]) -> Result<()> {
