@@ -1,5 +1,8 @@
 use crate::{
-    protocol::{bytes::Cursor, DomainName},
+    protocol::{
+        bytes::{Cursor, Reader},
+        DomainName,
+    },
     Error, Result,
 };
 
@@ -134,6 +137,13 @@ impl<'a> DomainNameReader<'a> {
     }
 }
 
+impl Reader<DomainName> for Cursor<'_> {
+    #[inline]
+    fn read(&mut self) -> Result<DomainName> {
+        DomainNameReader::read(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -222,5 +232,14 @@ mod tests {
                 Err(Error::DomainNameTooMuchPointers)
             ));
         }
+    }
+
+    #[test]
+    fn test_cursor_read() {
+        let packet = b"\x03sub\x07example\x03com\x00";
+        let mut cursor = Cursor::new(&packet[..]);
+        let dn: DomainName = cursor.read().unwrap();
+
+        assert_eq!(dn.as_str(), "sub.example.com.");
     }
 }
