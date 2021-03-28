@@ -10,13 +10,6 @@ categories = ["asynchronous", "network-programming", "parser-implementations"]
 homepage = "https://github.com/r-bk/rsdns"
 repository = "https://github.com/r-bk/rsdns"
 
-[features]
-default = ["net-std"]
-net-std = []
-net-tokio = ["tokio/rt", "tokio/net", "tokio/time"]
-net-async-std = ["async-std"]
-net-smol = ["smol"]
-
 [dependencies]
 thiserror = "1.0"
 strum = "0.20"
@@ -24,9 +17,19 @@ strum_macros = "0.20"
 arrayvec = { version = "0.5", features = ["array-sizes-129-255"] }
 rand = "0.8"
 
-tokio = { version = "^1", optional = true }
-async-std  = { version = "^1", optional = true }
-smol = { version = "^1", optional = true }
+[dependencies.tokio]
+version = "^1"
+optional = true
+default-features = false
+features = ["rt", "net", "time"]
+
+[dependencies.async-std]
+version = "^1"
+optional = true
+
+[dependencies.smol]
+version = "^1"
+optional = true
 
 [package.metadata.docs.rs]
 all-features = true
