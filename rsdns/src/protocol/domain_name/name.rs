@@ -9,7 +9,7 @@ use std::{
     str::FromStr,
 };
 
-type ArrayType = ArrayString<[u8; DOMAIN_NAME_MAX_LENGTH]>;
+type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 
 /// A domain name.
 ///

@@ -14,7 +14,7 @@ repository = "https://github.com/r-bk/rsdns"
 thiserror = "1.0"
 strum = "0.20"
 strum_macros = "0.20"
-arrayvec = { version = "0.5", features = ["array-sizes-129-255"] }
+arrayvec = "0.7"
 rand = "0.8"
 
 [features]

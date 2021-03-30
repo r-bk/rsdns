@@ -10,7 +10,7 @@ const POINTER_MASK: u8 = 0b1100_0000;
 const LENGTH_MASK: u8 = 0b0011_1111;
 const MAX_POINTERS: usize = 32;
 
-type OffsetsArray = arrayvec::ArrayVec<[u16; MAX_POINTERS]>;
+type OffsetsArray = arrayvec::ArrayVec<u16, MAX_POINTERS>;
 
 pub struct DomainNameReader<'a> {
     cursor: Cursor<'a>,
