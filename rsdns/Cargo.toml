@@ -31,6 +31,10 @@ optional = true
 version = "^1"
 optional = true
 
+[dependencies.smol-timeout]
+version = "0.6"
+optional = true
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
