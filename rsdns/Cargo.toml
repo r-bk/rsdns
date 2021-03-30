@@ -17,6 +17,12 @@ strum_macros = "0.20"
 arrayvec = { version = "0.5", features = ["array-sizes-129-255"] }
 rand = "0.8"
 
+[features]
+default = []
+net-tokio = ["tokio"]
+net-async-std = ["async-std"]
+net-smol = ["smol", "smol-timeout"]
+
 [dependencies.tokio]
 version = "^1"
 optional = true
