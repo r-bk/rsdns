@@ -7,13 +7,14 @@ use strum_macros::EnumIter;
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[allow(missing_docs)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum OpCode {
     /// a standard query
-    Query = 0,
+    QUERY = 0,
     /// an inverse query
-    Iquery = 1,
+    IQUERY = 1,
     /// a server status request
-    Status = 2,
+    STATUS = 2,
 }
 
 impl TryFrom<u8> for OpCode {
@@ -21,9 +22,9 @@ impl TryFrom<u8> for OpCode {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => OpCode::Query,
-            1 => OpCode::Iquery,
-            2 => OpCode::Status,
+            0 => OpCode::QUERY,
+            1 => OpCode::IQUERY,
+            2 => OpCode::STATUS,
             _ => return Err(Error::UnknownOpCode(value)),
         };
 

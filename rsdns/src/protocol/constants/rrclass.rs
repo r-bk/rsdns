@@ -6,15 +6,16 @@ use strum_macros::EnumIter;
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum RrClass {
     /// the internet
-    In = 1,
+    IN = 1,
     /// the CSNET class (obsolete)
-    Cs = 2,
+    CS = 2,
     /// the CHAOS class
-    Ch = 3,
+    CH = 3,
     /// Hesiod
-    Hs = 4,
+    HS = 4,
 }
 
 impl TryFrom<u16> for RrClass {
@@ -22,10 +23,10 @@ impl TryFrom<u16> for RrClass {
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
-            1 => RrClass::In,
-            2 => RrClass::Cs,
-            3 => RrClass::Ch,
-            4 => RrClass::Hs,
+            1 => RrClass::IN,
+            2 => RrClass::CS,
+            3 => RrClass::CH,
+            4 => RrClass::HS,
             _ => return Err(Error::UnknownRrClass(value)),
         };
 

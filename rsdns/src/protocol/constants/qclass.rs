@@ -6,17 +6,18 @@ use strum_macros::EnumIter;
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum QClass {
     /// the internet
-    In = 1,
+    IN = 1,
     /// the CSNET class (obsolete)
-    Cs = 2,
+    CS = 2,
     /// the CHAOS class
-    Ch = 3,
+    CH = 3,
     /// Hesiod
-    Hs = 4,
+    HS = 4,
     /// any class
-    Any = 255,
+    ANY = 255,
 }
 
 impl TryFrom<u16> for QClass {
@@ -24,11 +25,11 @@ impl TryFrom<u16> for QClass {
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
-            1 => QClass::In,
-            2 => QClass::Cs,
-            3 => QClass::Ch,
-            4 => QClass::Hs,
-            255 => QClass::Any,
+            1 => QClass::IN,
+            2 => QClass::CS,
+            3 => QClass::CH,
+            4 => QClass::HS,
+            255 => QClass::ANY,
             _ => return Err(Error::UnknownQClass(value)),
         };
 

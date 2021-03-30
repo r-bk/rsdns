@@ -6,40 +6,41 @@ use strum_macros::EnumIter;
 ///
 /// [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum RrType {
     // rfc 1035
     /// a host address
     A = 1,
     /// an authoritative name server
-    Ns = 2,
+    NS = 2,
     /// a mail destination (obsolete - use MX)
-    Md = 3,
+    MD = 3,
     /// a mail forwarder (obsolete - use MX)
-    Mf = 4,
+    MF = 4,
     /// the canonical name of an alias
-    Cname = 5,
+    CNAME = 5,
     /// marks the start of a zone authority
-    Soa = 6,
+    SOA = 6,
     /// a mailbox domain name
-    Mb = 7,
+    MB = 7,
     /// a mail group member
-    Mg = 8,
+    MG = 8,
     /// a mail rename domain name
-    Mr = 9,
+    MR = 9,
     /// a NULL RR
-    Null = 10,
+    NULL = 10,
     /// a well known service description
-    Wks = 11,
+    WKS = 11,
     /// a domain name pointer
-    Ptr = 12,
+    PTR = 12,
     /// host information
-    Hinfo = 13,
+    HINFO = 13,
     /// mailbox or mail list information
-    Minfo = 14,
+    MINFO = 14,
     /// mail exchange
-    Mx = 15,
+    MX = 15,
     /// text strings
-    Txt = 16,
+    TXT = 16,
 }
 
 impl TryFrom<u16> for RrType {
@@ -48,21 +49,21 @@ impl TryFrom<u16> for RrType {
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
             1 => RrType::A,
-            2 => RrType::Ns,
-            3 => RrType::Md,
-            4 => RrType::Mf,
-            5 => RrType::Cname,
-            6 => RrType::Soa,
-            7 => RrType::Mb,
-            8 => RrType::Mg,
-            9 => RrType::Mr,
-            10 => RrType::Null,
-            11 => RrType::Wks,
-            12 => RrType::Ptr,
-            13 => RrType::Hinfo,
-            14 => RrType::Minfo,
-            15 => RrType::Mx,
-            16 => RrType::Txt,
+            2 => RrType::NS,
+            3 => RrType::MD,
+            4 => RrType::MF,
+            5 => RrType::CNAME,
+            6 => RrType::SOA,
+            7 => RrType::MB,
+            8 => RrType::MG,
+            9 => RrType::MR,
+            10 => RrType::NULL,
+            11 => RrType::WKS,
+            12 => RrType::PTR,
+            13 => RrType::HINFO,
+            14 => RrType::MINFO,
+            15 => RrType::MX,
+            16 => RrType::TXT,
             _ => return Err(Error::UnknownRrType(value)),
         };
 
