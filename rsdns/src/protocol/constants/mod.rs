@@ -33,4 +33,4 @@ pub const HEADER_LENGTH: usize = 12;
 /// message when retrieved over TCP.
 ///
 /// Defined in [RFC 1035 ~4.2.2](https://tools.ietf.org/html/rfc1035#section-4.2.2).
-pub const DNS_MESSAGE_MAX_LENGTH: usize = std::u16::MAX as usize;
+pub const DNS_MESSAGE_MAX_LENGTH: usize = u16::MAX as usize;
