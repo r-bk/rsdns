@@ -442,6 +442,26 @@ impl PartialEq for DomainName {
     }
 }
 
+impl PartialEq<&str> for DomainName {
+    fn eq(&self, other: &&str) -> bool {
+        let l_is_root = self.arr.as_bytes() == b".";
+        let r_is_root = *other == ".";
+
+        match (l_is_root, r_is_root) {
+            (true, true) => return true,
+            (false, false) => {}
+            _ => return false,
+        }
+
+        let mut bytes = self.arr.as_bytes();
+        if !bytes.is_empty() && !other.ends_with('.') {
+            bytes = &bytes[..bytes.len() - 1];
+        }
+
+        bytes.eq_ignore_ascii_case(other.as_bytes())
+    }
+}
+
 impl Eq for DomainName {}
 
 impl Hash for DomainName {
@@ -710,6 +730,53 @@ mod tests {
         assert_ne!(dn1, dn2);
         assert_ne!(dn1, dn3);
         assert_ne!(dn2, dn3);
+    }
+
+    #[test]
+    fn test_eq_str() {
+        let dn1 = DomainName::from("example.com").unwrap();
+        let dn2 = DomainName::from("EXAMPLE.COM").unwrap();
+        let dn3 = DomainName::from("eXaMpLe.cOm").unwrap();
+
+        assert_eq!(dn1, "EXAMPLE.COM.");
+        assert_eq!(dn1, "EXAMPLE.COM");
+
+        assert_eq!(dn1, "eXaMpLe.cOm.");
+        assert_eq!(dn2, "eXaMpLe.cOm");
+
+        assert_eq!(dn1, "eXaMpLe.cOm");
+        assert_eq!(dn2, "eXaMpLe.cOm.");
+
+        assert_eq!(
+            DomainName::from("sub.example.com").unwrap(),
+            "sub.example.com."
+        );
+        assert_eq!(
+            DomainName::from("sub.example.com.").unwrap(),
+            "sub.example.com"
+        );
+
+        assert_eq!(DomainName::new(), "");
+        assert_eq!(DomainName::new_root(), ".");
+    }
+
+    #[test]
+    fn test_neq_str() {
+        let dn1 = DomainName::from("example.com").unwrap();
+        let dn2 = DomainName::from("sub.example.com").unwrap();
+        let dn3 = DomainName::from("Sub.examp1e.com").unwrap();
+
+        assert_ne!(dn1, "sub.example.com");
+        assert_ne!(dn1, "sub.example.com.");
+
+        assert_ne!(dn1, "Sub.examp1e.com");
+        assert_ne!(dn1, "Sub.examp1e.com.");
+
+        assert_ne!(dn2, "Sub.examp1e.com");
+        assert_ne!(dn2, "Sub.examp1e.com.");
+
+        assert_ne!(DomainName::new(), ".");
+        assert_ne!(DomainName::new_root(), "");
     }
 
     #[test]
