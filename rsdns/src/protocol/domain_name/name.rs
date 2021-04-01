@@ -736,7 +736,6 @@ mod tests {
     fn test_eq_str() {
         let dn1 = DomainName::from("example.com").unwrap();
         let dn2 = DomainName::from("EXAMPLE.COM").unwrap();
-        let dn3 = DomainName::from("eXaMpLe.cOm").unwrap();
 
         assert_eq!(dn1, "EXAMPLE.COM.");
         assert_eq!(dn1, "EXAMPLE.COM");
@@ -744,7 +743,7 @@ mod tests {
         assert_eq!(dn1, "eXaMpLe.cOm.");
         assert_eq!(dn2, "eXaMpLe.cOm");
 
-        assert_eq!(dn1, "eXaMpLe.cOm");
+        assert_eq!(dn2, "eXaMpLe.cOm");
         assert_eq!(dn2, "eXaMpLe.cOm.");
 
         assert_eq!(
@@ -764,7 +763,6 @@ mod tests {
     fn test_neq_str() {
         let dn1 = DomainName::from("example.com").unwrap();
         let dn2 = DomainName::from("sub.example.com").unwrap();
-        let dn3 = DomainName::from("Sub.examp1e.com").unwrap();
 
         assert_ne!(dn1, "sub.example.com");
         assert_ne!(dn1, "sub.example.com.");
