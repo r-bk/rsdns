@@ -34,8 +34,8 @@ pub enum Error {
     DomainNameBadPointer,
     #[error("buffer end reached unexpectedly")]
     EndOfBuffer,
-    #[error("buffer is not large enough")]
-    BufferTooShort,
+    #[error("buffer is not large enough: {0} bytes required")]
+    BufferTooShort(usize),
     #[error("operation timed-out")]
     Timeout,
 }

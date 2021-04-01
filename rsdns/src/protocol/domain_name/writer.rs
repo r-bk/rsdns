@@ -14,7 +14,7 @@ impl WCursor<'_> {
             }
             Ok(())
         } else {
-            Err(Error::BufferTooShort)
+            Err(Error::BufferTooShort(self.pos() + label.len() + 1))
         }
     }
 
