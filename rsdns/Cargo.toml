@@ -18,7 +18,8 @@ arrayvec = "0.7"
 rand = "0.8"
 
 [features]
-default = []
+default = ["net-std"]
+net-std = []
 net-tokio = ["tokio"]
 net-async-std = ["async-std"]
 net-smol = ["smol", "smol-timeout"]
