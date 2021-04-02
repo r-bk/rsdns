@@ -3,3 +3,5 @@
 members = [
     "rsdns",
 ]
+
+resolver = "2"
