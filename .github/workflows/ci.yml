@@ -39,46 +39,46 @@ jobs:
           components: rustfmt, clippy
 
       - uses: actions-rs/cargo@v1
-        name: Build
+        name: build rsdns
         if: ${{ matrix.feature != 'all' }}
         with:
           command: build
-          args: --no-default-features --features ${{ matrix.feature }}
+          args: -p rsdns --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
-        name: Build All
+        name: build all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
           command: build
-          args: --all-features
+          args: -p rsdns --all-features
 
       - uses: actions-rs/cargo@v1
-        name: Test
+        name: test rsdns
         if: ${{ matrix.feature != 'all' }}
         with:
           command: test
-          args: --no-default-features --features ${{ matrix.feature }}
+          args: -p rsdns --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
-        name: Test All
+        name: test all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
           command: test
-          args: --all-features
+          args: -p rsdns --all-features
 
       - uses: actions-rs/cargo@v1
-        name: Lint
+        name: lint rsdns
         if: ${{ matrix.feature != 'all' }}
         with:
           command: clippy
-          args: --no-default-features --features ${{ matrix.feature }} -- -D warnings
+          args: -p rsdns --no-default-features --features ${{ matrix.feature }} -- -D warnings
 
       - uses: actions-rs/cargo@v1
-        name: Lint All
+        name: lint all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
           command: clippy
-          args: --all-features -- -D warnings
+          args: -p rsdns --all-features -- -D warnings
 
   common-ci:
     runs-on: ubuntu-latest
@@ -91,14 +91,14 @@ jobs:
           override: true
           components: rustfmt
       - uses: actions-rs/cargo@v1
-        name: Format
+        name: format all
         with:
           command: fmt
           args: --all -- --check
       - uses: actions-rs/cargo@v1
-        name: Doc
+        name: doc rsdns
         env:
           RUSTDOCFLAGS: "--cfg docsrs"
         with:
           command: doc
-          args: --all-features --no-deps
+          args: -p rsdns --all-features --no-deps
