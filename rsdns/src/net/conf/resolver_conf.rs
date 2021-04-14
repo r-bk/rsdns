@@ -1,5 +1,5 @@
 //! Defines configuration for resolvers.
-use crate::net::conf::ProtocolStrategy;
+use crate::net::conf::{ProtocolStrategy, Recursion};
 use std::{
     net::{Ipv4Addr, SocketAddr, SocketAddrV4},
     time::Duration,
@@ -13,18 +13,6 @@ const INTERFACE_NAME_MAX_LENGTH: usize = 16; // socket(7), IFNAMSIZ
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
 type InterfaceName = arrayvec::ArrayString<INTERFACE_NAME_MAX_LENGTH>;
-
-/// Recursive query configuration.
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-pub enum Recursion {
-    /// Non-recursive query is sent to a nameserver.
-    Off,
-
-    /// Recursive query is sent to a nameserver.
-    ///
-    /// This is the default behavior.
-    On,
-}
 
 /// Configuration for resolvers.
 #[derive(Clone, Eq, PartialEq, Debug)]
