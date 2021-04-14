@@ -1,16 +1,6 @@
 [env]
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 
-[tasks.build]
-command = "cargo"
-args = ["build", "--all-features"]
-workspace = false
-
-[tasks.test]
-command = "cargo"
-args = ["test", "--all-features"]
-workspace = false
-
 [tasks.clippy]
 command = "cargo"
 args = ["clippy", "--all-features"]
