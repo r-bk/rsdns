@@ -35,11 +35,14 @@ impl<'a> QueryWriter<'a> {
             ..Default::default()
         };
 
+        self.wcursor.u16_be(0)?;
         self.wcursor.write(&header)?;
         self.wcursor.write_domain_name(qname)?;
         self.wcursor.u16_be(qtype as u16)?;
         self.wcursor.u16_be(qclass as u16)?;
-        Ok(self.wcursor.pos())
+        let pos = self.wcursor.reset_pos();
+        self.wcursor.u16_be((pos - 2) as u16)?;
+        Ok(pos)
     }
 }
 
@@ -60,18 +63,20 @@ mod tests {
         let size = qw
             .write("host.example.com", QType::CNAME, QClass::IN)
             .unwrap();
-        assert_eq!(size, 34);
+        assert_eq!(size, 34 + 2);
 
         let msg_id = qw.message_id();
         drop(qw);
 
         let mut c = Cursor::new(&query[..size]);
 
+        let size = c.u16_be().unwrap();
         let header: Header = c.read().unwrap();
         let dn: DomainName = c.read().unwrap();
         let qt = QType::try_from(c.u16_be().unwrap()).unwrap();
         let qc = QClass::try_from(c.u16_be().unwrap()).unwrap();
 
+        assert_eq!(size, 34);
         assert!(header.flags.rd());
         assert_eq!(header.id, msg_id);
         assert_eq!(header.qd_count, 1);

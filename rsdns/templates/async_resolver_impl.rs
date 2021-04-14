@@ -125,8 +125,6 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
     async fn tcp_exchange(&mut self) -> Result<usize> {
         let mut sock = tcp_socket(&self.conf).await?;
 
-        // TODO: change message writer to prepare the message for TCP
-        sock.write_all(&(self.msg.len() as u16).to_be_bytes()).await?;
         sock.write_all(&self.msg).await?;
 
         let mut response_size_buf = [0u8; 2];
@@ -145,7 +143,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
 
     async fn udp_exchange_loop(&mut self) -> Result<(usize, Flags)> {
         loop {
-            self.sock.send(&self.msg).await?;
+            self.sock.send(&self.msg[2..]).await?;
 
             let query_timeout = self.conf.query_timeout();
 
