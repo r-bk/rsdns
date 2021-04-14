@@ -8,10 +8,10 @@ use std::{
 use crate::{Error, Result};
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-const IF_NAME_SIZE: usize = 16; // socket(7), IFNAMSIZ
+const INTERFACE_NAME_MAX_LENGTH: usize = 16; // socket(7), IFNAMSIZ
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-type DeviceName = arrayvec::ArrayString<IF_NAME_SIZE>;
+type InterfaceName = arrayvec::ArrayString<INTERFACE_NAME_MAX_LENGTH>;
 
 /// Protocol selection strategy.
 ///
@@ -66,7 +66,7 @@ pub struct ResolverConf {
     pub(crate) nameserver_: SocketAddr,
     pub(crate) bind_addr_: SocketAddr,
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-    pub(crate) bind_device_: DeviceName,
+    pub(crate) interface_: InterfaceName,
     pub(crate) query_lifetime_: Duration,
     pub(crate) query_timeout_: Option<Duration>,
     pub(crate) protocol_strategy_: ProtocolStrategy,
@@ -80,7 +80,7 @@ impl ResolverConf {
             nameserver_: nameserver,
             bind_addr_: SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0)),
             #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-            bind_device_: DeviceName::default(),
+            interface_: InterfaceName::default(),
             query_lifetime_: Duration::from_millis(10000),
             query_timeout_: Some(Duration::from_millis(2000)),
             protocol_strategy_: ProtocolStrategy::Default,
@@ -136,7 +136,7 @@ impl ResolverConf {
         self
     }
 
-    /// Returns the bind device name.
+    /// Returns the interface name to bind to.
     ///
     /// Default: `None`.
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
@@ -145,19 +145,19 @@ impl ResolverConf {
         doc(cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2")))
     )]
     pub fn bind_device(&self) -> Option<&str> {
-        if !self.bind_device_.is_empty() {
-            Some(self.bind_device_.as_str())
+        if !self.interface_.is_empty() {
+            Some(self.interface_.as_str())
         } else {
             None
         }
     }
 
-    /// Sets the bind device name.
+    /// Sets the interface name to bind to.
     ///
-    /// This option forces the resolver to bind sockets to a specified device using the
+    /// This option forces the resolver to bind sockets to a specified interface using the
     /// `SO_BINDTODEVICE` socket option (see `socket(7)` man page).
     ///
-    /// `bind_device` should be a non-empty string shorter than `IFNAMSIZ` bytes (currently 16).
+    /// `interface_name` should be a non-empty string shorter than 16 bytes (`IFNAMSIZ`).
     /// Whitespace characters and `'/'` are considered invalid for interface names.
     ///
     /// This option is handy when you have multiple network interfaces with the same IP address.
@@ -169,10 +169,10 @@ impl ResolverConf {
         docsrs,
         doc(cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2")))
     )]
-    pub fn with_bind_device(mut self, bind_device: Option<&str>) -> Result<Self> {
-        match bind_device {
+    pub fn with_bind_device(mut self, interface_name: Option<&str>) -> Result<Self> {
+        match interface_name {
             Some(bd) => {
-                if bd.is_empty() || bd.len() >= self.bind_device_.capacity() {
+                if bd.is_empty() || bd.len() >= self.interface_.capacity() {
                     return Err(Error::BadBindDevice);
                 }
                 for b in bd.as_bytes() {
@@ -180,10 +180,10 @@ impl ResolverConf {
                         return Err(Error::BadBindDevice);
                     }
                 }
-                self.bind_device_.clear();
-                self.bind_device_.try_push_str(bd).ok();
+                self.interface_.clear();
+                self.interface_.try_push_str(bd).ok();
             }
-            None => self.bind_device_.clear(),
+            None => self.interface_.clear(),
         }
         Ok(self)
     }

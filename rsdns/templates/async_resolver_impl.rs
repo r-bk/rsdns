@@ -226,11 +226,11 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
 fn udp_socket2(conf: &ResolverConf) -> Result<UdpSocket> {
-    if conf.bind_device_.is_empty() {
+    if conf.interface_.is_empty() {
         return udp_socket_simple(conf);
     }
 
-    let mut interface = conf.bind_device_;
+    let mut interface = conf.interface_;
     interface.try_push(char::default()).ok(); // add terminating null
 
     let sock = socket2::Socket::new(
@@ -254,11 +254,11 @@ fn udp_socket2(conf: &ResolverConf) -> Result<UdpSocket> {
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
 async fn tcp_socket2(conf: &ResolverConf) -> Result<TcpStream> {
-    if conf.bind_device_.is_empty() {
+    if conf.interface_.is_empty() {
         return tcp_socket_simple(conf).await;
     }
 
-    let mut interface = conf.bind_device_;
+    let mut interface = conf.interface_;
     interface.try_push(char::default()).ok(); // add terminating null
 
     let sock = socket2::Socket::new(
