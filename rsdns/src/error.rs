@@ -38,6 +38,13 @@ pub enum Error {
     BufferTooShort(usize),
     #[error("operation timed-out")]
     Timeout,
+    #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
+    #[cfg_attr(
+        docsrs,
+        doc(cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2")))
+    )]
+    #[error("device name is too long or contains forbidden characters - '/' or whitespace")]
+    BadBindDevice,
 }
 
 /// Result returned by this library.

@@ -16,6 +16,10 @@ strum = "0.20"
 strum_macros = "0.20"
 arrayvec = "0.7"
 rand = "0.8"
+cfg-if = "1.0.0"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+socket2 = { version = "0.4", optional = true, features = ["all"] }
 
 [features]
 default = ["net-std"]
@@ -28,7 +32,7 @@ net-smol = ["smol", "smol-timeout"]
 version = "^1"
 optional = true
 default-features = false
-features = ["rt", "net", "time"]
+features = ["rt", "net", "time", "io-util"]
 
 [dependencies.async-std]
 version = "^1"
@@ -41,6 +45,9 @@ optional = true
 [dependencies.smol-timeout]
 version = "0.6"
 optional = true
+
+[build-dependencies]
+tera = { version = "1.7.0", default-features = false }
 
 [package.metadata.docs.rs]
 all-features = true

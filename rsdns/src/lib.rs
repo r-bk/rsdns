@@ -5,6 +5,13 @@
 //! [RFC 1034](https://tools.ietf.org/html/rfc1034#section-5.3.1).
 
 mod error;
+#[cfg(any(
+    feature = "net-async-std",
+    feature = "net-smol",
+    feature = "net-std",
+    feature = "net-tokio"
+))]
+pub mod net;
 pub mod protocol;
 
 pub use error::Error;
