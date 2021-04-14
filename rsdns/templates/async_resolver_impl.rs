@@ -266,6 +266,7 @@ async fn tcp_socket2(conf: &ResolverConf) -> Result<TcpStream> {
     )?;
 
     sock.bind_device(Some(interface.as_bytes()))?;
+    sock.set_nodelay(true)?;
 
     let tcp_socket = unsafe { TcpSocket::from_raw_fd(sock.into_raw_fd()) };
 
@@ -298,6 +299,7 @@ fn udp_socket_simple(conf: &ResolverConf) -> Result<UdpSocket> {
 #[inline(always)]
 async fn tcp_socket_simple(conf: &ResolverConf) -> Result<TcpStream> {
     let sock = TcpStream::connect(conf.nameserver_).await?;
+    sock.set_nodelay(true)?;
     Ok(sock)
 }
 
