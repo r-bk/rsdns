@@ -20,6 +20,13 @@ impl<'a> WCursor<'a> {
     }
 
     #[inline]
+    pub fn reset_pos(&mut self) -> usize {
+        let mut new_pos = 0;
+        std::mem::swap(&mut self.pos, &mut new_pos);
+        new_pos
+    }
+
+    #[inline]
     pub fn len(&self) -> usize {
         let capacity = self.capacity();
         if self.pos < capacity {
