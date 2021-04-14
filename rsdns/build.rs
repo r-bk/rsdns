@@ -35,7 +35,7 @@ fn format_file(path: &std::path::Path) {
 
 fn write_file(tera: &Tera, context: &Context, file_name: &str, crate_name: &str) {
     let out_dir = std::env::var_os("OUT_DIR").unwrap();
-    let template_name = format!("{}.rs.j2", file_name);
+    let template_name = format!("{}.rs", file_name);
     let file_data = tera
         .render(&template_name, context)
         .expect("failed to render template");
@@ -71,12 +71,12 @@ fn write_resolvers(tera: &Tera) {
         }
     }
 
-    println!("cargo:rerun-if-changed=templates/resolver.rs.j2");
-    println!("cargo:rerun-if-changed=templates/async_resolver_impl.rs.j2");
+    println!("cargo:rerun-if-changed=templates/resolver.rs");
+    println!("cargo:rerun-if-changed=templates/async_resolver_impl.rs");
 }
 
 fn main() {
-    let tera = match Tera::new("templates/*.j2") {
+    let tera = match Tera::new("templates/*.rs") {
         Ok(t) => t,
         Err(e) => {
             panic!("Tera parsing error(s): {}", e);
