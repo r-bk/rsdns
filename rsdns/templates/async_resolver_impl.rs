@@ -278,6 +278,7 @@ async fn tcp_socket2(conf: &ResolverConf) -> Result<TcpStream> {
 fn udp_socket_simple(conf: &ResolverConf) -> Result<UdpSocket> {
     let sock = std::net::UdpSocket::bind(conf.bind_addr_)?;
     sock.connect(conf.nameserver_)?;
+    sock.set_nonblocking(true)?;
 
     {% if crate_name == "async-std" %}
 
