@@ -19,9 +19,9 @@ pub struct Resolver {
 impl Resolver {
     /// Creates a new instance of [Resolver] with provided configuration `conf`.
     #[inline(always)]
-    pub fn new(conf: ResolverConf) -> Result<Self> {
+    pub {% if async == "true" %}async {% endif -%} fn new(conf: ResolverConf) -> Result<Self> {
         Ok(Self {
-            internal: ResolverImpl::new(conf)?,
+            internal: ResolverImpl::new(conf){% if async == "true" %}.await{% endif %}?,
         })
     }
 

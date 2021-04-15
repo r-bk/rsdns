@@ -36,7 +36,6 @@ use crate::{
         io::{AsyncReadExt, AsyncWriteExt},
     };
     use smol_timeout::TimeoutExt;
-    use std::convert::TryFrom;
 
 {% endif %}
 
@@ -49,8 +48,8 @@ pub struct ResolverImpl {
 }
 
 impl ResolverImpl {
-    pub fn new(conf: ResolverConf) -> Result<Self> {
-        let sock = udp_socket(&conf)?;
+    pub async fn new(conf: ResolverConf) -> Result<Self> {
+        let sock = udp_socket(&conf).await?;
         Ok(Self { conf, sock })
     }
 
@@ -223,9 +222,9 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
 {% if crate_name == "tokio" %}
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-fn udp_socket2(conf: &ResolverConf) -> Result<UdpSocket> {
+async fn udp_socket2(conf: &ResolverConf) -> Result<UdpSocket> {
     if conf.interface_.is_empty() {
-        return udp_socket_simple(conf);
+        return udp_socket_simple(conf).await;
     }
 
     let mut interface = conf.interface_;
@@ -276,24 +275,10 @@ async fn tcp_socket2(conf: &ResolverConf) -> Result<TcpStream> {
 {% endif %}
 
 #[inline(always)]
-fn udp_socket_simple(conf: &ResolverConf) -> Result<UdpSocket> {
-    let sock = std::net::UdpSocket::bind(conf.bind_addr_)?;
-    sock.connect(conf.nameserver_)?;
-    sock.set_nonblocking(true)?;
-
-    {% if crate_name == "async-std" %}
-
-    Ok(UdpSocket::from(sock))
-
-    {% elif crate_name == "smol" %}
-
-    Ok(UdpSocket::try_from(sock)?)
-
-    {% elif crate_name == "tokio" %}
-
-    Ok(UdpSocket::from_std(sock)?)
-
-    {% endif %}
+async fn udp_socket_simple(conf: &ResolverConf) -> Result<UdpSocket> {
+    let sock = UdpSocket::bind(conf.bind_addr_).await?;
+    sock.connect(conf.nameserver_).await?;
+    Ok(sock)
 }
 
 #[inline(always)]
@@ -304,19 +289,19 @@ async fn tcp_socket_simple(conf: &ResolverConf) -> Result<TcpStream> {
 }
 
 #[inline(always)]
-fn udp_socket(conf: &ResolverConf) -> Result<UdpSocket> {
+async fn udp_socket(conf: &ResolverConf) -> Result<UdpSocket> {
     {% if crate_name != "tokio" %}
 
-    udp_socket_simple(conf)
+    udp_socket_simple(conf).await
 
     {% else %}
 
     cfg_if::cfg_if!{
         if #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))] {
-            udp_socket2(conf)
+            udp_socket2(conf).await
         }
         else {
-            udp_socket_simple(conf)
+            udp_socket_simple(conf).await
         }
     }
 
