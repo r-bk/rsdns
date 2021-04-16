@@ -32,7 +32,7 @@ impl ResolverConf {
     pub fn new(nameserver: SocketAddr) -> ResolverConf {
         ResolverConf {
             nameserver_: nameserver,
-            bind_addr_: SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0)),
+            bind_addr_: Self::default_ipv4_bind_address(),
             #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
             interface_: InterfaceName::default(),
             query_lifetime_: Duration::from_millis(10000),
@@ -210,5 +210,9 @@ impl ResolverConf {
     pub fn with_recursion(mut self, recursion: Recursion) -> Self {
         self.recursion_ = recursion;
         self
+    }
+
+    fn default_ipv4_bind_address() -> SocketAddr {
+        SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0))
     }
 }
