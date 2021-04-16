@@ -1,12 +1,12 @@
 use crate::Error;
 use std::convert::TryFrom;
-use strum_macros::EnumIter;
+use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// DNS query OPCODE.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[allow(missing_docs)]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum OpCode {
     /// a standard query
@@ -15,6 +15,13 @@ pub enum OpCode {
     IQUERY = 1,
     /// a server status request
     STATUS = 2,
+}
+
+impl OpCode {
+    /// Converts `OpCode` to a static string.
+    pub fn as_str(self) -> &'static str {
+        self.into()
+    }
 }
 
 impl TryFrom<u8> for OpCode {

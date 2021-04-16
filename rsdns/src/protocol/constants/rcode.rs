@@ -1,11 +1,11 @@
 use crate::Error;
 use std::convert::TryFrom;
-use strum_macros::EnumIter;
+use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// DNS response CODE.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum RCode {
     /// No error condition
@@ -21,6 +21,13 @@ pub enum RCode {
     NOTIMP = 4,
     /// Refused - the name server refuses to perform the specified operation for policy reasons.
     REFUSED = 5,
+}
+
+impl RCode {
+    /// Converts `RCode` to a static string.
+    pub fn as_str(self) -> &'static str {
+        self.into()
+    }
 }
 
 impl TryFrom<u8> for RCode {
