@@ -1,7 +1,7 @@
 //! Defines configuration for resolvers.
 use crate::net::conf::{ProtocolStrategy, Recursion};
 use std::{
-    net::{Ipv4Addr, SocketAddr, SocketAddrV4},
+    net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     time::Duration,
 };
 
@@ -30,9 +30,14 @@ pub struct ResolverConf {
 impl ResolverConf {
     /// Creates resolver configuration for `nameserver` with default values.
     pub fn new(nameserver: SocketAddr) -> ResolverConf {
+        let bind_addr = if nameserver.is_ipv4() {
+            Self::default_ipv4_bind_address()
+        } else {
+            Self::default_ipv6_bind_address()
+        };
         ResolverConf {
             nameserver_: nameserver,
-            bind_addr_: Self::default_ipv4_bind_address(),
+            bind_addr_: bind_addr,
             #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
             interface_: InterfaceName::default(),
             query_lifetime_: Duration::from_millis(10000),
@@ -70,6 +75,11 @@ impl ResolverConf {
     /// ```
     pub fn with_nameserver(mut self, nameserver: SocketAddr) -> Self {
         self.nameserver_ = nameserver;
+
+        if self.nameserver_.is_ipv6() && self.bind_addr_ == Self::default_ipv4_bind_address() {
+            self.bind_addr_ = Self::default_ipv6_bind_address();
+        }
+
         self
     }
 
@@ -214,5 +224,9 @@ impl ResolverConf {
 
     fn default_ipv4_bind_address() -> SocketAddr {
         SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0))
+    }
+
+    fn default_ipv6_bind_address() -> SocketAddr {
+        SocketAddr::V6(SocketAddrV6::new(Ipv6Addr::UNSPECIFIED, 0, 0, 0))
     }
 }
