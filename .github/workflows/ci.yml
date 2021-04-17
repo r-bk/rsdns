@@ -59,6 +59,13 @@ jobs:
           args: -p rsdns --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
+        name: build ch4
+        if: ${{ matrix.feature != 'all' }}
+        with:
+          command: build
+          args: -p ch4 --no-default-features --features ${{ matrix.feature }}
+
+      - uses: actions-rs/cargo@v1
         name: build all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
@@ -73,6 +80,13 @@ jobs:
           args: -p rsdns --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
+        name: test ch4
+        if: ${{ matrix.feature != 'all' }}
+        with:
+          command: test
+          args: -p ch4 --no-default-features --features ${{ matrix.feature }}
+
+      - uses: actions-rs/cargo@v1
         name: test all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
@@ -85,6 +99,13 @@ jobs:
         with:
           command: clippy
           args: -p rsdns --no-default-features --features ${{ matrix.feature }} -- -D warnings
+
+      - uses: actions-rs/cargo@v1
+        name: lint ch4
+        if: ${{ matrix.feature != 'all' }}
+        with:
+          command: clippy
+          args: -p ch4 --no-default-features --features ${{ matrix.feature }} -- -D warnings
 
       - uses: actions-rs/cargo@v1
         name: lint all rsdns
