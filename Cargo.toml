@@ -2,6 +2,7 @@
 
 members = [
     "rsdns",
+    "ch4",
 ]
 
 resolver = "2"
