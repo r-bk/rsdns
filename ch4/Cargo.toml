@@ -34,5 +34,5 @@ smol = { version = "1", optional = true }
 
 [build-dependencies]
 built = { version = "0.4.4", features = ["git2", "chrono"] }
-vergen = { version = "5.1.1", default-features = false, features = ["rustc"] }
+vergen = { version = "5.1.1", default-features = false, features = ["rustc", "si"] }
 tera = { version = "1.7.0", default-features = false }

@@ -117,6 +117,10 @@ impl Args {
         println!("cargo target:        {}", bi::TARGET);
         println!("endianness:          {}", bi::CFG_ENDIAN);
         println!("pointer width:       {}", bi::CFG_POINTER_WIDTH);
+        println!("build system name:   {}", env!("VERGEN_SYSINFO_NAME"));
+        println!("build os version:    {}", env!("VERGEN_SYSINFO_OS_VERSION"));
+        println!("build cpu vendor:    {}", env!("VERGEN_SYSINFO_CPU_VENDOR"));
+        println!("build cpu brand:     {}", env!("VERGEN_SYSINFO_CPU_BRAND"));
     }
 
     pub fn parse(&self) -> Result<(ResolverConf, QType, Vec<String>)> {
