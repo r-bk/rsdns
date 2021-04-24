@@ -7,7 +7,6 @@ pub struct Cursor<'a> {
     pos: usize,
 }
 
-#[allow(dead_code)]
 impl<'a> Cursor<'a> {
     #[inline]
     pub const fn new(buf: &[u8]) -> Cursor {
@@ -17,11 +16,6 @@ impl<'a> Cursor<'a> {
     #[inline]
     pub const fn with_pos(buf: &[u8], pos: usize) -> Cursor {
         Cursor { buf, pos }
-    }
-
-    #[inline]
-    pub const fn clone_with_pos(&self, pos: usize) -> Cursor {
-        Cursor { buf: self.buf, pos }
     }
 
     #[inline]
