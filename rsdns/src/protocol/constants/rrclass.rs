@@ -5,7 +5,9 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// Resource record CLASS.
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
-#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
+#[derive(
+    Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash, Ord, PartialOrd,
+)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum RrClass {
     /// the internet
