@@ -49,7 +49,7 @@ impl<'a> MessageReader<'a> {
     fn find_an_offset(mut cursor: Cursor, qd_count: usize) -> Result<usize> {
         for _ in 0..qd_count {
             DomainNameReader::skip(&mut cursor)?;
-            cursor.advance(4)?; // qtype(2) + qclass(2)
+            cursor.skip(4)?; // qtype(2) + qclass(2)
         }
 
         Ok(cursor.pos())

@@ -27,7 +27,7 @@ impl<'a> Cursor<'a> {
         self.pos = pos
     }
 
-    pub fn advance(&mut self, distance: usize) -> Result<()> {
+    pub fn skip(&mut self, distance: usize) -> Result<()> {
         if self.len() >= distance {
             self.pos += distance;
             Ok(())

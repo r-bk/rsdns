@@ -61,7 +61,7 @@ impl<'a> DomainNameReader<'a> {
             if length == 0 {
                 break;
             } else if Self::is_length(length) {
-                self.cursor.advance(length as usize)?;
+                self.cursor.skip(length as usize)?;
             } else if Self::is_pointer(length) {
                 let o2 = self.cursor.u8()?;
                 let offset = Self::pointer_to_offset(length, o2);
