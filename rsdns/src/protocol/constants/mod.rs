@@ -4,6 +4,7 @@ mod qtype;
 mod rcode;
 mod rrclass;
 mod rrtype;
+mod section;
 
 pub use opcode::*;
 pub use qclass::*;
@@ -11,6 +12,7 @@ pub use qtype::*;
 pub use rcode::*;
 pub use rrclass::*;
 pub use rrtype::*;
+pub use section::*;
 
 /// DomainName max length.
 ///
