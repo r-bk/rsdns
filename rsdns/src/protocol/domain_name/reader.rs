@@ -46,9 +46,7 @@ impl<'a> DomainNameReader<'a> {
         cursor.set_pos(dnr.max_pos);
         Ok(())
     }
-}
 
-impl<'a> DomainNameReader<'a> {
     fn new(cursor: Cursor<'a>) -> Self {
         DomainNameReader {
             cursor,
