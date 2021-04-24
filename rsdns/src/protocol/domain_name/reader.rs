@@ -1,6 +1,7 @@
 use crate::{
     protocol::{
         bytes::{Cursor, Reader},
+        domain_name::DomainNameBuilder,
         DomainName,
     },
     Error, Result,
@@ -18,13 +19,25 @@ pub struct DomainNameReader<'a> {
     seen_offsets: OffsetsArray,
 }
 
+#[allow(dead_code)]
 impl<'a> DomainNameReader<'a> {
     pub fn read(cursor: &mut Cursor<'a>) -> Result<DomainName> {
         let mut dn = DomainName::new();
-        let mut dnr = Self::new(cursor.clone());
-        dnr.read_impl(&mut dn)?;
-        cursor.set_pos(dnr.max_pos);
+        Self::read_internal(cursor, &mut dn)?;
         Ok(dn)
+    }
+
+    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<String> {
+        let mut dn = String::new();
+        Self::read_internal(cursor, &mut dn)?;
+        Ok(dn)
+    }
+
+    fn read_internal<T: DomainNameBuilder>(cursor: &mut Cursor<'a>, dn: &mut T) -> Result<()> {
+        let mut dnr = Self::new(cursor.clone());
+        dnr.read_impl(dn)?;
+        cursor.set_pos(dnr.max_pos);
+        Ok(())
     }
 
     pub fn skip(cursor: &mut Cursor<'a>) -> Result<()> {
@@ -74,7 +87,7 @@ impl<'a> DomainNameReader<'a> {
         Ok(())
     }
 
-    fn read_impl(&mut self, dn: &mut DomainName) -> Result<()> {
+    fn read_impl<T: DomainNameBuilder>(&mut self, dn: &mut T) -> Result<()> {
         loop {
             let length = self.cursor.u8()?;
             if length == 0 {
@@ -157,10 +170,27 @@ mod tests {
     }
 
     #[test]
+    fn test_basic_flow_string() {
+        let packet = b"\x03sub\x07example\x03com\x00";
+        let dn = DomainNameReader::read_string(&mut Cursor::new(&packet[..])).unwrap();
+
+        assert_eq!(dn.as_str(), "sub.example.com.");
+    }
+
+    #[test]
     fn test_root_domain_name() {
         let packet = b"\x00";
 
         let dn = DomainNameReader::read(&mut Cursor::new(&packet[..])).unwrap();
+
+        assert_eq!(dn.as_str(), ".");
+    }
+
+    #[test]
+    fn test_root_domain_name_string() {
+        let packet = b"\x00";
+
+        let dn = DomainNameReader::read_string(&mut Cursor::new(&packet[..])).unwrap();
 
         assert_eq!(dn.as_str(), ".");
     }
