@@ -4,6 +4,7 @@ use crate::{
 };
 use arrayvec::ArrayString;
 use std::{
+    cmp::Ordering,
     convert::TryFrom,
     hash::{Hash, Hasher},
     str::FromStr,
@@ -442,6 +443,26 @@ impl PartialEq for DomainName {
     }
 }
 
+impl PartialOrd for DomainName {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for DomainName {
+    fn cmp(&self, other: &Self) -> Ordering {
+        for i in 0..self.len().min(other.len()) {
+            let left = unsafe { self.arr.as_bytes().get_unchecked(i) };
+            let right = unsafe { other.arr.as_bytes().get_unchecked(i) };
+            let ord = left.to_ascii_lowercase().cmp(&right.to_ascii_lowercase());
+            if Ordering::Equal != ord {
+                return ord;
+            }
+        }
+        self.len().cmp(&other.len())
+    }
+}
+
 impl PartialEq<&str> for DomainName {
     fn eq(&self, other: &&str) -> bool {
         let l_is_root = self.arr.as_bytes() == b".";
@@ -789,5 +810,40 @@ mod tests {
         assert!(s.contains(&DomainName::from("EXAMPLE.COM").unwrap()));
 
         assert!(!s.contains(&DomainName::from("suB.Example.com.").unwrap()));
+    }
+
+    #[test]
+    fn test_ord() {
+        let dn1 = DomainName::from("example.com").unwrap();
+        let dn2 = DomainName::from("ExaMplE.com").unwrap();
+        let dn3 = DomainName::from("Sub.example.com").unwrap();
+
+        assert_eq!(Ordering::Equal, dn1.cmp(&dn2));
+        assert_eq!(Ordering::Less, dn1.cmp(&dn3));
+        assert_eq!(Ordering::Greater, dn3.cmp(&dn1));
+        assert_eq!(
+            Ordering::Equal,
+            DomainName::new_root().cmp(&DomainName::new_root())
+        );
+        assert_eq!(Ordering::Equal, DomainName::new().cmp(&DomainName::new()));
+    }
+
+    #[test]
+    fn test_partial_ord() {
+        let dn1 = DomainName::from("example.com").unwrap();
+        let dn2 = DomainName::from("ExaMplE.com").unwrap();
+        let dn3 = DomainName::from("Sub.example.com").unwrap();
+
+        assert_eq!(Some(Ordering::Equal), dn1.partial_cmp(&dn2));
+        assert_eq!(Some(Ordering::Less), dn1.partial_cmp(&dn3));
+        assert_eq!(Some(Ordering::Greater), dn3.partial_cmp(&dn1));
+        assert_eq!(
+            Some(Ordering::Equal),
+            DomainName::new_root().partial_cmp(&DomainName::new_root())
+        );
+        assert_eq!(
+            Some(Ordering::Equal),
+            DomainName::new().partial_cmp(&DomainName::new())
+        );
     }
 }
