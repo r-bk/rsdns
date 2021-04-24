@@ -1,5 +1,4 @@
-use crate::{protocol::bytes::Bytes, Error, Result};
-use std::mem::size_of;
+use crate::{Error, Result};
 
 #[derive(Clone, Debug)]
 pub struct Cursor<'a> {
@@ -56,21 +55,12 @@ impl<'a> Cursor<'a> {
         self.len() == 0
     }
 
-    pub fn as_bytes(&self) -> &[u8] {
-        let pos = self.pos.min(self.buf.len());
-        unsafe { self.buf.get_unchecked(pos..) }
-    }
-
     pub fn u16_be(&mut self) -> Result<u16> {
-        let v = Bytes::rbe_u16(self.as_bytes())?;
-        self.pos += size_of::<u16>();
-        Ok(v)
+        r_be!(self, u16)
     }
 
     pub unsafe fn u16_be_unchecked(&mut self) -> u16 {
-        let v = Bytes::rbe_u16_unchecked(self.buf.get_unchecked(self.pos..));
-        self.pos += size_of::<u16>();
-        v
+        ru_be!(self, u16)
     }
 
     pub fn u8(&mut self) -> Result<u8> {

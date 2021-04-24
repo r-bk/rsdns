@@ -1,5 +1,4 @@
-use crate::{protocol::bytes::Bytes, Error, Result};
-use std::mem::size_of;
+use crate::{Error, Result};
 
 #[derive(Debug)]
 pub struct WCursor<'a> {
@@ -57,31 +56,25 @@ impl<'a> WCursor<'a> {
 
     #[inline]
     pub fn u16_be(&mut self, val: u16) -> Result<()> {
-        let size = size_of::<u16>();
-        let slice = self.slice(size)?;
-        unsafe { Bytes::wbe_u16_unchecked(val, slice) };
-        self.pos += size;
-        Ok(())
+        w_be!(self, u16, val)
     }
 
     #[inline]
     pub unsafe fn u16_be_unchecked(&mut self, val: u16) {
-        Bytes::wbe_u16_unchecked(val, self.buf.get_unchecked_mut(self.pos..));
-        self.pos += size_of::<u16>();
+        wu_be!(self, u16, val)
     }
 
     #[inline]
     pub fn u8(&mut self, val: u8) -> Result<()> {
-        let size = size_of::<u8>();
-        unsafe { *self.slice(size)?.get_unchecked_mut(0) = val };
-        self.pos += size;
+        unsafe { *self.slice(1)?.get_unchecked_mut(0) = val };
+        self.pos += 1;
         Ok(())
     }
 
     #[inline]
     pub unsafe fn u8_unchecked(&mut self, val: u8) {
         *self.buf.get_unchecked_mut(self.pos) = val;
-        self.pos += size_of::<u8>();
+        self.pos += 1;
     }
 
     #[inline]
