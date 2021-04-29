@@ -156,6 +156,13 @@ impl Reader<DomainName> for Cursor<'_> {
     }
 }
 
+impl Reader<DomainNameString> for Cursor<'_> {
+    #[inline]
+    fn read(&mut self) -> Result<DomainNameString> {
+        DomainNameReader::read_string(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
