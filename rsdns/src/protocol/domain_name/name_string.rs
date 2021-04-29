@@ -11,7 +11,8 @@ use std::{
 
 /// A domain name string.
 ///
-/// This is a dynamically allocated version of [`DomainName`].
+/// This is a dynamically allocated version of [`DomainName`]. As opposed to `DomainName`,
+/// which uses a static buffer for backing storage, `DomainNameString` uses `String`.
 ///
 /// `DomainNameString` stores the name in the form `example.com.`. The trailing period denotes
 /// the root zone.
@@ -35,7 +36,7 @@ pub struct DomainNameString {
 }
 
 impl DomainNameString {
-    /// Creates an empty `DomainName`.
+    /// Creates an empty `DomainNameString`.
     ///
     /// # Examples
     ///
@@ -466,7 +467,7 @@ mod tests {
         let l_63 = "a".repeat(63);
         let l_62 = "b".repeat(62);
 
-        let mut dn = DomainName::new();
+        let mut dn = DomainNameString::new();
 
         dn.push_label(&l_63).unwrap();
         assert_eq!(dn.len(), 64);
