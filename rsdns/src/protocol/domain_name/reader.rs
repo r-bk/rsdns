@@ -1,3 +1,4 @@
+use crate::protocol::DomainNameString;
 use crate::{
     protocol::{
         bytes::{Cursor, Reader},
@@ -27,8 +28,8 @@ impl<'a> DomainNameReader<'a> {
         Ok(dn)
     }
 
-    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<String> {
-        let mut dn = String::new();
+    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<DomainNameString> {
+        let mut dn = DomainNameString::new();
         Self::read_internal(cursor, &mut dn)?;
         Ok(dn)
     }

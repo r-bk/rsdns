@@ -1,4 +1,7 @@
-use crate::{protocol::DomainName, Result};
+use crate::{
+    protocol::{DomainName, DomainNameString},
+    Result,
+};
 
 pub trait DomainNameBuilder {
     fn is_empty(&self) -> bool;
@@ -6,7 +9,7 @@ pub trait DomainNameBuilder {
     fn push_label_bytes(&mut self, label: &[u8]) -> Result<()>;
 }
 
-impl DomainNameBuilder for String {
+impl DomainNameBuilder for DomainNameString {
     #[inline(always)]
     fn is_empty(&self) -> bool {
         self.is_empty()
@@ -14,20 +17,12 @@ impl DomainNameBuilder for String {
 
     #[inline(always)]
     fn set_root(&mut self) {
-        self.clear();
-        self.push('.');
+        self.set_root();
     }
 
+    #[inline(always)]
     fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
-        DomainName::check_label_bytes(label)?;
-
-        // at this point the label is proven to be valid,
-        // which means it is sound to convert it unchecked as a valid label is ASCII
-        let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
-
-        self.push_str(label_as_str);
-        self.push('.');
-        Ok(())
+        self.push_label_bytes(label)
     }
 }
 
@@ -44,6 +39,6 @@ impl DomainNameBuilder for DomainName {
 
     #[inline(always)]
     fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
-        DomainName::push_label_bytes(self, label)
+        self.push_label_bytes(label)
     }
 }
