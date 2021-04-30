@@ -86,7 +86,8 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
         writeln!(&mut output, ";; QUESTION SECTION:")?;
 
         #[allow(clippy::for_loops_over_fallibles)]
-        for q in mr.questions().read()? {
+        for q in mr.questions() {
+            let q = q?;
             let dn_width = DOMAIN_NAME_WIDTH - 2;
             let mut qc_width = QCLASS_WIDTH;
             let mut qt_width = QTYPE_WIDTH;

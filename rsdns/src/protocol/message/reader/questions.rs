@@ -3,7 +3,41 @@ use crate::{
     Result,
 };
 
-/// A reader of the questions section of a DNS message.
+/// An iterator over the questions section of a DNS message.
+///
+/// Returns:
+///
+/// - `Some(Ok(Question))` - if a question was read successfully
+/// - `Some(Err(_))` - on error
+/// - `None` - if there is nothing left to read, or a previous call resulted in error
+///
+/// # Examples
+///
+/// ```
+/// use rsdns::{
+///     protocol::{
+///         message::MessageReader,
+///         Question
+///     },
+///     Result
+/// };
+///
+/// fn print_questions(buf: &[u8]) -> Result<()> {
+///     let mut message_reader = MessageReader::new(buf)?;
+///
+///     for question in message_reader.questions() {
+///         let question = question?;
+///         println!(
+///             "{} {} {}",
+///             question.qname.as_str(),
+///             question.qtype as u16,
+///             question.qclass as u16
+///         );
+///     }
+///
+///     Ok(())
+/// }
+/// ```
 pub struct Questions<'a> {
     cursor: Cursor<'a>,
     err: bool,
@@ -21,89 +55,26 @@ impl<'a> Questions<'a> {
         }
     }
 
-    /// Reads the next question.
-    ///
-    /// Returns:
-    ///
-    /// - `Ok(Some(Question))` - if a question was read successfully
-    /// - `Ok(None)` - if there is nothing left to read, or a previous call resulted in error
-    /// - `Err(_)` - on error
-    ///
-    /// # Examples
-    ///
-    /// There are several possible ways to read all questions.
-    ///
-    /// One is to use the `for` loop:
-    ///
-    /// ```
-    /// use rsdns::{
-    ///     protocol::{
-    ///         message::MessageReader,
-    ///         Question
-    ///     },
-    ///     Result
-    /// };
-    ///
-    /// fn print_questions(buf: &[u8]) -> Result<()> {
-    ///     let mut message_reader = MessageReader::new(buf)?;
-    ///     let mut questions = message_reader.questions();
-    ///
-    ///     for question in questions.read()? {
-    ///         println!(
-    ///             "{} {} {}",
-    ///             question.qname.as_str(),
-    ///             question.qtype as u16,
-    ///             question.qclass as u16
-    ///         );
-    ///     }
-    ///
-    ///     Ok(())
-    /// }
-    /// ```
-    ///
-    /// Or, if more elaborate error handling is required, using `loop`:
-    ///
-    /// ```
-    /// use rsdns::{
-    ///     protocol::{
-    ///         message::MessageReader,
-    ///         Question
-    ///     },
-    ///     Result
-    /// };
-    ///
-    /// fn print_questions(buf: &[u8]) -> Result<()> {
-    ///     let mut message_reader = MessageReader::new(buf)?;
-    ///     let mut questions = message_reader.questions();
-    ///
-    ///     loop {
-    ///         match questions.read() {
-    ///             Ok(Some(question)) => println!("{:?}", question),
-    ///             Ok(None) => break,
-    ///             Err(e) => {
-    ///                 /* error handling here */
-    ///                 return Err(e);
-    ///             }
-    ///         }
-    ///     }
-    ///
-    ///     Ok(())
-    /// }
-    /// ```
-    pub fn read(&mut self) -> Result<Option<Question>> {
+    fn read(&mut self) -> Option<Result<Question>> {
         if self.err || self.qd_read == self.qd_count {
-            return Ok(None);
+            return None;
         }
 
-        match Question::read(&mut self.cursor) {
-            Ok(q) => {
-                self.qd_read += 1;
-                Ok(Some(q))
-            }
-            Err(e) => {
-                self.err = true;
-                Err(e)
-            }
+        let res = Question::read(&mut self.cursor);
+        if res.is_ok() {
+            self.qd_read += 1;
+        } else {
+            self.err = true;
         }
+        Some(res)
+    }
+}
+
+impl Iterator for Questions<'_> {
+    type Item = Result<Question>;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        self.read()
     }
 }

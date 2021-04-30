@@ -184,9 +184,13 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
                 continue;
             }
 
-            if let Some(question) = mr.questions().read()? {
-                if question.qtype == self.qtype && question.qclass == self.qclass && question.qname == self.qname {
-                    return Ok((size, mr.header().flags));
+            for question in mr.questions() {
+                if let Ok(question) = question {
+                    if question.qtype == self.qtype
+                            && question.qclass == self.qclass
+                            && question.qname == self.qname {
+                        return Ok((size, mr.header().flags));
+                    }
                 }
             }
         }
