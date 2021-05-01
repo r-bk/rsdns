@@ -6,8 +6,8 @@ pub enum Error {
     UnknownRrType(u16),
     #[error("unknown QTYPE: {0}")]
     UnknownQType(u16),
-    #[error("unknown RR CLASS: {0}")]
-    UnknownRrClass(u16),
+    #[error("unknown resource record class: {0}")]
+    UnknownRClass(u16),
     #[error("unknown QCLASS: {0}")]
     UnknownQClass(u16),
     #[error("unknown OPCODE: {0}")]

@@ -1,16 +1,16 @@
 mod opcode;
 mod qclass;
 mod qtype;
+mod rclass;
 mod rcode;
-mod rrclass;
 mod rrtype;
 mod section;
 
 pub use opcode::*;
 pub use qclass::*;
 pub use qtype::*;
+pub use rclass::*;
 pub use rcode::*;
-pub use rrclass::*;
 pub use rrtype::*;
 pub use section::*;
 
