@@ -7,7 +7,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
 #[allow(clippy::upper_case_acronyms)]
-pub enum RrType {
+pub enum RType {
     // rfc 1035
     /// a host address
     A = 1,
@@ -43,35 +43,35 @@ pub enum RrType {
     TXT = 16,
 }
 
-impl RrType {
-    /// Converts `RrType` to a static string.
+impl RType {
+    /// Converts `RType` to a static string.
     pub fn as_str(self) -> &'static str {
         self.into()
     }
 }
 
-impl TryFrom<u16> for RrType {
+impl TryFrom<u16> for RType {
     type Error = Error;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
-            1 => RrType::A,
-            2 => RrType::NS,
-            3 => RrType::MD,
-            4 => RrType::MF,
-            5 => RrType::CNAME,
-            6 => RrType::SOA,
-            7 => RrType::MB,
-            8 => RrType::MG,
-            9 => RrType::MR,
-            10 => RrType::NULL,
-            11 => RrType::WKS,
-            12 => RrType::PTR,
-            13 => RrType::HINFO,
-            14 => RrType::MINFO,
-            15 => RrType::MX,
-            16 => RrType::TXT,
-            _ => return Err(Error::UnknownRrType(value)),
+            1 => RType::A,
+            2 => RType::NS,
+            3 => RType::MD,
+            4 => RType::MF,
+            5 => RType::CNAME,
+            6 => RType::SOA,
+            7 => RType::MB,
+            8 => RType::MG,
+            9 => RType::MR,
+            10 => RType::NULL,
+            11 => RType::WKS,
+            12 => RType::PTR,
+            13 => RType::HINFO,
+            14 => RType::MINFO,
+            15 => RType::MX,
+            16 => RType::TXT,
+            _ => return Err(Error::UnknownRType(value)),
         };
 
         Ok(me)
@@ -85,10 +85,10 @@ mod tests {
 
     #[test]
     fn test_try_from() {
-        for rr_type in RrType::iter() {
-            assert_eq!(rr_type, RrType::try_from(rr_type as u16).unwrap());
+        for rr_type in RType::iter() {
+            assert_eq!(rr_type, RType::try_from(rr_type as u16).unwrap());
         }
 
-        assert!(matches!(RrType::try_from(0), Err(Error::UnknownRrType(0))));
+        assert!(matches!(RType::try_from(0), Err(Error::UnknownRType(0))));
     }
 }

@@ -2,8 +2,8 @@
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("unknown RR TYPE: {0}")]
-    UnknownRrType(u16),
+    #[error("unknown resource record type: {0}")]
+    UnknownRType(u16),
     #[error("unknown QTYPE: {0}")]
     UnknownQType(u16),
     #[error("unknown resource record class: {0}")]
