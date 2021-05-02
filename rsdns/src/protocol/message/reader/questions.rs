@@ -16,7 +16,7 @@ use crate::{
 /// ```
 /// use rsdns::{
 ///     protocol::{
-///         message::MessageReader,
+///         message::reader::MessageReader,
 ///         Question
 ///     },
 ///     Result

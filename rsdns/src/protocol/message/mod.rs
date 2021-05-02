@@ -5,4 +5,3 @@ pub mod reader;
 
 #[allow(unused_imports)]
 pub(crate) use query_writer::*;
-pub use reader::MessageReader;
