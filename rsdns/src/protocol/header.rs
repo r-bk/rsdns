@@ -68,7 +68,7 @@ impl Reader<Header> for Cursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::{OpCode, RCode};
+    use crate::protocol::{OpCode, ResponseCode};
     use rand::seq::IteratorRandom;
     use strum::IntoEnumIterator;
 
@@ -83,7 +83,7 @@ mod tests {
             .set_rd(rand::random())
             .set_tc(rand::random())
             .set_opcode(OpCode::iter().choose(&mut rng).unwrap())
-            .set_rcode(RCode::iter().choose(&mut rng).unwrap());
+            .set_response_code(ResponseCode::iter().choose(&mut rng).unwrap());
 
         let header = Header {
             id: rand::random::<u16>(),

@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{OpCode, RCode},
+    protocol::{OpCode, ResponseCode},
     Result,
 };
 use std::convert::TryFrom;
@@ -123,13 +123,13 @@ impl Flags {
         *self
     }
 
-    /// Returns the RCODE.
-    pub fn rcode(self) -> Result<RCode> {
-        RCode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
+    /// Returns the response code.
+    pub fn response_code(self) -> Result<ResponseCode> {
+        ResponseCode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
     }
 
-    /// Sets the RCODE.
-    pub fn set_rcode(&mut self, rcode: RCode) -> Self {
+    /// Sets the response code.
+    pub fn set_response_code(&mut self, rcode: ResponseCode) -> Self {
         self.flags |= rcode as u16;
         *self
     }
@@ -210,26 +210,26 @@ mod tests {
     }
 
     #[test]
-    fn test_rcode() {
-        for rcode in RCode::iter() {
+    fn test_response_code() {
+        for rcode in ResponseCode::iter() {
             let f = Flags {
                 flags: rcode as u16,
             };
-            assert_eq!(f.rcode().unwrap(), rcode);
+            assert_eq!(f.response_code().unwrap(), rcode);
 
             let mut f = Flags::default();
             assert_eq!(f.as_u16(), 0);
 
-            f.set_rcode(rcode);
-            assert_eq!(f.rcode().unwrap(), rcode);
+            f.set_response_code(rcode);
+            assert_eq!(f.response_code().unwrap(), rcode);
             assert_eq!(f.as_u16() & 0b0000_0000_0000_1111, rcode as u16);
         }
 
         for i in 0..16 {
-            if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
+            if ResponseCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { flags: i as u16 };
-                match f.rcode() {
-                    Err(Error::UnknownRCode(v)) => assert_eq!(v, i as u8),
+                match f.response_code() {
+                    Err(Error::UnknownResponseCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }

@@ -2,7 +2,7 @@ mod opcode;
 mod qclass;
 mod qtype;
 mod rclass;
-mod rcode;
+mod response_code;
 mod rtype;
 mod section;
 
@@ -10,7 +10,7 @@ pub use opcode::*;
 pub use qclass::*;
 pub use qtype::*;
 pub use rclass::*;
-pub use rcode::*;
+pub use response_code::*;
 pub use rtype::*;
 pub use section::*;
 

@@ -12,8 +12,8 @@ pub enum Error {
     UnknownQClass(u16),
     #[error("unknown OPCODE: {0}")]
     UnknownOpCode(u8),
-    #[error("unknown RCODE: {0}")]
-    UnknownRCode(u8),
+    #[error("unknown response code: {0}")]
+    UnknownResponseCode(u8),
     #[error("io error")]
     IoError(#[from] std::io::Error),
     #[error("domain name label invalid character")]
