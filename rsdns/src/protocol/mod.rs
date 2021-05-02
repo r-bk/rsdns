@@ -1,4 +1,5 @@
-//! DNS protocol implementation.
+//! Protocol implementation.
+
 #[macro_use]
 mod macros;
 pub(crate) mod bytes;

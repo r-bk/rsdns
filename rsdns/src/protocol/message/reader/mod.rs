@@ -1,4 +1,4 @@
-//! Defines entities for parsing a raw DNS message.
+//! Message reading implementation.
 
 mod message_reader;
 mod questions;

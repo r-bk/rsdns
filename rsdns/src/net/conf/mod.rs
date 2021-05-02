@@ -1,4 +1,4 @@
-//! Resolver configuration definitions.
+//! Configuration primitives.
 
 mod protocol_strategy;
 mod recursion;

@@ -1,4 +1,4 @@
-//! DNS message utilities.
+//! On-wire message implementation.
 
 mod query_writer;
 pub mod reader;
