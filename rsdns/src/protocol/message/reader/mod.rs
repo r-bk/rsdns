@@ -1,4 +1,4 @@
-//! Message reading implementation.
+//! Message reading primitives.
 
 mod message_reader;
 mod questions;

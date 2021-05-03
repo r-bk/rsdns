@@ -9,7 +9,7 @@ use crate::{
     Result,
 };
 
-/// A set of low-level primitives for parsing a raw DNS message.
+/// A DNS message reader.
 #[allow(dead_code)]
 pub struct MessageReader<'a> {
     buf: &'a [u8],
@@ -30,7 +30,7 @@ impl<'a> MessageReader<'a> {
         })
     }
 
-    /// Returns the parsed DNS message header.
+    /// Returns the parsed DNS header.
     pub fn header(&self) -> &Header {
         &self.header
     }

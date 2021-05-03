@@ -1,4 +1,4 @@
-//! On-wire message implementation.
+//! Message handling.
 
 mod query_writer;
 pub mod reader;
