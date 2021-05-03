@@ -1,4 +1,4 @@
-/// Errors returned by this library.
+/// Errors returned by [rsdns](crate).
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -47,5 +47,5 @@ pub enum Error {
     BadBindDevice,
 }
 
-/// Result returned by this library.
+/// Result returned by [rsdns](crate).
 pub type Result<T> = std::result::Result<T, Error>;
