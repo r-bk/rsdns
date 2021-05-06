@@ -7,7 +7,7 @@ macro_rules! r_be {
             $self.pos += std::mem::size_of::<$t>();
             Ok(v.to_be())
         } else {
-            Err(Error::EndOfBuffer)
+            Err($self.bound_error())
         }
     }};
 }

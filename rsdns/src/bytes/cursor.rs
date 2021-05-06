@@ -4,17 +4,54 @@ use crate::{Error, Result};
 pub struct Cursor<'a> {
     buf: &'a [u8],
     pos: usize,
+    orig: Option<&'a [u8]>,
 }
 
+#[allow(dead_code)]
 impl<'a> Cursor<'a> {
     #[inline]
     pub const fn new(buf: &[u8]) -> Cursor {
-        Cursor { buf, pos: 0 }
+        Cursor {
+            buf,
+            pos: 0,
+            orig: None,
+        }
     }
 
     #[inline]
     pub const fn with_pos(buf: &[u8], pos: usize) -> Cursor {
-        Cursor { buf, pos }
+        Cursor {
+            buf,
+            pos,
+            orig: None,
+        }
+    }
+
+    pub fn window(&mut self, size: usize) -> Result<()> {
+        if self.orig.is_none() {
+            if self.len() >= size {
+                self.orig = Some(self.buf);
+                self.buf = unsafe { self.buf.get_unchecked(..self.pos + size) };
+                Ok(())
+            } else {
+                Err(Error::EndOfBuffer)
+            }
+        } else {
+            Err(Error::CursorAlreadyInWindow)
+        }
+    }
+
+    pub fn close_window(&mut self) -> Result<()> {
+        if self.orig.is_some() {
+            if self.pos == self.buf.len() {
+                self.buf = self.orig.take().unwrap();
+                Ok(())
+            } else {
+                Err(Error::CursorWindowError(self.buf.len(), self.pos))
+            }
+        } else {
+            Err(Error::CursorNotInWindow)
+        }
     }
 
     #[inline]
@@ -32,7 +69,7 @@ impl<'a> Cursor<'a> {
             self.pos += distance;
             Ok(())
         } else {
-            Err(Error::EndOfBuffer)
+            Err(self.bound_error())
         }
     }
 
@@ -73,7 +110,7 @@ impl<'a> Cursor<'a> {
             self.pos += 1;
             Ok(v)
         } else {
-            Err(Error::EndOfBuffer)
+            Err(self.bound_error())
         }
     }
 
@@ -83,7 +120,16 @@ impl<'a> Cursor<'a> {
             self.pos += size;
             Ok(unsafe { self.buf.get_unchecked(pos..pos + size) })
         } else {
-            Err(Error::EndOfBuffer)
+            Err(self.bound_error())
+        }
+    }
+
+    #[inline]
+    fn bound_error(&self) -> Error {
+        if self.orig.is_none() {
+            Error::EndOfBuffer
+        } else {
+            Error::EndOfWindow
         }
     }
 }

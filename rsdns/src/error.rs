@@ -34,6 +34,8 @@ pub enum Error {
     DomainNameBadPointer,
     #[error("buffer end reached unexpectedly")]
     EndOfBuffer,
+    #[error("buffer window end reached unexpectedly")]
+    EndOfWindow,
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
     #[error("operation timed-out")]
@@ -45,6 +47,12 @@ pub enum Error {
     )]
     #[error("device name is too long or contains forbidden characters - '/' or whitespace")]
     BadBindDevice,
+    #[error("cursor is already in window mode")]
+    CursorAlreadyInWindow,
+    #[error("cursor not in window mode")]
+    CursorNotInWindow,
+    #[error("cursor window error: expected {0}, actual {1}")]
+    CursorWindowError(usize, usize),
 }
 
 /// Result returned by [rsdns](crate).
