@@ -5,6 +5,7 @@
 //! [RFC 1034](https://tools.ietf.org/html/rfc1034#section-5.3.1).
 
 pub(crate) mod bytes;
+pub mod constants;
 mod error;
 #[cfg(any(
     feature = "net-async-std",

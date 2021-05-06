@@ -3,7 +3,6 @@
 #[macro_use]
 mod macros;
 mod character_string;
-pub mod constants;
 mod domain_name;
 mod flags;
 mod header;

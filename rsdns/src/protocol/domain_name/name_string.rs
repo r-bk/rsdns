@@ -1,7 +1,4 @@
-use crate::{
-    protocol::{constants::DOMAIN_NAME_MAX_LENGTH, DomainName},
-    Error, Result,
-};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, protocol::DomainName, Error, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,

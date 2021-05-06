@@ -1,6 +1,6 @@
 use crate::{args::Args, output::Output};
 use anyhow::Result;
-use rsdns::protocol::constants::QClass;
+use rsdns::constants::QClass;
 use std::time::SystemTime;
 
 {% if async == "true" %}

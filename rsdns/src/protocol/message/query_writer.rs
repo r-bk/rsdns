@@ -1,9 +1,7 @@
 use crate::{
     bytes::{WCursor, Writer},
-    protocol::{
-        constants::{QClass, QType},
-        Flags, Header,
-    },
+    constants::{QClass, QType},
+    protocol::{Flags, Header},
     Result,
 };
 

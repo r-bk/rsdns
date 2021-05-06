@@ -1,9 +1,9 @@
 use crate::{
+  constants::{QType, QClass},
   net::{
       {{ crate_module_name }}::ResolverImpl,
       conf::ResolverConf,
   },
-  protocol::constants::{QType, QClass},
   Result
 };
 

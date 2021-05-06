@@ -1,8 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
-    protocol::{
-        constants::HEADER_LENGTH, domain_name::DomainNameReader, message::reader::Questions, Header,
-    },
+    constants::HEADER_LENGTH,
+    protocol::{domain_name::DomainNameReader, message::reader::Questions, Header},
     Result,
 };
 

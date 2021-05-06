@@ -1,4 +1,4 @@
-use crate::protocol::constants::CHARACTER_STRING_MAX_LENGTH;
+use crate::constants::CHARACTER_STRING_MAX_LENGTH;
 
 type ArrType = arrayvec::ArrayVec<u8, CHARACTER_STRING_MAX_LENGTH>;
 

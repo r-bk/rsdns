@@ -1,7 +1,5 @@
 use crate::{
-    bytes::WCursor,
-    protocol::{constants::DOMAIN_NAME_MAX_LENGTH, DomainName},
-    Error, Result,
+    bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, protocol::DomainName, Error, Result,
 };
 
 impl WCursor<'_> {

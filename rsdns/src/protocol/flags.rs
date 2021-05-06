@@ -1,5 +1,5 @@
 use crate::{
-    protocol::constants::{OpCode, ResponseCode},
+    constants::{OpCode, ResponseCode},
     Result,
 };
 use std::convert::TryFrom;

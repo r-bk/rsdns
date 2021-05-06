@@ -1,5 +1,5 @@
 use crate::{
-    protocol::constants::{DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH},
+    constants::{DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH},
     Error, Result,
 };
 use arrayvec::ArrayString;
@@ -266,7 +266,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::{constants::DOMAIN_NAME_MAX_LENGTH, DomainName};
+    /// use rsdns::{constants::DOMAIN_NAME_MAX_LENGTH, protocol::DomainName};
     ///
     /// let dn = DomainName::from("example.com.").unwrap();
     /// assert_eq!(dn.len(), 12);

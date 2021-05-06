@@ -1,6 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader, WCursor, Writer},
-    protocol::{constants::HEADER_LENGTH, Flags},
+    constants::HEADER_LENGTH,
+    protocol::Flags,
     Error, Result,
 };
 
@@ -65,7 +66,7 @@ impl Reader<Header> for Cursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::constants::{OpCode, ResponseCode};
+    use crate::constants::{OpCode, ResponseCode};
     use rand::seq::IteratorRandom;
     use strum::IntoEnumIterator;
 
