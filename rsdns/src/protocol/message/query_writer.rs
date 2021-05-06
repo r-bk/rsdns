@@ -1,6 +1,6 @@
 use crate::{
+    bytes::{WCursor, Writer},
     protocol::{
-        bytes::{WCursor, Writer},
         constants::{QClass, QType},
         Flags, Header,
     },
@@ -50,9 +50,9 @@ impl<'a> QueryWriter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::{
+    use crate::{
         bytes::{Cursor, Reader},
-        DomainName,
+        protocol::DomainName,
     };
     use std::convert::TryFrom;
 

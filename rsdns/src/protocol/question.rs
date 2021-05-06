@@ -1,6 +1,6 @@
 use crate::{
+    bytes::Cursor,
     protocol::{
-        bytes::Cursor,
         constants::{QClass, QType},
         domain_name::DomainNameReader,
         DomainName,

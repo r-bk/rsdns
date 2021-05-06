@@ -1,10 +1,7 @@
 use crate::protocol::DomainNameString;
 use crate::{
-    protocol::{
-        bytes::{Cursor, Reader},
-        domain_name::DomainNameBuilder,
-        DomainName,
-    },
+    bytes::{Cursor, Reader},
+    protocol::{domain_name::DomainNameBuilder, DomainName},
     Error, Result,
 };
 

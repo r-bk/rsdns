@@ -1,9 +1,6 @@
 use crate::{
-    protocol::{
-        bytes::{Cursor, Reader, WCursor, Writer},
-        constants::HEADER_LENGTH,
-        Flags,
-    },
+    bytes::{Cursor, Reader, WCursor, Writer},
+    protocol::{constants::HEADER_LENGTH, Flags},
     Error, Result,
 };
 

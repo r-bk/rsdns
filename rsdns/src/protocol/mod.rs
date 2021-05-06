@@ -2,7 +2,6 @@
 
 #[macro_use]
 mod macros;
-pub(crate) mod bytes;
 mod character_string;
 pub mod constants;
 mod domain_name;

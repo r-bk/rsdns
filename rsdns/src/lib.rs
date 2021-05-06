@@ -4,6 +4,7 @@
 //! [rsdns](crate) is a DNS Client library providing functionality of a Stub Resolver defined in
 //! [RFC 1034](https://tools.ietf.org/html/rfc1034#section-5.3.1).
 
+pub(crate) mod bytes;
 mod error;
 #[cfg(any(
     feature = "net-async-std",

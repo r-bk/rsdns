@@ -1,4 +1,4 @@
-use crate::{protocol::bytes::Cursor, Result};
+use crate::{bytes::Cursor, Result};
 use std::net::Ipv4Addr;
 
 pub trait Reader<T> {

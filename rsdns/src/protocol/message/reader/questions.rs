@@ -1,7 +1,4 @@
-use crate::{
-    protocol::{bytes::Cursor, Question},
-    Result,
-};
+use crate::{bytes::Cursor, protocol::Question, Result};
 
 /// An iterator over the questions section of a DNS message.
 ///
