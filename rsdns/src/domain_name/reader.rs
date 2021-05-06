@@ -1,8 +1,6 @@
-use crate::protocol::DomainNameString;
 use crate::{
     bytes::{Cursor, Reader},
-    protocol::{domain_name::DomainNameBuilder, DomainName},
-    Error, Result,
+    DomainName, DomainNameBuilder, DomainNameString, Error, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;

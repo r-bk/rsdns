@@ -49,7 +49,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        protocol::DomainName,
+        DomainName,
     };
     use std::convert::TryFrom;
 

@@ -44,7 +44,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let dn = DomainName::new();
     ///
@@ -61,7 +61,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let dn = DomainName::new_root();
     /// assert_eq!(dn.len(), 1);
@@ -78,7 +78,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let dn = DomainName::from("example.com").unwrap();
     /// assert_eq!(dn.as_str(), "example.com.");
@@ -115,7 +115,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let dn = DomainName::new();
     /// assert_eq!(dn.as_str(), "");
@@ -227,7 +227,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// assert!(DomainName::check_name("example.com").is_ok());
     /// assert!(DomainName::check_name("example-.com").is_err());
@@ -246,7 +246,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let dn = DomainName::new();
     /// assert_eq!(dn.len(), 0);
@@ -266,7 +266,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::{constants::DOMAIN_NAME_MAX_LENGTH, protocol::DomainName};
+    /// use rsdns::{constants::DOMAIN_NAME_MAX_LENGTH, DomainName};
     ///
     /// let dn = DomainName::from("example.com.").unwrap();
     /// assert_eq!(dn.len(), 12);
@@ -284,7 +284,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     /// use std::str::FromStr;
     ///
     /// let dn = DomainName::from_str("example.com").unwrap();
@@ -303,7 +303,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     /// use std::str::FromStr;
     ///
     /// let mut dn = DomainName::from_str("example.com").unwrap();
@@ -329,7 +329,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let mut dn = DomainName::new();
     ///
@@ -364,7 +364,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let mut dn = DomainName::new();
     ///
@@ -393,7 +393,7 @@ impl DomainName {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::protocol::DomainName;
+    /// use rsdns::DomainName;
     ///
     /// let mut dn = DomainName::new();
     /// assert!(dn.is_empty());

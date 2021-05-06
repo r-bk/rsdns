@@ -1,6 +1,4 @@
-use crate::{
-    bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, protocol::DomainName, Error, Result,
-};
+use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, DomainName, Error, Result};
 
 impl WCursor<'_> {
     #[inline]
@@ -65,10 +63,7 @@ impl WCursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        bytes::Cursor,
-        protocol::{domain_name::DomainNameReader, DomainName},
-    };
+    use crate::{bytes::Cursor, DomainName, DomainNameReader};
 
     #[test]
     fn test_write_good_flow() {

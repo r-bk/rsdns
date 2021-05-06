@@ -1,7 +1,4 @@
-use crate::{
-    protocol::{DomainName, DomainNameString},
-    Result,
-};
+use crate::{DomainName, DomainNameString, Result};
 
 pub trait DomainNameBuilder {
     fn is_empty(&self) -> bool;

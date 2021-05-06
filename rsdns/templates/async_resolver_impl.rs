@@ -1,9 +1,7 @@
 use crate::{
     constants::{QType, QClass},
     net::conf::{ProtocolStrategy, Recursion, ResolverConf},
-    protocol::{
-        message::{reader::MessageReader, QueryWriter},
-    },
+    message::{reader::MessageReader, QueryWriter},
     Error, Flags, Result,
 };
 

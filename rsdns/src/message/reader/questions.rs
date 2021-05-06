@@ -12,7 +12,7 @@ use crate::{bytes::Cursor, Question, Result};
 ///
 /// ```
 /// use rsdns::{
-///     protocol::message::reader::MessageReader,
+///     message::reader::MessageReader,
 ///     Question, Result,
 /// };
 ///
