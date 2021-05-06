@@ -122,17 +122,19 @@ impl Args {
         println!("build cpu vendor:    {}", env!("VERGEN_SYSINFO_CPU_VENDOR"));
         println!("build cpu brand:     {}", env!("VERGEN_SYSINFO_CPU_BRAND"));
 
-        #[cfg(unix)]
-        if let Ok(dns_servers) = Self::load_resolv_conf() {
-            for (index, addr) in dns_servers.iter().enumerate() {
-                println!("dns server #{}:       {}", index, addr);
-            }
-        }
-
-        #[cfg(windows)]
-        if let Ok(dns_servers) = crate::win::get_dns_servers() {
-            for (index, addr) in dns_servers.iter().enumerate() {
-                println!("dns server #{}:       {}", index, addr);
+        cfg_if::cfg_if! {
+            if #[cfg(unix)] {
+                if let Ok(dns_servers) = Self::load_resolv_conf() {
+                    for (index, addr) in dns_servers.iter().enumerate() {
+                        println!("dns server #{}:       {}", index, addr);
+                    }
+                }
+            } else if #[cfg(windows)] {
+                if let Ok(dns_servers) = crate::win::get_dns_servers() {
+                    for (index, addr) in dns_servers.iter().enumerate() {
+                        println!("dns server #{}:       {}", index, addr);
+                    }
+                }
             }
         }
     }
@@ -168,40 +170,35 @@ impl Args {
         let nameserver = match nameserver_ip_addr {
             Some(addr) => SocketAddr::from((addr, self.port)),
             None => {
-                #[cfg(unix)]
-                {
-                    let nameservers = match Self::load_resolv_conf() {
-                        Ok(v) => v,
-                        Err(_) => Vec::new(),
-                    };
+                cfg_if::cfg_if! {
+                    if #[cfg(unix)] {
+                        let nameservers = match Self::load_resolv_conf() {
+                            Ok(v) => v,
+                            Err(_) => Vec::new(),
+                        };
 
-                    if nameservers.is_empty() {
-                        eprintln!("no nameservers");
+                        if nameservers.is_empty() {
+                            eprintln!("no nameservers");
+                            exit(1);
+                        }
+
+                        SocketAddr::from((nameservers[0], self.port))
+                    } else if #[cfg(windows)] {
+                        let nameservers = match crate::win::get_dns_servers() {
+                            Ok(v) => v,
+                            Err(_) => Vec::new(),
+                        };
+
+                        if nameservers.is_empty() {
+                            eprintln!("no nameservers");
+                            exit(1);
+                        }
+
+                        nameservers[0]
+                    } else {
+                        eprintln!("no nameserver");
                         exit(1);
                     }
-
-                    SocketAddr::from((nameservers[0], self.port))
-                }
-
-                #[cfg(windows)]
-                {
-                    let nameservers = match crate::win::get_dns_servers() {
-                        Ok(v) => v,
-                        Err(_) => Vec::new(),
-                    };
-
-                    if nameservers.is_empty() {
-                        eprintln!("no nameservers");
-                        exit(1);
-                    }
-
-                    nameservers[0]
-                }
-
-                #[cfg(not(any(unix, windows)))]
-                {
-                    eprintln!("no nameserver");
-                    exit(1);
                 }
             }
         };
