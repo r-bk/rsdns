@@ -4,12 +4,12 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// DNS query type.
 ///
-/// [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
+/// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
+/// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum QType {
-    // rfc 1035
-    /// a host address
+    /// a host address (IPv4)
     A = 1,
     /// an authoritative name server
     NS = 2,
@@ -41,6 +41,8 @@ pub enum QType {
     MX = 15,
     /// text strings
     TXT = 16,
+    /// a host address (IPv6)
+    AAAA = 28,
     /// a request for a transfer of an entire zone
     AXFR = 252,
     /// a request for mailbox-related records (MB, MG or MR)
@@ -80,6 +82,7 @@ impl TryFrom<u16> for QType {
             14 => QType::MINFO,
             15 => QType::MX,
             16 => QType::TXT,
+            28 => QType::AAAA,
             252 => QType::AXFR,
             253 => QType::MAILB,
             254 => QType::MAILA,

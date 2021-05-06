@@ -100,6 +100,7 @@ impl<'a> Records<'a> {
                     RType::MINFO => rrr!(self, Minfo, domain_name_pos, rclass, ttl, rdlen),
                     RType::MX => rrr!(self, Mx, domain_name_pos, rclass, ttl, rdlen),
                     RType::TXT => rrr!(self, Txt, domain_name_pos, rclass, ttl, rdlen),
+                    RType::AAAA => rrr!(self, Aaaa, domain_name_pos, rclass, ttl, rdlen),
                 };
 
                 self.section_tracker.section_read(section)?;

@@ -112,6 +112,10 @@ impl<'a> Cursor<'a> {
         r_be!(self, u32)
     }
 
+    pub fn u128_be(&mut self) -> Result<u128> {
+        r_be!(self, u128)
+    }
+
     pub fn u8(&mut self) -> Result<u8> {
         if !self.is_empty() {
             let v = unsafe { *self.buf.get_unchecked(self.pos) };

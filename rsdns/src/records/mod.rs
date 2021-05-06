@@ -8,6 +8,9 @@ pub mod data;
 mod rfc1035;
 pub use rfc1035::*;
 
+mod rfc3596;
+pub use rfc3596::*;
+
 /// Enumerates supported resource records.
 #[derive(Debug, Clone)]
 pub enum ResourceRecord {
@@ -43,4 +46,6 @@ pub enum ResourceRecord {
     Mx(rfc1035::Mx),
     /// Text strings.
     Txt(rfc1035::Txt),
+    /// A host address (IPv6)
+    Aaaa(rfc3596::Aaaa),
 }

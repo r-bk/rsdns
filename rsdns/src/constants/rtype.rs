@@ -4,12 +4,12 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Resource record type.
 ///
-/// [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
+/// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
+/// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum RType {
-    // rfc 1035
-    /// a host address
+    /// a host address (IPv4)
     A = 1,
     /// an authoritative name server
     NS = 2,
@@ -41,6 +41,8 @@ pub enum RType {
     MX = 15,
     /// text strings
     TXT = 16,
+    /// a host address (IPv6)
+    AAAA = 28,
 }
 
 impl RType {
@@ -71,6 +73,7 @@ impl TryFrom<u16> for RType {
             14 => RType::MINFO,
             15 => RType::MX,
             16 => RType::TXT,
+            28 => RType::AAAA,
             _ => return Err(Error::UnknownRType(value)),
         };
 
