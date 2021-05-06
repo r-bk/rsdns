@@ -73,6 +73,13 @@ jobs:
           args: -p rsdns --all-features
 
       - uses: actions-rs/cargo@v1
+        name: show ch4 info
+        if: ${{ matrix.feature != 'all' }}
+        with:
+          command: run
+          args: -- --info
+
+      - uses: actions-rs/cargo@v1
         name: test rsdns
         if: ${{ matrix.feature != 'all' }}
         with:
