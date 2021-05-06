@@ -128,6 +128,13 @@ impl Args {
                 println!("dns server #{}:       {}", index, addr);
             }
         }
+
+        #[cfg(windows)]
+        if let Ok(dns_servers) = crate::win::get_dns_servers() {
+            for (index, addr) in dns_servers.iter().enumerate() {
+                println!("dns server #{}:       {}", index, addr);
+            }
+        }
     }
 
     pub fn parse(&self) -> Result<(ResolverConf, QType, Vec<String>)> {
@@ -176,7 +183,22 @@ impl Args {
                     SocketAddr::from((nameservers[0], self.port))
                 }
 
-                #[cfg(not(unix))]
+                #[cfg(windows)]
+                {
+                    let nameservers = match crate::win::get_dns_servers() {
+                        Ok(v) => v,
+                        Err(_) => Vec::new(),
+                    };
+
+                    if nameservers.is_empty() {
+                        eprintln!("no nameservers");
+                        exit(1);
+                    }
+
+                    nameservers[0]
+                }
+
+                #[cfg(not(any(unix, windows)))]
                 {
                     eprintln!("no nameserver");
                     exit(1);

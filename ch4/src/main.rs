@@ -1,5 +1,8 @@
 use anyhow::Result;
 
+#[cfg(windows)]
+pub(crate) mod win;
+
 #[cfg(any(
     all(
         feature = "net-tokio",

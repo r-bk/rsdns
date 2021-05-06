@@ -3,6 +3,13 @@ use tera::{Context, Tera};
 use vergen::{vergen, Config};
 
 fn main() {
+    #[cfg(windows)]
+    windows::build!(
+        Windows::Win32::IpHelper::*,
+        Windows::Win32::Debug::WIN32_ERROR,
+        Windows::Win32::WinSock::*,
+    );
+
     built::write_built_file().expect("built failed");
     vergen(Config::default()).expect("vergen failed");
     gen_ch4_version();
