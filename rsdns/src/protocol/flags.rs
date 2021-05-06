@@ -4,6 +4,23 @@ use crate::{
 };
 use std::convert::TryFrom;
 
+macro_rules! get_bit {
+    ($e:expr, $l:literal) => {
+        ($e & (1 << $l)) != 0
+    };
+}
+
+macro_rules! set_bit {
+    ($e:expr, $l:literal, $v:ident) => {
+        let mask = 1 << $l;
+        if $v {
+            $e |= mask;
+        } else {
+            $e &= !mask;
+        }
+    };
+}
+
 /// DNS message header flags.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)

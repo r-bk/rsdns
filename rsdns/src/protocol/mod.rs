@@ -1,7 +1,5 @@
 //! Protocol implementation.
 
-#[macro_use]
-mod macros;
 mod domain_name;
 mod flags;
 mod header;
