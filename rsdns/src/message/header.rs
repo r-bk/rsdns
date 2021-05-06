@@ -1,7 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader, WCursor, Writer},
     constants::HEADER_LENGTH,
-    Error, Flags, Result,
+    message::Flags,
+    Error, Result,
 };
 
 /// DNS message header.

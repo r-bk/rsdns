@@ -9,10 +9,7 @@ mod character_string;
 pub mod constants;
 mod domain_name;
 mod error;
-mod flags;
-mod header;
 pub mod message;
-mod question;
 #[cfg(any(
     feature = "net-async-std",
     feature = "net-smol",
@@ -25,6 +22,3 @@ pub use character_string::*;
 pub use domain_name::*;
 pub use error::Error;
 pub use error::Result;
-pub use flags::*;
-pub use header::*;
-pub use question::*;

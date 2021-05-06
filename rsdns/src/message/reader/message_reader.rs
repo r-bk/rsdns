@@ -1,8 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
-    message::reader::Questions,
-    DomainNameReader, Header, Result,
+    message::{reader::Questions, Header},
+    DomainNameReader, Result,
 };
 
 /// A DNS message reader.

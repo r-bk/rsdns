@@ -1,8 +1,8 @@
 use crate::{
     constants::{QType, QClass},
     resolvers::conf::{ProtocolStrategy, Recursion, ResolverConf},
-    message::{reader::MessageReader, QueryWriter},
-    Error, Flags, Result,
+    message::{reader::MessageReader, Flags, QueryWriter},
+    Error, Result,
 };
 
 {% if crate_name == "tokio" %}
