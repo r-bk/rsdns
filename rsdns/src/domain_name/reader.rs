@@ -158,6 +158,15 @@ impl Reader<DomainNameString> for Cursor<'_> {
     }
 }
 
+impl Cursor<'_> {
+    #[allow(dead_code)]
+    pub fn skip_domain_name(&mut self) -> Result<usize> {
+        let start = self.pos();
+        DomainNameReader::skip(self)?;
+        Ok(self.pos() - start)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
