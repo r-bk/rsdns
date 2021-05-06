@@ -1,7 +1,7 @@
 use crate::{
     bytes::Cursor,
     constants::{QClass, QType},
-    protocol::{domain_name::DomainNameReader, DomainName},
+    protocol::{DomainName, DomainNameReader},
     Result,
 };
 use std::convert::TryFrom;

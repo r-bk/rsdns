@@ -16,7 +16,9 @@ mod error;
 ))]
 pub mod net;
 pub mod protocol;
+mod question;
 
 pub use character_string::*;
 pub use error::Error;
 pub use error::Result;
+pub use question::*;

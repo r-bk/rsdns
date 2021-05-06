@@ -1,4 +1,4 @@
-use crate::{bytes::Cursor, protocol::Question, Result};
+use crate::{bytes::Cursor, Question, Result};
 
 /// An iterator over the questions section of a DNS message.
 ///
@@ -12,11 +12,8 @@ use crate::{bytes::Cursor, protocol::Question, Result};
 ///
 /// ```
 /// use rsdns::{
-///     protocol::{
-///         message::reader::MessageReader,
-///         Question
-///     },
-///     Result
+///     protocol::message::reader::MessageReader,
+///     Question, Result,
 /// };
 ///
 /// fn print_questions(buf: &[u8]) -> Result<()> {
