@@ -6,17 +6,17 @@ use std::time::SystemTime;
 {% if async == "true" %}
 cfg_if::cfg_if! {
     if #[cfg(feature = "net-tokio")] {
-        use rsdns::net::tokio::Resolver;
+        use rsdns::resolvers::tokio::Resolver;
     } else if #[cfg(feature = "net-async-std")] {
-        use rsdns::net::async_std::Resolver;
+        use rsdns::resolvers::async_std::Resolver;
     } else if #[cfg(feature = "net-smol")] {
-        use rsdns::net::smol::Resolver;
+        use rsdns::resolvers::smol::Resolver;
     } else {
         compile_error!("One of the async net features must be enabled!!!");
     }
 }
 {% else %}
-use rsdns::net::std::Resolver;
+use rsdns::resolvers::std::Resolver;
 {% endif %}
 
 pub {% if async == "true" %}async{% endif %} fn main() -> Result<()> {

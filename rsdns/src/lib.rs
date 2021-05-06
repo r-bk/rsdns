@@ -12,14 +12,14 @@ mod error;
 mod flags;
 mod header;
 pub mod message;
+mod question;
 #[cfg(any(
     feature = "net-async-std",
     feature = "net-smol",
     feature = "net-std",
     feature = "net-tokio"
 ))]
-pub mod net;
-mod question;
+pub mod resolvers;
 
 pub use character_string::*;
 pub use domain_name::*;

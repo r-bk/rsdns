@@ -1,6 +1,6 @@
 use crate::{
     constants::{QType, QClass},
-    net::conf::{ProtocolStrategy, Recursion, ResolverConf},
+    resolvers::conf::{ProtocolStrategy, Recursion, ResolverConf},
     message::{reader::MessageReader, QueryWriter},
     Error, Flags, Result,
 };

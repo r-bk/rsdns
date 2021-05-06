@@ -1,6 +1,6 @@
 use crate::{
   constants::{QType, QClass},
-  net::{
+  resolvers::{
       {{ crate_module_name }}::ResolverImpl,
       conf::ResolverConf,
   },
