@@ -121,6 +121,13 @@ impl Args {
         println!("build os version:    {}", env!("VERGEN_SYSINFO_OS_VERSION"));
         println!("build cpu vendor:    {}", env!("VERGEN_SYSINFO_CPU_VENDOR"));
         println!("build cpu brand:     {}", env!("VERGEN_SYSINFO_CPU_BRAND"));
+
+        #[cfg(unix)]
+        if let Ok(dns_servers) = Self::load_resolv_conf() {
+            for (index, addr) in dns_servers.iter().enumerate() {
+                println!("dns server #{}:       {}", index, addr);
+            }
+        }
     }
 
     pub fn parse(&self) -> Result<(ResolverConf, QType, Vec<String>)> {
