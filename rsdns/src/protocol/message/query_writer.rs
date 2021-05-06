@@ -1,8 +1,7 @@
 use crate::{
     bytes::{WCursor, Writer},
     constants::{QClass, QType},
-    protocol::{Flags, Header},
-    Result,
+    Flags, Header, Result,
 };
 
 pub struct QueryWriter<'a> {

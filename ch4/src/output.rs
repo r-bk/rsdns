@@ -2,9 +2,7 @@ use crate::args::Args;
 use anyhow::Result;
 use chrono::{DateTime, Local};
 use rsdns::{
-    constants::QType,
-    net::conf::ResolverConf,
-    protocol::{message::reader::MessageReader, Header},
+    constants::QType, net::conf::ResolverConf, protocol::message::reader::MessageReader, Header,
 };
 use std::{
     fmt::Write,

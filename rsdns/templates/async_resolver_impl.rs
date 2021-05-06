@@ -3,9 +3,8 @@ use crate::{
     net::conf::{ProtocolStrategy, Recursion, ResolverConf},
     protocol::{
         message::{reader::MessageReader, QueryWriter},
-        Flags,
     },
-    Error, Result,
+    Error, Flags, Result,
 };
 
 {% if crate_name == "tokio" %}

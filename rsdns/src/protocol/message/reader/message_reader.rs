@@ -1,8 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
-    protocol::{domain_name::DomainNameReader, message::reader::Questions, Header},
-    Result,
+    protocol::{domain_name::DomainNameReader, message::reader::Questions},
+    Header, Result,
 };
 
 /// A DNS message reader.

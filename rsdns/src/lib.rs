@@ -8,6 +8,8 @@ pub(crate) mod bytes;
 mod character_string;
 pub mod constants;
 mod error;
+mod flags;
+mod header;
 #[cfg(any(
     feature = "net-async-std",
     feature = "net-smol",
@@ -21,4 +23,6 @@ mod question;
 pub use character_string::*;
 pub use error::Error;
 pub use error::Result;
+pub use flags::*;
+pub use header::*;
 pub use question::*;
