@@ -2,7 +2,7 @@ use crate::Error;
 use std::convert::TryFrom;
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
-/// DNS response code.
+/// A query response code.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]

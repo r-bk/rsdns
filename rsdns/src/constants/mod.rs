@@ -1,4 +1,4 @@
-//! DNS protocol constant definitions.
+//! Constants and definitions.
 
 mod opcode;
 mod qclass;
@@ -26,14 +26,14 @@ pub const DOMAIN_NAME_MAX_LENGTH: usize = 255;
 /// [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
 pub const DOMAIN_NAME_LABEL_MAX_LENGTH: usize = 63;
 
-/// DNS message header length.
+/// Message header length.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035#section-4.1.1)
 pub const HEADER_LENGTH: usize = 12;
 
-/// Maximal length of a DNS message.
+/// Maximal length of a message.
 ///
-/// This value corresponds to the maximal possible length of a DNS
+/// This value corresponds to the maximal possible length of a
 /// message when retrieved over TCP.
 ///
 /// Defined in [RFC 1035 ~4.2.2](https://tools.ietf.org/html/rfc1035#section-4.2.2).

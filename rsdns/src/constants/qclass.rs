@@ -2,7 +2,7 @@ use crate::Error;
 use std::convert::TryFrom;
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
-/// DNS query class.
+/// A query class.
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
