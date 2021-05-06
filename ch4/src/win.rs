@@ -78,7 +78,7 @@ unsafe fn get_adapter_dns_servers(a: &IP_ADAPTER_ADDRESSES_LH) -> Vec<SocketAddr
         if !sock_addr.is_null() {
             match ADDRESS_FAMILY::from((*sock_addr).sa_family as u32) {
                 ADDRESS_FAMILY::AF_INET => {
-                    let p_sockaddr_in: * const SOCKADDR_IN = sock_addr.cast();
+                    let p_sockaddr_in: *const SOCKADDR_IN = sock_addr.cast();
                     let ipv4 = Ipv4Addr::from(u32::from_be((*p_sockaddr_in).sin_addr.S_un.S_addr));
                     if !ipv4.is_unspecified() {
                         let mut port = u16::from_be((*p_sockaddr_in).sin_port);
@@ -89,16 +89,18 @@ unsafe fn get_adapter_dns_servers(a: &IP_ADAPTER_ADDRESSES_LH) -> Vec<SocketAddr
                     }
                 }
                 ADDRESS_FAMILY::AF_INET6 => {
-                    let p_sockaddr_in6: * const SOCKADDR_IN6 = sock_addr.cast();
+                    let p_sockaddr_in6: *const SOCKADDR_IN6 = sock_addr.cast();
                     let ipv6 = Ipv6Addr::from((*p_sockaddr_in6).sin6_addr.u.Byte);
-                    if !ipv6.is_unspecified() && (ipv6.segments()[0] & 0xffc0) != 0xfec0 { // !ipv6.is_unicast_site_local
+                    if !ipv6.is_unspecified() && !is_unicast_site_local(&ipv6) {
                         let mut port = u16::from_be((*p_sockaddr_in6).sin6_port);
                         if port == 0 {
                             port = 53;
                         }
                         let flowinfo = u32::from_be((*p_sockaddr_in6).sin6_flowinfo);
                         let scope_id = u32::from_be((*p_sockaddr_in6).Anonymous.sin6_scope_id);
-                        ans.push(SocketAddr::from(SocketAddrV6::new(ipv6, port, flowinfo, scope_id)));
+                        ans.push(SocketAddr::from(SocketAddrV6::new(
+                            ipv6, port, flowinfo, scope_id,
+                        )));
                     }
                 }
                 _ => {}
@@ -107,4 +109,10 @@ unsafe fn get_adapter_dns_servers(a: &IP_ADAPTER_ADDRESSES_LH) -> Vec<SocketAddr
         p_address = (*p_address).Next;
     }
     ans
+}
+
+#[inline]
+fn is_unicast_site_local(ipv6: &Ipv6Addr) -> bool {
+    // Ipv6Addr::is_unicast_site_local is available only in nightly build for now
+    (ipv6.segments()[0] & 0xffc0) == 0xfec0
 }

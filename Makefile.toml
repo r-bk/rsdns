@@ -11,3 +11,7 @@ toolchain = "nightly"
 command = "cargo"
 args = ["doc", "-p", "rsdns", "--all-features", "--no-deps", "--open"]
 workspace = false
+
+[tasks.fmt]
+command = "cargo"
+args = ["fmt", "--all", "--", "--check"]
