@@ -5,6 +5,7 @@
 //! [RFC 1034](https://tools.ietf.org/html/rfc1034#section-5.3.1).
 
 pub(crate) mod bytes;
+mod character_string;
 pub mod constants;
 mod error;
 #[cfg(any(
@@ -16,5 +17,6 @@ mod error;
 pub mod net;
 pub mod protocol;
 
+pub use character_string::*;
 pub use error::Error;
 pub use error::Result;
