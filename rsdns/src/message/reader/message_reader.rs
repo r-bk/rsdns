@@ -1,7 +1,10 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
-    message::{reader::Questions, Header},
+    message::{
+        reader::{Questions, Records},
+        Header,
+    },
     DomainNameReader, Result,
 };
 
@@ -37,6 +40,11 @@ impl<'a> MessageReader<'a> {
             Cursor::with_pos(self.buf, HEADER_LENGTH),
             self.header.qd_count,
         )
+    }
+
+    /// Returns an iterator over the RR sections of the DNS message.
+    pub fn records(&self) -> Records {
+        Records::new(Cursor::with_pos(self.buf, self.an_offset), &self.header)
     }
 
     /// Finds the offset of the answers section.

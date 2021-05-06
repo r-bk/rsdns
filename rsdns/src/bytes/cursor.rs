@@ -26,6 +26,15 @@ impl<'a> Cursor<'a> {
         }
     }
 
+    #[inline]
+    pub fn clone_with_pos(&self, pos: usize) -> Cursor {
+        Cursor {
+            buf: self.buf,
+            pos,
+            orig: None,
+        }
+    }
+
     pub fn window(&mut self, size: usize) -> Result<()> {
         if self.orig.is_none() {
             if self.len() >= size {
