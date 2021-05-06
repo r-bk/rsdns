@@ -18,7 +18,7 @@ pub struct MessageReader<'a> {
 
 impl<'a> MessageReader<'a> {
     /// Creates a `MessageReader` for a DNS message contained in `buf`.
-    pub fn new(buf: &'a [u8]) -> Result<MessageReader<'a>> {
+    pub fn new(buf: &'a [u8]) -> Result<Self> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
         let an_offset = Self::find_an_offset(cursor, header.qd_count as usize)?;
@@ -34,7 +34,7 @@ impl<'a> MessageReader<'a> {
         &self.header
     }
 
-    /// Returns a reader for the questions section of the DNS message.
+    /// Returns an iterator over the questions section of the DNS message.
     pub fn questions(&self) -> Questions {
         Questions::new(
             Cursor::with_pos(self.buf, HEADER_LENGTH),
@@ -42,7 +42,7 @@ impl<'a> MessageReader<'a> {
         )
     }
 
-    /// Returns an iterator over the RR sections of the DNS message.
+    /// Returns an iterator over the resource record sections of the DNS message.
     pub fn records(&self) -> Records {
         Records::new(Cursor::with_pos(self.buf, self.an_offset), &self.header)
     }
