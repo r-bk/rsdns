@@ -3,7 +3,7 @@ use anyhow::Result;
 use chrono::{DateTime, Local};
 use rsdns::{
     net::conf::ResolverConf,
-    protocol::{message::reader::MessageReader, Header, QType},
+    protocol::{constants::QType, message::reader::MessageReader, Header},
 };
 use std::{
     fmt::Write,

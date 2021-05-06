@@ -3,7 +3,7 @@ use crate::{
       {{ crate_module_name }}::ResolverImpl,
       conf::ResolverConf,
   },
-  protocol::{QType, QClass},
+  protocol::constants::{QType, QClass},
   Result
 };
 

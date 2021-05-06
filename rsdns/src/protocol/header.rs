@@ -68,7 +68,7 @@ impl Reader<Header> for Cursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol::{OpCode, ResponseCode};
+    use crate::protocol::constants::{OpCode, ResponseCode};
     use rand::seq::IteratorRandom;
     use strum::IntoEnumIterator;
 

@@ -1,3 +1,5 @@
+//! DNS protocol constant definitions.
+
 mod opcode;
 mod qclass;
 mod qtype;

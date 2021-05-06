@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{bytes::WCursor, DomainName, DOMAIN_NAME_MAX_LENGTH},
+    protocol::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, DomainName},
     Error, Result,
 };
 

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use rsdns::{
     net::conf::{ProtocolStrategy, Recursion, ResolverConf},
-    protocol::QType,
+    protocol::constants::QType,
 };
 #[cfg(unix)]
 use std::io::{BufRead, BufReader};

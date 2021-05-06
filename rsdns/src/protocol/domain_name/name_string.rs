@@ -1,5 +1,5 @@
 use crate::{
-    protocol::{DomainName, DOMAIN_NAME_MAX_LENGTH},
+    protocol::{constants::DOMAIN_NAME_MAX_LENGTH, DomainName},
     Error, Result,
 };
 use std::{

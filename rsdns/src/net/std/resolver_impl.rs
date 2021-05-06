@@ -1,6 +1,6 @@
 use crate::{
     net::conf::ResolverConf,
-    protocol::{QClass, QType},
+    protocol::constants::{QClass, QType},
     Result,
 };
 
