@@ -9,6 +9,8 @@ pub mod constants;
 mod domain_name;
 mod error;
 pub mod message;
+pub mod records;
+
 #[cfg(any(
     feature = "net-async-std",
     feature = "net-smol",

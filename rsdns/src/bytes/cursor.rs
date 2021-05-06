@@ -7,7 +7,6 @@ pub struct Cursor<'a> {
     orig: Option<&'a [u8]>,
 }
 
-#[allow(dead_code)]
 impl<'a> Cursor<'a> {
     #[inline]
     pub const fn new(buf: &[u8]) -> Cursor {

@@ -1,5 +1,6 @@
 //! Message handling.
 
+mod character_string;
 mod flags;
 mod header;
 mod query_writer;

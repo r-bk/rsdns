@@ -5,6 +5,10 @@ pub trait Reader<T> {
     fn read(&mut self) -> crate::Result<T>;
 }
 
+pub trait RrDataReader<T> {
+    fn read_rr_data(&mut self, rd_len: usize) -> crate::Result<T>;
+}
+
 impl Reader<Ipv4Addr> for Cursor<'_> {
     fn read(&mut self) -> Result<Ipv4Addr> {
         let ip4 = self.u32_be()?;
