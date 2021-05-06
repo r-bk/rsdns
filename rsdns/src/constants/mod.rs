@@ -21,11 +21,6 @@ pub use section::*;
 /// [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
 pub const DOMAIN_NAME_MAX_LENGTH: usize = 255;
 
-/// CharacterString max length.
-///
-/// [RFC 1035 ~3.3](https://tools.ietf.org/html/rfc1035#section-3.3)
-pub const CHARACTER_STRING_MAX_LENGTH: usize = 255;
-
 /// DomainName label max length.
 ///
 /// [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
