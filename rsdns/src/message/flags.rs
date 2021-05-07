@@ -1,5 +1,6 @@
 use crate::{
     constants::{OpCode, ResponseCode},
+    message::MessageType,
     Result,
 };
 use std::convert::TryFrom;
@@ -40,18 +41,14 @@ impl Flags {
         self.flags
     }
 
-    /// Returns the **QR** flag.
-    ///
-    /// The flag indicates if the message is a **QUERY** (`false`) or a **RESPONSE** (`true`).
-    pub fn qr(self) -> bool {
-        get_bit!(self.flags, 15)
+    /// Returns the message type.
+    pub fn message_type(self) -> MessageType {
+        (get_bit!(self.flags, 15)).into()
     }
 
-    /// Sets the **QR** flag.
-    ///
-    /// **QUERY** = `false`
-    /// **RESPONSE** = `true`
-    pub fn set_qr(&mut self, value: bool) -> Self {
+    /// Sets the message type.
+    pub fn set_message_type(&mut self, message_type: MessageType) -> Self {
+        let value: bool = message_type.into();
         set_bit!(self.flags, 15, value);
         *self
     }
@@ -190,11 +187,22 @@ mod tests {
 
     #[test]
     fn test_bool_flags() {
-        test_bool_flag(Flags::qr, Flags::set_qr, 0b1000_0000_0000_0000);
         test_bool_flag(Flags::aa, Flags::set_aa, 0b0000_0100_0000_0000);
         test_bool_flag(Flags::tc, Flags::set_tc, 0b0000_0010_0000_0000);
         test_bool_flag(Flags::rd, Flags::set_rd, 0b0000_0001_0000_0000);
         test_bool_flag(Flags::ra, Flags::set_ra, 0b0000_0000_1000_0000);
+    }
+
+    #[test]
+    fn test_message_flags() {
+        let mut f = Flags::default();
+        assert_eq!(f.message_type(), MessageType::Query);
+
+        f.set_message_type(MessageType::Response);
+        assert_eq!(f.message_type(), MessageType::Response);
+
+        f.set_message_type(MessageType::Query);
+        assert_eq!(f.message_type(), MessageType::Query);
     }
 
     #[test]

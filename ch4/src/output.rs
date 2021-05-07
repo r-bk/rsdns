@@ -3,7 +3,7 @@ use anyhow::Result;
 use chrono::{DateTime, Local};
 use rsdns::{
     constants::QType,
-    message::{reader::MessageReader, Header},
+    message::{reader::MessageReader, Header, MessageType},
     resolvers::conf::ResolverConf,
 };
 use std::{
@@ -115,7 +115,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
     fn format_flags(header: &Header) -> String {
         let mut flags_str = Vec::new();
 
-        if header.flags.qr() {
+        if header.flags.message_type() == MessageType::Response {
             flags_str.push("qr");
         }
         if header.flags.aa() {

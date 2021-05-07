@@ -75,7 +75,7 @@ mod tests {
         let mut rng = rand::thread_rng();
 
         let flags = Flags::new()
-            .set_qr(rand::random())
+            .set_message_type(rand::random::<bool>().into())
             .set_aa(rand::random())
             .set_ra(rand::random())
             .set_rd(rand::random())
