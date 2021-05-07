@@ -1,4 +1,4 @@
-/// DNS message sections.
+/// Message section.
 #[derive(Copy, Clone, Debug, Eq, Ord, PartialOrd, PartialEq, Hash)]
 pub enum Section {
     /// The header section.
