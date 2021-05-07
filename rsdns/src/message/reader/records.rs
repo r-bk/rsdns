@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::{RClass, RType, Section},
+    constants::{MessageSection, RClass, RType},
     message::{reader::SectionTracker, Header},
     records::{self, ResourceRecord},
     Error, Result,
@@ -34,7 +34,7 @@ impl<'a> Records<'a> {
         }
     }
 
-    fn read(&mut self) -> Option<Result<(Section, ResourceRecord)>> {
+    fn read(&mut self) -> Option<Result<(MessageSection, ResourceRecord)>> {
         if !self.err {
             let res = self.read_impl();
             if res.is_ok() {
@@ -50,7 +50,7 @@ impl<'a> Records<'a> {
         }
     }
 
-    fn read_impl(&mut self) -> Result<(Section, ResourceRecord)> {
+    fn read_impl(&mut self) -> Result<(MessageSection, ResourceRecord)> {
         loop {
             let section = self.section_tracker.next_section();
 
@@ -113,7 +113,7 @@ impl<'a> Records<'a> {
 }
 
 impl Iterator for Records<'_> {
-    type Item = Result<(Section, ResourceRecord)>;
+    type Item = Result<(MessageSection, ResourceRecord)>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {

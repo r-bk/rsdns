@@ -1,6 +1,6 @@
 /// Message section.
 #[derive(Copy, Clone, Debug, Eq, Ord, PartialOrd, PartialEq, Hash)]
-pub enum Section {
+pub enum MessageSection {
     /// The header section.
     Header = 0,
     /// The question section.

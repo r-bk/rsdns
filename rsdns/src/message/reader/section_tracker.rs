@@ -1,4 +1,4 @@
-use crate::{constants::Section, message::Header, Error, Result};
+use crate::{constants::MessageSection, message::Header, Error, Result};
 
 #[derive(Debug, Clone, Default)]
 pub struct SectionTracker {
@@ -20,24 +20,24 @@ impl SectionTracker {
         }
     }
 
-    pub fn next_section(&self) -> Option<Section> {
+    pub fn next_section(&self) -> Option<MessageSection> {
         if self.an_read < self.an_count {
-            Some(Section::Answer)
+            Some(MessageSection::Answer)
         } else if self.ns_read < self.ns_count {
-            Some(Section::Authority)
+            Some(MessageSection::Authority)
         } else if self.ar_read < self.ar_count {
-            Some(Section::Additional)
+            Some(MessageSection::Additional)
         } else {
             None
         }
     }
 
-    pub fn section_read(&mut self, section: Section) -> Result<()> {
+    pub fn section_read(&mut self, section: MessageSection) -> Result<()> {
         match section {
-            Section::Answer => self.an_read += 1,
-            Section::Authority => self.ns_read += 1,
-            Section::Additional => self.ar_read += 1,
-            _ => return Err(Error::BadSection(section)),
+            MessageSection::Answer => self.an_read += 1,
+            MessageSection::Authority => self.ns_read += 1,
+            MessageSection::Additional => self.ar_read += 1,
+            _ => return Err(Error::BadMessageSection(section)),
         }
         Ok(())
     }
