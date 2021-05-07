@@ -97,6 +97,8 @@ impl TryFrom<u16> for QType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::constants::RType;
+    use std::str::FromStr;
     use strum::IntoEnumIterator;
 
     #[test]
@@ -106,5 +108,20 @@ mod tests {
         }
 
         assert!(matches!(QType::try_from(0), Err(Error::UnknownQType(0))));
+    }
+
+    #[test]
+    fn test_rtype_compatibility() {
+        for qtype in QType::iter() {
+            match qtype {
+                QType::AXFR | QType::MAILB | QType::MAILA | QType::ANY => continue,
+                _ => {
+                    assert_eq!(
+                        qtype as u16,
+                        RType::from_str(qtype.as_str()).unwrap() as u16
+                    );
+                }
+            }
+        }
     }
 }

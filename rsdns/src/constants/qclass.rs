@@ -47,6 +47,8 @@ impl TryFrom<u16> for QClass {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::constants::RClass;
+    use std::str::FromStr;
     use strum::IntoEnumIterator;
 
     #[test]
@@ -56,5 +58,18 @@ mod tests {
         }
 
         assert!(matches!(QClass::try_from(0), Err(Error::UnknownQClass(0))));
+    }
+
+    #[test]
+    fn test_rclass_compatibility() {
+        for qclass in QClass::iter() {
+            if qclass == QClass::ANY {
+                continue;
+            }
+            assert_eq!(
+                qclass as u16,
+                RClass::from_str(qclass.as_str()).unwrap() as u16
+            );
+        }
     }
 }
