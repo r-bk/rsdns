@@ -53,6 +53,18 @@ impl Flags {
         *self
     }
 
+    /// Checks if the message type is [Query](MessageType::Query).
+    #[inline]
+    pub fn is_query(&self) -> bool {
+        self.message_type() == MessageType::Query
+    }
+
+    /// Checks if the message type is [Response](MessageType::Response).
+    #[inline]
+    pub fn is_response(&self) -> bool {
+        self.message_type() == MessageType::Response
+    }
+
     /// Returns the message **OPCODE**.
     pub fn opcode(self) -> Result<OpCode> {
         OpCode::try_from(((self.flags & 0b0111_1000_0000_0000) >> 11) as u8)
