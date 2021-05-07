@@ -109,7 +109,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
         if self.udp_first() {
             let (size, flags) = self.udp_exchange_loop().await?;
 
-            if flags.tc() && self.tcp_allowed() {
+            if flags.truncated() && self.tcp_allowed() {
                 self.tcp_exchange().await
             } else {
                 Ok(size)

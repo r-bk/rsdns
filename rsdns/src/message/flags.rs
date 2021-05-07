@@ -77,31 +77,30 @@ impl Flags {
         *self
     }
 
-    /// Returns the **AA** flag.
+    /// Returns the authoritative answer flag.
     ///
-    /// AA - authoritative answer.
-    /// This bit is valid in responses, and specifies that
+    /// This flag is valid in responses, and specifies that
     /// the responding name server is an authority for the domain name in question section.
-    pub fn aa(self) -> bool {
+    pub fn authoritative_answer(self) -> bool {
         get_bit!(self.flags, 10)
     }
 
-    /// Sets the **AA** flag.
-    pub fn set_aa(&mut self, value: bool) -> Self {
+    /// Sets the authoritative answer flag.
+    pub fn set_authoritative_answer(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 10, value);
         *self
     }
 
-    /// Returns the **TC** flag.
+    /// Returns the truncated flag.
     ///
-    /// TC specifies that the message was truncated due to length greater than that permitted on the
-    /// transmission channel.
-    pub fn tc(self) -> bool {
+    /// This flag specifies that the message was truncated due to length greater than that
+    /// permitted on the transmission channel.
+    pub fn truncated(self) -> bool {
         get_bit!(self.flags, 9)
     }
 
-    /// Sets the TC flag.
-    pub fn set_tc(&mut self, value: bool) -> Self {
+    /// Sets the truncated flag.
+    pub fn set_truncated(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 9, value);
         *self
     }
@@ -199,8 +198,16 @@ mod tests {
 
     #[test]
     fn test_bool_flags() {
-        test_bool_flag(Flags::aa, Flags::set_aa, 0b0000_0100_0000_0000);
-        test_bool_flag(Flags::tc, Flags::set_tc, 0b0000_0010_0000_0000);
+        test_bool_flag(
+            Flags::authoritative_answer,
+            Flags::set_authoritative_answer,
+            0b0000_0100_0000_0000,
+        );
+        test_bool_flag(
+            Flags::truncated,
+            Flags::set_truncated,
+            0b0000_0010_0000_0000,
+        );
         test_bool_flag(Flags::rd, Flags::set_rd, 0b0000_0001_0000_0000);
         test_bool_flag(Flags::ra, Flags::set_ra, 0b0000_0000_1000_0000);
     }

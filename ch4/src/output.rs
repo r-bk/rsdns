@@ -118,10 +118,10 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
         if header.flags.is_response() {
             flags_str.push("qr");
         }
-        if header.flags.aa() {
+        if header.flags.authoritative_answer() {
             flags_str.push("aa");
         }
-        if header.flags.tc() {
+        if header.flags.truncated() {
             flags_str.push("tc");
         }
         if header.flags.rd() {
