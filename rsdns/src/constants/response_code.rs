@@ -41,7 +41,7 @@ impl TryFrom<u8> for ResponseCode {
             3 => ResponseCode::NXDOMAIN,
             4 => ResponseCode::NOTIMP,
             5 => ResponseCode::REFUSED,
-            _ => return Err(Error::UnknownResponseCode(value)),
+            _ => return Err(Error::ReservedResponseCode(value)),
         };
 
         Ok(me)
@@ -61,7 +61,7 @@ mod tests {
 
         assert!(matches!(
             ResponseCode::try_from(128),
-            Err(Error::UnknownResponseCode(128))
+            Err(Error::ReservedResponseCode(128))
         ));
     }
 }

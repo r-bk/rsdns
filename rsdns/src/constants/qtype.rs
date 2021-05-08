@@ -87,7 +87,7 @@ impl TryFrom<u16> for QType {
             253 => QType::MAILB,
             254 => QType::MAILA,
             255 => QType::ANY,
-            _ => return Err(Error::UnknownQType(value)),
+            _ => return Err(Error::ReservedQType(value)),
         };
 
         Ok(me)
@@ -107,7 +107,7 @@ mod tests {
             assert_eq!(qtype, QType::try_from(qtype as u16).unwrap());
         }
 
-        assert!(matches!(QType::try_from(0), Err(Error::UnknownQType(0))));
+        assert!(matches!(QType::try_from(0), Err(Error::ReservedQType(0))));
     }
 
     #[test]

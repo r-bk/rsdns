@@ -32,7 +32,7 @@ impl TryFrom<u8> for OpCode {
             0 => OpCode::QUERY,
             1 => OpCode::IQUERY,
             2 => OpCode::STATUS,
-            _ => return Err(Error::UnknownOpCode(value)),
+            _ => return Err(Error::ReservedOpCode(value)),
         };
 
         Ok(me)
@@ -52,7 +52,7 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from(128),
-            Err(Error::UnknownOpCode(128))
+            Err(Error::ReservedOpCode(128))
         ));
     }
 }

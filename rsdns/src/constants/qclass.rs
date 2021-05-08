@@ -37,7 +37,7 @@ impl TryFrom<u16> for QClass {
             3 => QClass::CH,
             4 => QClass::HS,
             255 => QClass::ANY,
-            _ => return Err(Error::UnknownQClass(value)),
+            _ => return Err(Error::ReservedQClass(value)),
         };
 
         Ok(me)
@@ -57,7 +57,7 @@ mod tests {
             assert_eq!(qclass, QClass::try_from(qclass as u16).unwrap());
         }
 
-        assert!(matches!(QClass::try_from(0), Err(Error::UnknownQClass(0))));
+        assert!(matches!(QClass::try_from(0), Err(Error::ReservedQClass(0))));
     }
 
     #[test]

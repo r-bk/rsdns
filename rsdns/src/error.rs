@@ -4,18 +4,18 @@ use crate::constants::MessageSection;
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("unknown resource record type: {0}")]
-    UnknownRType(u16),
-    #[error("unknown QTYPE: {0}")]
-    UnknownQType(u16),
-    #[error("unknown resource record class: {0}")]
-    UnknownRClass(u16),
-    #[error("unknown QCLASS: {0}")]
-    UnknownQClass(u16),
-    #[error("unknown OPCODE: {0}")]
-    UnknownOpCode(u8),
-    #[error("unknown response code: {0}")]
-    UnknownResponseCode(u8),
+    #[error("reserved resource record type: {0}")]
+    ReservedRType(u16),
+    #[error("reserved query type: {0}")]
+    ReservedQType(u16),
+    #[error("reserved resource record class: {0}")]
+    ReservedRClass(u16),
+    #[error("reserved query class: {0}")]
+    ReservedQClass(u16),
+    #[error("reserved query opcode: {0}")]
+    ReservedOpCode(u8),
+    #[error("reserved response code: {0}")]
+    ReservedResponseCode(u8),
     #[error("io error")]
     IoError(#[from] std::io::Error),
     #[error("domain name label invalid character")]

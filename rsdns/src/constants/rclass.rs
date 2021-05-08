@@ -36,7 +36,7 @@ impl TryFrom<u16> for RClass {
             2 => RClass::CS,
             3 => RClass::CH,
             4 => RClass::HS,
-            _ => return Err(Error::UnknownRClass(value)),
+            _ => return Err(Error::ReservedRClass(value)),
         };
 
         Ok(me)
@@ -54,6 +54,6 @@ mod tests {
             assert_eq!(rr_class, RClass::try_from(rr_class as u16).unwrap());
         }
 
-        assert!(matches!(RClass::try_from(0), Err(Error::UnknownRClass(0))));
+        assert!(matches!(RClass::try_from(0), Err(Error::ReservedRClass(0))));
     }
 }

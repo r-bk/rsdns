@@ -74,7 +74,7 @@ impl TryFrom<u16> for RType {
             15 => RType::MX,
             16 => RType::TXT,
             28 => RType::AAAA,
-            _ => return Err(Error::UnknownRType(value)),
+            _ => return Err(Error::ReservedRType(value)),
         };
 
         Ok(me)
@@ -92,6 +92,6 @@ mod tests {
             assert_eq!(rr_type, RType::try_from(rr_type as u16).unwrap());
         }
 
-        assert!(matches!(RType::try_from(0), Err(Error::UnknownRType(0))));
+        assert!(matches!(RType::try_from(0), Err(Error::ReservedRType(0))));
     }
 }

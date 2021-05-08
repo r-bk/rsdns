@@ -251,7 +251,7 @@ mod tests {
                     bits: (i << 11) as u16,
                 };
                 match f.opcode() {
-                    Err(Error::UnknownOpCode(v)) => assert_eq!(v, i as u8),
+                    Err(Error::ReservedOpCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }
@@ -276,7 +276,7 @@ mod tests {
             if ResponseCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { bits: i as u16 };
                 match f.response_code() {
-                    Err(Error::UnknownResponseCode(v)) => assert_eq!(v, i as u8),
+                    Err(Error::ReservedResponseCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }
