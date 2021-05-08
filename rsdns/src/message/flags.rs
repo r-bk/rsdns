@@ -21,10 +21,10 @@ macro_rules! set_bit {
     };
 }
 
-/// DNS message header flags.
+/// Message flags.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(Copy, Clone, Default, Eq, PartialEq)]
+#[derive(Copy, Clone, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Flags {
     bits: u16,
 }
