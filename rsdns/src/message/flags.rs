@@ -114,17 +114,16 @@ impl Flags {
         *self
     }
 
-    /// Returns the RA flag.
+    /// Returns the recursion available flag.
     ///
-    /// RA - recursion available.
     /// This flag is set or cleared in a response, and denotes whether recursive query support is
     /// available in the name server.
-    pub fn ra(self) -> bool {
+    pub fn recursion_available(self) -> bool {
         get_bit!(self.bits, 7)
     }
 
-    /// Sets the RA flag.
-    pub fn set_ra(&mut self, value: bool) -> Self {
+    /// Sets the recursion available flag.
+    pub fn set_recursion_available(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 7, value);
         *self
     }
@@ -214,7 +213,11 @@ mod tests {
             Flags::set_recursion_desired,
             0b0000_0001_0000_0000,
         );
-        test_bool_flag(Flags::ra, Flags::set_ra, 0b0000_0000_1000_0000);
+        test_bool_flag(
+            Flags::recursion_available,
+            Flags::set_recursion_available,
+            0b0000_0000_1000_0000,
+        );
     }
 
     #[test]

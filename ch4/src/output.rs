@@ -127,7 +127,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
         if header.flags.recursion_desired() {
             flags_str.push("rd");
         }
-        if header.flags.ra() {
+        if header.flags.recursion_available() {
             flags_str.push("ra");
         }
 

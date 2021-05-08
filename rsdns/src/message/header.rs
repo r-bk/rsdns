@@ -77,7 +77,7 @@ mod tests {
         let flags = Flags::new()
             .set_message_type(rand::random::<bool>().into())
             .set_authoritative_answer(rand::random())
-            .set_ra(rand::random())
+            .set_recursion_available(rand::random())
             .set_recursion_desired(rand::random())
             .set_truncated(rand::random())
             .set_opcode(OpCode::iter().choose(&mut rng).unwrap())
