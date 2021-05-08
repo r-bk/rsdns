@@ -1,7 +1,6 @@
 use crate::{
     constants::{OpCode, ResponseCode},
-    message::{MessageType, ParsedOpCode},
-    Result,
+    message::{MessageType, ParsedOpCode, ParsedResponseCode},
 };
 use std::convert::TryFrom;
 
@@ -147,11 +146,13 @@ impl Flags {
     }
 
     /// Returns the response code.
-    ///
-    /// [`Err(ReservedResponseCode)`](crate::Error::ReservedResponseCode) is returned on unsupported
-    /// response code.
-    pub fn response_code(self) -> Result<ResponseCode> {
-        ResponseCode::try_from((self.bits & 0b0000_0000_0000_1111) as u8)
+    pub fn response_code(self) -> ParsedResponseCode {
+        let bits = (self.bits & 0b0000_0000_0000_1111) as u8;
+        if let Ok(response_code) = ResponseCode::try_from(bits) {
+            ParsedResponseCode::Some(response_code)
+        } else {
+            ParsedResponseCode::Reserved(bits)
+        }
     }
 
     /// Sets the response code.
@@ -184,7 +185,6 @@ impl std::convert::From<Flags> for u16 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Error;
     use strum::IntoEnumIterator;
 
     type FlagGet = fn(Flags) -> bool;
@@ -287,7 +287,7 @@ mod tests {
             if ResponseCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { bits: i as u16 };
                 match f.response_code() {
-                    Err(Error::ReservedResponseCode(v)) => assert_eq!(v, i as u8),
+                    ParsedResponseCode::Reserved(v) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }

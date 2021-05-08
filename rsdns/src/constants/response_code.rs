@@ -5,7 +5,9 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// Query response code.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash)]
+#[derive(
+    Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
+)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum ResponseCode {
     /// No error condition

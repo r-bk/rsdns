@@ -67,7 +67,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
             &mut output,
             ";; ->>HEADER<<- opcode: {}, status: {}, id: {}",
             header.flags.opcode().as_str(),
-            header.flags.response_code()?.as_str(),
+            header.flags.response_code().as_str(),
             header.id,
         )?;
         writeln!(
