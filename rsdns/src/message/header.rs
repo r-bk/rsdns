@@ -5,10 +5,10 @@ use crate::{
     Error, Result,
 };
 
-/// DNS message header.
+/// Message header.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Header {
     /// An identifier assigned by the program that generates any kind of query.
     /// This identifier is copied to the corresponding reply and can be used by the requester to
