@@ -60,12 +60,14 @@ impl Flags {
         self.message_type() == MessageType::Response
     }
 
-    /// Returns the message **OPCODE**.
+    /// Returns the message opcode.
+    ///
+    /// [`Err(ReservedOpCode)`](crate::Error::ReservedOpCode) is returned on unsupported opcode.
     pub fn opcode(self) -> Result<OpCode> {
         OpCode::try_from(((self.bits & 0b0111_1000_0000_0000) >> 11) as u8)
     }
 
-    /// Sets the **OPCODE**.
+    /// Sets the message opcode.
     pub fn set_opcode(&mut self, opcode: OpCode) -> Self {
         let mask = 0b0111_1000_0000_0000;
         self.bits = (self.bits & !mask) | (opcode as u16) << 11;
@@ -142,6 +144,9 @@ impl Flags {
     }
 
     /// Returns the response code.
+    ///
+    /// [`Err(ReservedResponseCode)`](crate::Error::ReservedResponseCode) is returned on unsupported
+    /// response code.
     pub fn response_code(self) -> Result<ResponseCode> {
         ResponseCode::try_from((self.bits & 0b0000_0000_0000_1111) as u8)
     }
