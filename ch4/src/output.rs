@@ -124,7 +124,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
         if header.flags.truncated() {
             flags_str.push("tc");
         }
-        if header.flags.rd() {
+        if header.flags.recursion_desired() {
             flags_str.push("rd");
         }
         if header.flags.ra() {

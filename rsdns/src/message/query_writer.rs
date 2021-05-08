@@ -8,7 +8,7 @@ use crate::{
 pub struct QueryWriter<'a> {
     wcursor: WCursor<'a>,
     id: u16,
-    rd: bool,
+    recursion_desired: bool,
 }
 
 #[allow(dead_code)]
@@ -17,7 +17,7 @@ impl<'a> QueryWriter<'a> {
         QueryWriter {
             wcursor: WCursor::new(buf),
             id: rand::random::<u16>(),
-            rd: recursion_desired,
+            recursion_desired,
         }
     }
 
@@ -29,7 +29,7 @@ impl<'a> QueryWriter<'a> {
     pub fn write(&mut self, qname: &str, qtype: QType, qclass: QClass) -> Result<usize> {
         let header = Header {
             id: self.id,
-            flags: Flags::new().set_rd(self.rd),
+            flags: Flags::new().set_recursion_desired(self.recursion_desired),
             qd_count: 1,
             ..Default::default()
         };
@@ -76,7 +76,7 @@ mod tests {
         let qc = QClass::try_from(c.u16_be().unwrap()).unwrap();
 
         assert_eq!(size, 34);
-        assert!(header.flags.rd());
+        assert!(header.flags.recursion_desired());
         assert_eq!(header.id, msg_id);
         assert_eq!(header.qd_count, 1);
         assert_eq!(dn.as_str(), "host.example.com.");

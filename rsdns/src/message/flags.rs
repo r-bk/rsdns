@@ -100,17 +100,16 @@ impl Flags {
         *self
     }
 
-    /// Returns the RD flag.
+    /// Returns the recursion desired flag.
     ///
-    /// RD - recursion desired.
-    /// This flag may be set in a query and is copied into the response. If RD is set, it directs
+    /// This flag may be set in a query and is copied into the response. When set, it directs
     /// the name server to pursue the query recursively. Recursive query support is optional.
-    pub fn rd(self) -> bool {
+    pub fn recursion_desired(self) -> bool {
         get_bit!(self.flags, 8)
     }
 
-    /// Sets the RD flag.
-    pub fn set_rd(&mut self, value: bool) -> Self {
+    /// Sets the recursion desired flag.
+    pub fn set_recursion_desired(&mut self, value: bool) -> Self {
         set_bit!(self.flags, 8, value);
         *self
     }
@@ -210,7 +209,11 @@ mod tests {
             Flags::set_truncated,
             0b0000_0010_0000_0000,
         );
-        test_bool_flag(Flags::rd, Flags::set_rd, 0b0000_0001_0000_0000);
+        test_bool_flag(
+            Flags::recursion_desired,
+            Flags::set_recursion_desired,
+            0b0000_0001_0000_0000,
+        );
         test_bool_flag(Flags::ra, Flags::set_ra, 0b0000_0000_1000_0000);
     }
 
