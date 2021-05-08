@@ -36,11 +36,6 @@ impl Flags {
         Flags { flags: 0 }
     }
 
-    /// Converts to the underlying primitive type.
-    pub fn as_u16(self) -> u16 {
-        self.flags
-    }
-
     /// Returns the message type.
     pub fn message_type(self) -> MessageType {
         (get_bit!(self.flags, 15)).into()
@@ -173,6 +168,13 @@ impl std::convert::From<u16> for Flags {
     }
 }
 
+impl std::convert::From<Flags> for u16 {
+    #[inline]
+    fn from(f: Flags) -> u16 {
+        f.flags
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -184,16 +186,16 @@ mod tests {
 
     fn test_bool_flag(get: FlagGet, set: FlagSet, mask: u16) {
         let mut f = Flags::default();
-        assert_eq!(f.as_u16(), 0);
+        assert_eq!(u16::from(f), 0);
         assert_eq!(get(f), false);
 
         set(&mut f, true);
         assert_eq!(get(f), true);
-        assert_eq!(f.as_u16(), mask);
+        assert_eq!(u16::from(f), mask);
 
         set(&mut f, false);
         assert_eq!(get(f), false);
-        assert_eq!(f.as_u16(), 0);
+        assert_eq!(u16::from(f), 0);
     }
 
     #[test]
@@ -233,11 +235,11 @@ mod tests {
             assert_eq!(f.opcode().unwrap(), opcode);
 
             let mut f = Flags::default();
-            assert_eq!(f.as_u16(), 0);
+            assert_eq!(u16::from(f), 0);
 
             f.set_opcode(opcode);
             assert_eq!(f.opcode().unwrap(), opcode);
-            assert_eq!((f.as_u16() & 0b0111_1000_0000_0000) >> 11, opcode as u16);
+            assert_eq!((u16::from(f) & 0b0111_1000_0000_0000) >> 11, opcode as u16);
         }
 
         for i in 0..16 {
@@ -262,11 +264,11 @@ mod tests {
             assert_eq!(f.response_code().unwrap(), rcode);
 
             let mut f = Flags::default();
-            assert_eq!(f.as_u16(), 0);
+            assert_eq!(u16::from(f), 0);
 
             f.set_response_code(rcode);
             assert_eq!(f.response_code().unwrap(), rcode);
-            assert_eq!(f.as_u16() & 0b0000_0000_0000_1111, rcode as u16);
+            assert_eq!(u16::from(f) & 0b0000_0000_0000_1111, rcode as u16);
         }
 
         for i in 0..16 {
@@ -299,7 +301,7 @@ mod tests {
 
             f.set_z(i as u8);
             assert_eq!(f.z(), (i % 8) as u8);
-            assert_eq!(f.as_u16(), ((i % 8) << 4) as u16);
+            assert_eq!(u16::from(f), ((i % 8) << 4) as u16);
         }
     }
 }

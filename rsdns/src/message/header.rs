@@ -31,7 +31,7 @@ impl Writer<Header> for WCursor<'_> {
         if self.len() >= HEADER_LENGTH {
             unsafe {
                 self.u16_be_unchecked(h.id);
-                self.u16_be_unchecked(h.flags.as_u16());
+                self.u16_be_unchecked(h.flags.into());
                 self.u16_be_unchecked(h.qd_count);
                 self.u16_be_unchecked(h.an_count);
                 self.u16_be_unchecked(h.ns_count);
