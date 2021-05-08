@@ -27,24 +27,24 @@ macro_rules! set_bit {
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Default, Eq, PartialEq)]
 pub struct Flags {
-    flags: u16,
+    bits: u16,
 }
 
 impl Flags {
     /// Creates new (zero) Flags.
     pub fn new() -> Flags {
-        Flags { flags: 0 }
+        Flags { bits: 0 }
     }
 
     /// Returns the message type.
     pub fn message_type(self) -> MessageType {
-        (get_bit!(self.flags, 15)).into()
+        (get_bit!(self.bits, 15)).into()
     }
 
     /// Sets the message type.
     pub fn set_message_type(&mut self, message_type: MessageType) -> Self {
         let value: bool = message_type.into();
-        set_bit!(self.flags, 15, value);
+        set_bit!(self.bits, 15, value);
         *self
     }
 
@@ -62,13 +62,13 @@ impl Flags {
 
     /// Returns the message **OPCODE**.
     pub fn opcode(self) -> Result<OpCode> {
-        OpCode::try_from(((self.flags & 0b0111_1000_0000_0000) >> 11) as u8)
+        OpCode::try_from(((self.bits & 0b0111_1000_0000_0000) >> 11) as u8)
     }
 
     /// Sets the **OPCODE**.
     pub fn set_opcode(&mut self, opcode: OpCode) -> Self {
         let mask = 0b0111_1000_0000_0000;
-        self.flags = (self.flags & !mask) | (opcode as u16) << 11;
+        self.bits = (self.bits & !mask) | (opcode as u16) << 11;
         *self
     }
 
@@ -77,12 +77,12 @@ impl Flags {
     /// This flag is valid in responses, and specifies that
     /// the responding name server is an authority for the domain name in question section.
     pub fn authoritative_answer(self) -> bool {
-        get_bit!(self.flags, 10)
+        get_bit!(self.bits, 10)
     }
 
     /// Sets the authoritative answer flag.
     pub fn set_authoritative_answer(&mut self, value: bool) -> Self {
-        set_bit!(self.flags, 10, value);
+        set_bit!(self.bits, 10, value);
         *self
     }
 
@@ -91,12 +91,12 @@ impl Flags {
     /// This flag specifies that the message was truncated due to length greater than that
     /// permitted on the transmission channel.
     pub fn truncated(self) -> bool {
-        get_bit!(self.flags, 9)
+        get_bit!(self.bits, 9)
     }
 
     /// Sets the truncated flag.
     pub fn set_truncated(&mut self, value: bool) -> Self {
-        set_bit!(self.flags, 9, value);
+        set_bit!(self.bits, 9, value);
         *self
     }
 
@@ -105,12 +105,12 @@ impl Flags {
     /// This flag may be set in a query and is copied into the response. When set, it directs
     /// the name server to pursue the query recursively. Recursive query support is optional.
     pub fn recursion_desired(self) -> bool {
-        get_bit!(self.flags, 8)
+        get_bit!(self.bits, 8)
     }
 
     /// Sets the recursion desired flag.
     pub fn set_recursion_desired(&mut self, value: bool) -> Self {
-        set_bit!(self.flags, 8, value);
+        set_bit!(self.bits, 8, value);
         *self
     }
 
@@ -120,12 +120,12 @@ impl Flags {
     /// This flag is set or cleared in a response, and denotes whether recursive query support is
     /// available in the name server.
     pub fn ra(self) -> bool {
-        get_bit!(self.flags, 7)
+        get_bit!(self.bits, 7)
     }
 
     /// Sets the RA flag.
     pub fn set_ra(&mut self, value: bool) -> Self {
-        set_bit!(self.flags, 7, value);
+        set_bit!(self.bits, 7, value);
         *self
     }
 
@@ -133,44 +133,44 @@ impl Flags {
     ///
     /// Z - reserved for future use
     pub fn z(self) -> u8 {
-        (self.flags >> 4) as u8
+        (self.bits >> 4) as u8
     }
 
     /// Sets the Z field.
     pub fn set_z(&mut self, value: u8) -> Self {
-        self.flags |= ((value & 0b0000_0111) << 4) as u16;
+        self.bits |= ((value & 0b0000_0111) << 4) as u16;
         *self
     }
 
     /// Returns the response code.
     pub fn response_code(self) -> Result<ResponseCode> {
-        ResponseCode::try_from((self.flags & 0b0000_0000_0000_1111) as u8)
+        ResponseCode::try_from((self.bits & 0b0000_0000_0000_1111) as u8)
     }
 
     /// Sets the response code.
     pub fn set_response_code(&mut self, rcode: ResponseCode) -> Self {
-        self.flags |= rcode as u16;
+        self.bits |= rcode as u16;
         *self
     }
 }
 
 impl std::fmt::Debug for Flags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:#b}", self.flags)
+        write!(f, "{:#b}", self.bits)
     }
 }
 
 impl std::convert::From<u16> for Flags {
     #[inline]
     fn from(flags: u16) -> Flags {
-        Flags { flags }
+        Flags { bits: flags }
     }
 }
 
 impl std::convert::From<Flags> for u16 {
     #[inline]
     fn from(f: Flags) -> u16 {
-        f.flags
+        f.bits
     }
 }
 
@@ -233,7 +233,7 @@ mod tests {
     fn test_opcode() {
         for opcode in OpCode::iter() {
             let f = Flags {
-                flags: (opcode as u16) << 11,
+                bits: (opcode as u16) << 11,
             };
             assert_eq!(f.opcode().unwrap(), opcode);
 
@@ -248,7 +248,7 @@ mod tests {
         for i in 0..16 {
             if OpCode::iter().find(|oc| *oc as u16 == i).is_none() {
                 let f = Flags {
-                    flags: (i << 11) as u16,
+                    bits: (i << 11) as u16,
                 };
                 match f.opcode() {
                     Err(Error::UnknownOpCode(v)) => assert_eq!(v, i as u8),
@@ -261,9 +261,7 @@ mod tests {
     #[test]
     fn test_response_code() {
         for rcode in ResponseCode::iter() {
-            let f = Flags {
-                flags: rcode as u16,
-            };
+            let f = Flags { bits: rcode as u16 };
             assert_eq!(f.response_code().unwrap(), rcode);
 
             let mut f = Flags::default();
@@ -276,7 +274,7 @@ mod tests {
 
         for i in 0..16 {
             if ResponseCode::iter().find(|rc| *rc as u16 == i).is_none() {
-                let f = Flags { flags: i as u16 };
+                let f = Flags { bits: i as u16 };
                 match f.response_code() {
                     Err(Error::UnknownResponseCode(v)) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
@@ -288,7 +286,7 @@ mod tests {
     #[test]
     fn test_z() {
         for i in 0..8 {
-            let f = Flags { flags: i << 4 };
+            let f = Flags { bits: i << 4 };
             assert_eq!(f.z(), i as u8);
 
             let mut f = Flags::default();
