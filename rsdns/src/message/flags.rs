@@ -1,6 +1,6 @@
 use crate::{
     constants::{OpCode, ResponseCode},
-    message::MessageType,
+    message::{MessageType, ParsedOpCode},
     Result,
 };
 use std::convert::TryFrom;
@@ -61,10 +61,13 @@ impl Flags {
     }
 
     /// Returns the message opcode.
-    ///
-    /// [`Err(ReservedOpCode)`](crate::Error::ReservedOpCode) is returned on unsupported opcode.
-    pub fn opcode(self) -> Result<OpCode> {
-        OpCode::try_from(((self.bits & 0b0111_1000_0000_0000) >> 11) as u8)
+    pub fn opcode(self) -> ParsedOpCode {
+        let bits = ((self.bits & 0b0111_1000_0000_0000) >> 11) as u8;
+        if let Ok(opcode) = OpCode::try_from(bits) {
+            ParsedOpCode::Some(opcode)
+        } else {
+            ParsedOpCode::Reserved(bits)
+        }
     }
 
     /// Sets the message opcode.
@@ -259,7 +262,7 @@ mod tests {
                     bits: (i << 11) as u16,
                 };
                 match f.opcode() {
-                    Err(Error::ReservedOpCode(v)) => assert_eq!(v, i as u8),
+                    ParsedOpCode::Reserved(v) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }
