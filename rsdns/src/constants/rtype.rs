@@ -1,5 +1,8 @@
 use crate::Error;
-use std::convert::TryFrom;
+use std::{
+    convert::TryFrom,
+    fmt::{self, Display, Formatter},
+};
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Resource record type.
@@ -78,6 +81,12 @@ impl TryFrom<u16> for RType {
         };
 
         Ok(me)
+    }
+}
+
+impl Display for RType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 

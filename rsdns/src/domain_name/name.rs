@@ -6,6 +6,7 @@ use arrayvec::ArrayString;
 use std::{
     cmp::Ordering,
     convert::TryFrom,
+    fmt::{self, Display, Formatter},
     hash::{Hash, Hasher},
     str::FromStr,
 };
@@ -490,6 +491,12 @@ impl Hash for DomainName {
         for b in self.arr.as_bytes() {
             state.write_u8(b.to_ascii_lowercase());
         }
+    }
+}
+
+impl Display for DomainName {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 

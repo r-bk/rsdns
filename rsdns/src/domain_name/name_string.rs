@@ -2,6 +2,7 @@ use crate::{constants::DOMAIN_NAME_MAX_LENGTH, DomainName, Error, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
+    fmt::{self, Display, Formatter},
     hash::{Hash, Hasher},
     str::FromStr,
 };
@@ -356,6 +357,12 @@ impl Hash for DomainNameString {
         for b in self.str_.as_bytes() {
             state.write_u8(b.to_ascii_lowercase());
         }
+    }
+}
+
+impl Display for DomainNameString {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 

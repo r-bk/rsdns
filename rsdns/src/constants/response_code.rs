@@ -1,5 +1,8 @@
 use crate::Error;
-use std::convert::TryFrom;
+use std::{
+    convert::TryFrom,
+    fmt::{self, Display, Formatter},
+};
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query response code.
@@ -47,6 +50,12 @@ impl TryFrom<u8> for ResponseCode {
         };
 
         Ok(me)
+    }
+}
+
+impl Display for ResponseCode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 

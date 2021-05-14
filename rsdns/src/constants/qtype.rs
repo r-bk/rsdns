@@ -1,5 +1,8 @@
 use crate::Error;
-use std::convert::TryFrom;
+use std::{
+    convert::TryFrom,
+    fmt::{self, Display, Formatter},
+};
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query type.
@@ -93,6 +96,12 @@ impl TryFrom<u16> for QType {
         };
 
         Ok(me)
+    }
+}
+
+impl Display for QType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 
