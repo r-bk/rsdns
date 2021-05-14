@@ -101,9 +101,9 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
             writeln!(
                 &mut output,
                 ";{:dn_width$} {:qc_width$} {:qt_width$}",
-                q.qname.as_str(),
-                q.qclass.as_str(),
-                q.qtype.as_str(),
+                q.qname,
+                q.qclass,
+                q.qtype,
                 dn_width = dn_width,
                 qc_width = qc_width,
                 qt_width = qt_width,
@@ -138,7 +138,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
         println!(
             "; <<>> ch4 {} <<>> {} {}",
             env!("CH4_VERSION"),
-            self.qtype.as_str(),
+            self.qtype,
             self.qname,
         );
     }
