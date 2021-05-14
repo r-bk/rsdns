@@ -1,4 +1,5 @@
 use crate::constants::ResponseCode;
+use std::fmt::{self, Display, Formatter};
 
 /// Parsed [ResponseCode].
 ///
@@ -70,5 +71,11 @@ impl ParsedResponseCode {
             15 => "RCODE(15)",
             _ => "BAD_RCODE",
         }
+    }
+}
+
+impl Display for ParsedResponseCode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }

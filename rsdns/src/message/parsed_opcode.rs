@@ -1,4 +1,5 @@
 use crate::constants::OpCode;
+use std::fmt::{self, Display, Formatter};
 
 /// Parsed [OpCode].
 ///
@@ -72,5 +73,11 @@ impl ParsedOpCode {
             15 => "OPCODE(15)",
             _ => "BAD_OPCODE",
         }
+    }
+}
+
+impl Display for ParsedOpCode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
