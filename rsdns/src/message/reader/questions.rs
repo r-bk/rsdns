@@ -12,7 +12,7 @@ use crate::{bytes::Cursor, message::Question, Result};
 ///
 /// ```
 /// use rsdns::{
-///     message::{Question, reader::MessageReader},
+///     message::reader::MessageReader,
 ///     Result,
 /// };
 ///
@@ -21,12 +21,7 @@ use crate::{bytes::Cursor, message::Question, Result};
 ///
 ///     for question in message_reader.questions() {
 ///         let question = question?;
-///         println!(
-///             "{} {} {}",
-///             question.qname.as_str(),
-///             question.qtype as u16,
-///             question.qclass as u16
-///         );
+///         println!("{} {} {}", question.qname, question.qtype, question.qclass);
 ///     }
 ///
 ///     Ok(())
