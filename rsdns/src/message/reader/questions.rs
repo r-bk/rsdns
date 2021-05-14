@@ -1,6 +1,6 @@
 use crate::{bytes::Cursor, message::Question, Result};
 
-/// An iterator over the questions section of a DNS message.
+/// An iterator over the questions section of a message.
 ///
 /// Returns:
 ///
