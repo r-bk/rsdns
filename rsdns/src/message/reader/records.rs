@@ -7,7 +7,16 @@ use crate::{
 };
 use std::convert::TryFrom;
 
-/// An iterator over the RR sections of a DNS message.
+/// An iterator over the resource record sections of a message.
+///
+/// Records are read from the [Answer](MessageSection::Answer),
+/// [Authority](MessageSection::Authority) and [Additional](MessageSection::Additional)
+/// message sections sequentially in this order. On every iteration a single resource record
+/// is read and returned together with its corresponding section type.
+/// Unknown resource record types are silently skipped.
+///
+/// Memory is allocated only for those records which contain dynamically allocated fields in the
+/// record data.
 pub struct Records<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,
