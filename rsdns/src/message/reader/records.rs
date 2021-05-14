@@ -17,6 +17,12 @@ use std::convert::TryFrom;
 ///
 /// Memory is allocated only for those records which contain dynamically allocated fields in the
 /// record data.
+///
+/// Returns:
+///
+/// - `Some(Ok((`[`MessageSection`]`, `[`ResourceRecord`]`)))` - if a record was read successfully
+/// - `Some(Err(_))` - on error
+/// - `None` - if there is nothing left to read, or a previous call resulted in error
 pub struct Records<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,

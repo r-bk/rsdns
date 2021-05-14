@@ -4,7 +4,7 @@ use crate::{bytes::Cursor, message::Question, Result};
 ///
 /// Returns:
 ///
-/// - `Some(Ok(Question))` - if a question was read successfully
+/// - `Some(Ok(`[`Question`]`))` - if a question was read successfully
 /// - `Some(Err(_))` - on error
 /// - `None` - if there is nothing left to read, or a previous call resulted in error
 ///
