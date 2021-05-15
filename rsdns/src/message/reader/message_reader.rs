@@ -44,13 +44,13 @@ use crate::{
 ///             ResourceRecord::A(ref rec) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.data.address
+///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
 ///                 );
 ///             }
 ///             ResourceRecord::Aaaa(ref rec) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv6: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.data.address
+///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
 ///                 );
 ///             }
 ///             _ => println!("{:?} {:?}", section, record),

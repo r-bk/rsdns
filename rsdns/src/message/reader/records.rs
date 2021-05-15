@@ -35,7 +35,7 @@ macro_rules! rrr {
             name: $self.cursor.clone_with_pos($pos).read()?,
             rclass: $rclass,
             $ttl,
-            data: $self.cursor.read_rr_data($rdlen)?,
+            rdata: $self.cursor.read_rr_data($rdlen)?,
         })
     }};
 }
