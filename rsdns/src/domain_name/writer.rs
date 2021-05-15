@@ -1,9 +1,9 @@
-use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, DomainName, Error, Result};
+use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, DomainNameArr, Error, Result};
 
 impl WCursor<'_> {
     #[inline]
     fn write_label(&mut self, label: &[u8]) -> Result<()> {
-        DomainName::check_label_bytes(label)?;
+        DomainNameArr::check_label_bytes(label)?;
         if self.len() > label.len() {
             unsafe {
                 self.u8_unchecked(label.len() as u8);
@@ -63,7 +63,7 @@ impl WCursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{bytes::Cursor, DomainName, DomainNameReader};
+    use crate::{bytes::Cursor, DomainNameArr, DomainNameReader};
 
     #[test]
     fn test_write_good_flow() {
@@ -86,7 +86,7 @@ mod tests {
             let mut cursor = Cursor::new(&arr[..len]);
             let dn = DomainNameReader::read(&mut cursor).unwrap();
 
-            assert_eq!(dn, DomainName::from(ex.0).unwrap());
+            assert_eq!(dn, DomainNameArr::from(ex.0).unwrap());
         }
     }
 
@@ -127,7 +127,7 @@ mod tests {
 
             assert_eq!(
                 dn,
-                DomainName::from(&long_label[..long_label.len() - 2]).unwrap()
+                DomainNameArr::from(&long_label[..long_label.len() - 2]).unwrap()
             );
             assert_eq!(dn.len(), 254);
         }
