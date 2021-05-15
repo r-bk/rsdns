@@ -1,4 +1,4 @@
-//! Resource records' data.
+//! Resource record data.
 
 #[macro_use]
 mod macros;
