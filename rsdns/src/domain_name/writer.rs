@@ -1,9 +1,9 @@
-use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, DomainNameArr, Error, Result};
+use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, Error, Result};
 
 impl WCursor<'_> {
     #[inline]
     fn write_label(&mut self, label: &[u8]) -> Result<()> {
-        DomainNameArr::check_label_bytes(label)?;
+        super::check_label_bytes(label)?;
         if self.len() > label.len() {
             unsafe {
                 self.u8_unchecked(label.len() as u8);

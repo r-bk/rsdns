@@ -1,4 +1,4 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, DomainNameArr, Error, Result};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -7,10 +7,7 @@ use std::{
     str::FromStr,
 };
 
-/// A domain name string.
-///
-/// This is a dynamically allocated version of [`DomainNameArr`]. As opposed to `DomainNameArr`,
-/// which uses a static buffer for backing storage, `DomainNameString` uses `String`.
+/// A domain name backed by [String].
 ///
 /// `DomainNameString` stores the name in the form `example.com.`. The trailing period denotes
 /// the root zone.
@@ -84,7 +81,7 @@ impl DomainNameString {
     /// assert_eq!(dn.as_str(), "sub.example.com.");
     /// ```
     pub fn from(s: &str) -> Result<Self> {
-        DomainNameArr::check_name(s)?;
+        super::check_name(s)?;
 
         let mut dn = Self {
             // check_name verifies the length of the string,
@@ -209,7 +206,7 @@ impl DomainNameString {
     /// assert_eq!(dn.as_str(), "example.com.");
     /// ```
     pub fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
-        DomainNameArr::check_label_bytes(label)?;
+        super::check_label_bytes(label)?;
 
         // at this point the label is proven to be valid,
         // which means it is sound to convert it unchecked as a valid label is ASCII
@@ -243,7 +240,7 @@ impl DomainNameString {
     /// assert_eq!(dn.as_str(), "example.com.");
     /// ```
     pub fn push_label(&mut self, label: &str) -> Result<()> {
-        DomainNameArr::check_label(label)?;
+        super::check_label(label)?;
 
         if self.str_.len() + label.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
             return Err(Error::DomainNameTooLong);
