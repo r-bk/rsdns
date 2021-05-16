@@ -10,10 +10,12 @@ use std::{
 
 type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 
-/// A domain name backed by [ArrayString].
+/// A domain name backed by byte array.
 ///
 /// This struct implements the domain name using a fixed array of [`DOMAIN_NAME_MAX_LENGTH`] bytes.
-/// This is done in order to avoid dynamic memory allocation.
+/// It is used for parsing the resource record header. This allows parsing resource records
+/// that have no variable size data fields without dynamic memory allocations
+/// at all (e.g. A and AAAA).
 ///
 /// `DomainNameArr` stores the name in the form `example.com.`. The trailing period denotes the root
 /// zone.
@@ -37,7 +39,7 @@ pub struct DomainNameArr {
 }
 
 impl DomainNameArr {
-    /// Creates an empty `DomainNameArr`.
+    /// Creates an empty domain name.
     ///
     /// # Examples
     ///
@@ -54,7 +56,7 @@ impl DomainNameArr {
         Default::default()
     }
 
-    /// Creates the root `DomainNameArr`.
+    /// Creates the root domain name.
     ///
     /// # Examples
     ///
@@ -71,7 +73,7 @@ impl DomainNameArr {
         dn
     }
 
-    /// Creates a `DomainNameArr` from a string slice.
+    /// Creates a domain name from a string slice.
     ///
     /// # Examples
     ///
@@ -108,7 +110,7 @@ impl DomainNameArr {
         Ok(dn)
     }
 
-    /// Returns the `DomainNameArr` as a string slice.
+    /// Returns the domain name as a string slice.
     ///
     /// # Examples
     ///
@@ -129,7 +131,10 @@ impl DomainNameArr {
         self.arr.as_str()
     }
 
-    /// Returns the length of the `DomainNameArr`.
+    /// Returns the length of the domain name in bytes.
+    ///
+    /// Valid domain names are comprised of ASCII characters only.
+    /// Thus this value equals the number of characters in the domain name.
     ///
     /// # Examples
     ///
@@ -147,25 +152,7 @@ impl DomainNameArr {
         self.arr.len()
     }
 
-    /// Returns the capacity of the underlying buffer.
-    ///
-    /// This is a convenience method. The capacity equals [`DOMAIN_NAME_MAX_LENGTH`].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use rsdns::{constants::DOMAIN_NAME_MAX_LENGTH, DomainNameArr};
-    ///
-    /// let dn = DomainNameArr::from("example.com.").unwrap();
-    /// assert_eq!(dn.len(), 12);
-    /// assert_eq!(dn.capacity(), DOMAIN_NAME_MAX_LENGTH);
-    /// ```
-    #[inline(always)]
-    pub fn capacity(&self) -> usize {
-        self.arr.capacity()
-    }
-
-    /// Checks if `DomainNameArr` is empty.
+    /// Checks if domain name is empty.
     ///
     /// **Note**: empty domain name is not valid.
     ///
@@ -186,7 +173,7 @@ impl DomainNameArr {
         self.arr.is_empty()
     }
 
-    /// Make the `DomainNameArr` empty.
+    /// Make the domain name empty.
     ///
     /// # Examples
     ///
@@ -209,7 +196,7 @@ impl DomainNameArr {
         self.arr.clear();
     }
 
-    /// Appends a label to the `DomainNameArr`.
+    /// Appends a label to the domain name.
     ///
     /// This function is dedicated to a parser which needs to construct
     /// a domain name label by label, as they are read from the DNS on-wire representation.
@@ -245,7 +232,7 @@ impl DomainNameArr {
         Ok(())
     }
 
-    /// Appends a label to the `DomainNameArr`.
+    /// Appends a label to the domain name.
     ///
     /// This is a string slice equivalent of [`DomainNameArr::push_label_bytes`].
     ///
@@ -276,7 +263,7 @@ impl DomainNameArr {
         Ok(())
     }
 
-    /// Sets this domain name to be the root zone domain name `.`.
+    /// Sets the domain name to denote the root DNS zone `.`.
     ///
     /// # Examples
     ///

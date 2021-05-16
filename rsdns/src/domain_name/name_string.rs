@@ -9,9 +9,9 @@ use std::{
 
 /// A domain name backed by [String].
 ///
-/// `DomainNameString` is implemented in terms of a plain [String], and as such, involves dynamic
-/// memory allocation when being built. It is used as the default domain name implementation for
-/// resource records which contain a domain name in the record data section.
+/// `DomainNameString` is implemented in terms of a plain [String], and, as such, involves dynamic
+/// memory allocation when being built. It is used to parse domain names in the resource record
+/// data sections.
 ///
 /// `DomainNameString` stores the name in the form `example.com.`. The trailing period denotes
 /// the root zone.
@@ -35,7 +35,7 @@ pub struct DomainNameString {
 }
 
 impl DomainNameString {
-    /// Creates an empty `DomainNameString`.
+    /// Creates an empty domain name.
     ///
     /// # Examples
     ///
@@ -54,7 +54,7 @@ impl DomainNameString {
         }
     }
 
-    /// Creates the root `DomainNameString`.
+    /// Creates the root domain name.
     ///
     /// # Examples
     ///
@@ -71,7 +71,7 @@ impl DomainNameString {
         }
     }
 
-    /// Creates a `DomainNameString` from a string slice.
+    /// Creates a domain name from a string slice.
     ///
     /// # Examples
     ///
@@ -108,7 +108,7 @@ impl DomainNameString {
         Ok(dn)
     }
 
-    /// Returns the `DomainNameString` as a string slice.
+    /// Returns the domain name as a string slice.
     ///
     /// # Examples
     ///
@@ -129,7 +129,10 @@ impl DomainNameString {
         &self.str_
     }
 
-    /// Returns the length of the `DomainNameString`.
+    /// Returns the length of the domain name in bytes.
+    ///
+    /// Valid domain names are comprised of ASCII characters only.
+    /// Thus this value equals the number of characters in the domain name.
     ///
     /// # Examples
     ///
@@ -147,7 +150,7 @@ impl DomainNameString {
         self.str_.len()
     }
 
-    /// Checks if `DomainNameString` is empty.
+    /// Checks if domain name is empty.
     ///
     /// **Note**: empty domain name is not valid.
     ///
@@ -168,7 +171,7 @@ impl DomainNameString {
         self.str_.is_empty()
     }
 
-    /// Make the `DomainNameString` empty.
+    /// Make the domain name empty.
     ///
     /// # Examples
     ///
@@ -191,7 +194,7 @@ impl DomainNameString {
         self.str_.clear();
     }
 
-    /// Appends a label to the `DomainNameString`.
+    /// Appends a label to the domain name.
     ///
     /// This function is dedicated to a parser which needs to construct
     /// a domain name label by label, as they are read from the DNS on-wire representation.
@@ -226,7 +229,7 @@ impl DomainNameString {
         Ok(())
     }
 
-    /// Appends a label to the `DomainNameString`.
+    /// Appends a label to the domain name.
     ///
     /// This is a string slice equivalent of [`DomainNameString::push_label_bytes`].
     ///
@@ -256,7 +259,7 @@ impl DomainNameString {
         Ok(())
     }
 
-    /// Sets this domain name to be the root zone domain name `.`.
+    /// Sets the domain name to denote the root DNS zone `.`.
     ///
     /// # Examples
     ///
