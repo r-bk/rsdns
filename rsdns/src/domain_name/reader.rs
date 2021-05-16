@@ -15,7 +15,6 @@ pub struct DomainNameReader<'a> {
     seen_offsets: OffsetsArray,
 }
 
-#[allow(dead_code)]
 impl<'a> DomainNameReader<'a> {
     pub fn read(cursor: &mut Cursor<'a>) -> Result<DomainNameArr> {
         let mut dn = DomainNameArr::new();
