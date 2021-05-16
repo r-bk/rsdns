@@ -63,7 +63,10 @@ impl WCursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{bytes::Cursor, DomainNameArr, DomainNameReader};
+    use crate::{
+        bytes::{Cursor, Reader},
+        DomainNameArr,
+    };
 
     #[test]
     fn test_write_good_flow() {
@@ -84,7 +87,7 @@ mod tests {
             assert_eq!(&arr[..len], ex.1);
 
             let mut cursor = Cursor::new(&arr[..len]);
-            let dn = DomainNameReader::read(&mut cursor).unwrap();
+            let dn: DomainNameArr = cursor.read().unwrap();
 
             assert_eq!(dn, DomainNameArr::from(ex.0).unwrap());
         }
@@ -123,7 +126,7 @@ mod tests {
             assert_eq!(len, 255);
 
             let mut cursor = Cursor::new(&arr[..len]);
-            let dn = DomainNameReader::read(&mut cursor).unwrap();
+            let dn: DomainNameArr = cursor.read().unwrap();
 
             assert_eq!(
                 dn,

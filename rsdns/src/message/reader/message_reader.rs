@@ -5,7 +5,7 @@ use crate::{
         reader::{Questions, Records},
         Header,
     },
-    DomainNameReader, Result,
+    Result,
 };
 
 /// A DNS message reader.
@@ -101,7 +101,7 @@ impl<'a> MessageReader<'a> {
 
     fn find_an_offset(mut cursor: Cursor, qd_count: usize) -> Result<usize> {
         for _ in 0..qd_count {
-            DomainNameReader::skip(&mut cursor)?;
+            cursor.skip_domain_name()?;
             cursor.skip(4)?; // qtype(2) + qclass(2)
         }
 

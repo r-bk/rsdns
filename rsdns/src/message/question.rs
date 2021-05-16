@@ -1,7 +1,7 @@
 use crate::{
-    bytes::Cursor,
+    bytes::{Cursor, Reader},
     constants::{QClass, QType},
-    DomainNameArr, DomainNameReader, Result,
+    DomainNameArr, Result,
 };
 use std::convert::TryFrom;
 
@@ -23,7 +23,7 @@ pub struct Question {
 impl Question {
     pub(crate) fn read(cursor: &mut Cursor) -> Result<Question> {
         Ok(Question {
-            qname: DomainNameReader::read(cursor)?,
+            qname: cursor.read()?,
             qtype: QType::try_from(cursor.u16_be()?)?,
             qclass: QClass::try_from(cursor.u16_be()?)?,
         })
