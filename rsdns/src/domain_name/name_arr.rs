@@ -10,9 +10,9 @@ use std::{
 
 type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 
-/// A domain name.
+/// A domain name backed by [ArrayString].
 ///
-/// This struct models the domain name above a fixed array of [`DOMAIN_NAME_MAX_LENGTH`] bytes.
+/// This struct implements the domain name using a fixed array of [`DOMAIN_NAME_MAX_LENGTH`] bytes.
 /// This is done in order to avoid dynamic memory allocation.
 ///
 /// `DomainNameArr` stores the name in the form `example.com.`. The trailing period denotes the root

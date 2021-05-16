@@ -9,6 +9,10 @@ use std::{
 
 /// A domain name backed by [String].
 ///
+/// `DomainNameString` is implemented in terms of a plain [String], and as such, involves dynamic
+/// memory allocation when being built. It is used as the default domain name implementation for
+/// resource records which contain a domain name in the record data section.
+///
 /// `DomainNameString` stores the name in the form `example.com.`. The trailing period denotes
 /// the root zone.
 ///
