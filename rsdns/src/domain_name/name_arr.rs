@@ -387,6 +387,43 @@ impl Display for DomainNameArr {
     }
 }
 
+impl super::Name for DomainNameArr {
+    #[inline(always)]
+    fn as_str(&self) -> &str {
+        self.as_str()
+    }
+
+    #[inline(always)]
+    fn len(&self) -> usize {
+        self.len()
+    }
+
+    #[inline(always)]
+    fn is_empty(&self) -> bool {
+        self.is_empty()
+    }
+
+    #[inline(always)]
+    fn clear(&mut self) {
+        self.clear()
+    }
+
+    #[inline(always)]
+    fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
+        self.push_label_bytes(label)
+    }
+
+    #[inline(always)]
+    fn push_label(&mut self, label: &str) -> Result<()> {
+        self.push_label(label)
+    }
+
+    #[inline(always)]
+    fn set_root(&mut self) {
+        self.set_root()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
