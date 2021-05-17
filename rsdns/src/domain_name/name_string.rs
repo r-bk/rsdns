@@ -9,19 +9,24 @@ use std::{
 
 /// A domain name backed by [String].
 ///
-/// `DomainNameString` is implemented in terms of a plain [String], and, as such, involves dynamic
-/// memory allocation when being built. It is used to parse domain names in the resource record
-/// data sections.
+/// This struct implements the domain name using the standard [String].
+/// Construction of [DomainNameString] involves dynamic memory allocation.
 ///
-/// `DomainNameString` stores the name in the form `example.com.`. The trailing period denotes
-/// the root zone.
+/// [DomainNameString] is used in resource record data, where usage of
+/// [DomainNameArr](crate::DomainNameArr) would make the size of the structure too large.
+/// For example, the [Soa](crate::records::Soa) record includes two domain names in the record data.
+/// This, together with the domain name in the record header, would make the size of the structure
+/// at least 765 bytes long if [DomainNameArr](crate::DomainNameArr) was used.
+///
+/// [DomainNameString] stores the name in the canonical form `example.com.`.
+/// The trailing period denotes the root DNS zone.
 ///
 /// Domain name max length, as defined in
 /// [RFC 1035](https://tools.ietf.org/html/rfc1035#section-3.1), is 255 bytes.
 /// This includes all label length bytes, and the terminating zero length byte. Hence the effective
 /// max length of a domain name without the root zone is 253 bytes.
 ///
-/// Domain name is case insensitive. Hence the implementation of `PartialEq` converts each side to
+/// Domain name is case insensitive. Hence, when compared, both sides are converted to
 /// ASCII lowercase. Use [`DomainNameString::as_str`] when exact match is required.
 ///
 /// Specifications:

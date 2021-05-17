@@ -12,20 +12,23 @@ type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 
 /// A domain name backed by byte array.
 ///
-/// This struct implements the domain name using a fixed array of [`DOMAIN_NAME_MAX_LENGTH`] bytes.
-/// It is used for parsing the resource record header. This allows parsing resource records
-/// that have no variable size data fields without dynamic memory allocations
-/// at all (e.g. A and AAAA).
+/// This struct implements the domain name using an array of bytes with capacity large enough to
+/// accommodate the longest domain name allowed by the DNS protocol.
 ///
-/// `DomainNameArr` stores the name in the form `example.com.`. The trailing period denotes the root
-/// zone.
+/// It is used in cases when dynamic memory allocation is undesirable. In particular, [rsdns](crate)
+/// uses it in resource record header. As a consequence parsing of resource records with no
+/// variable size fields (e.g. [A](crate::records::A), [AAAA](crate::records::Aaaa)) involves
+/// no memory allocation at all.
+///
+/// [DomainNameArr] stores the name in the canonical form `example.com.`.
+/// The trailing period denotes the root DNS zone.
 ///
 /// Domain name max length, as defined in
 /// [RFC 1035](https://tools.ietf.org/html/rfc1035#section-3.1), is 255 bytes.
 /// This includes all label length bytes, and the terminating zero length byte. Hence the effective
 /// max length of a domain name without the root zone is 253 bytes.
 ///
-/// Domain name is case insensitive. Hence the implementation of `PartialEq` converts each side to
+/// Domain name is case insensitive. Hence, when compared, both sides are converted to
 /// ASCII lowercase. Use [`DomainNameArr::as_str`] when exact match is required.
 ///
 /// Specifications:
