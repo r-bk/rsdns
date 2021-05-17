@@ -1,21 +1,21 @@
 use crate::{
     constants::{QClass, QType},
-    resolvers::config::ResolverConf,
+    resolvers::config::ResolverConfig,
     Result,
 };
 
 pub(crate) struct ResolverImpl {
-    conf: ResolverConf,
+    config: ResolverConfig,
 }
 
 #[allow(unused_variables)]
 impl ResolverImpl {
-    pub fn new(conf: ResolverConf) -> Result<Self> {
-        Ok(Self { conf })
+    pub fn new(config: ResolverConfig) -> Result<Self> {
+        Ok(Self { config })
     }
 
-    pub fn conf(&self) -> &ResolverConf {
-        &self.conf
+    pub fn config(&self) -> &ResolverConfig {
+        &self.config
     }
 
     pub fn query_raw(

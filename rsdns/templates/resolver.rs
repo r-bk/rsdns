@@ -2,7 +2,7 @@ use crate::{
   constants::{QType, QClass},
   resolvers::{
       {{ crate_module_name }}::ResolverImpl,
-      config::ResolverConf,
+      config::ResolverConfig,
   },
   Result
 };
@@ -19,7 +19,7 @@ pub struct Resolver {
 impl Resolver {
     /// Creates a new instance of [Resolver] with provided configuration `conf`.
     #[inline(always)]
-    pub {% if async == "true" %}async {% endif -%} fn new(conf: ResolverConf) -> Result<Self> {
+    pub {% if async == "true" %}async {% endif -%} fn new(conf: ResolverConfig) -> Result<Self> {
         Ok(Self {
             internal: ResolverImpl::new(conf){% if async == "true" %}.await{% endif %}?,
         })
@@ -27,8 +27,8 @@ impl Resolver {
 
     /// Returns the resolver configuration.
     #[inline(always)]
-    pub fn conf(&self) -> &ResolverConf {
-        self.internal.conf()
+    pub fn config(&self) -> &ResolverConfig {
+        self.internal.config()
     }
 
     /// Issues a DNS query and reads the response into caller-owned buffer `buf`.

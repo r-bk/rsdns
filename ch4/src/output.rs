@@ -4,7 +4,7 @@ use chrono::{DateTime, Local};
 use rsdns::{
     constants::QType,
     message::{reader::MessageReader, Header},
-    resolvers::config::ResolverConf,
+    resolvers::config::ResolverConfig,
 };
 use std::{
     fmt::Write,
@@ -23,7 +23,7 @@ pub struct Output<'a, 'b, 'c, 'd> {
     msg: &'c [u8],
     ts: SystemTime,
     elapsed: Duration,
-    resolver_conf: &'d ResolverConf,
+    resolver_conf: &'d ResolverConfig,
 }
 
 impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
@@ -34,7 +34,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
         msg: &'c [u8],
         ts: SystemTime,
         elapsed: Duration,
-        resolver_conf: &'d ResolverConf,
+        resolver_conf: &'d ResolverConfig,
     ) -> Self {
         Self {
             args,

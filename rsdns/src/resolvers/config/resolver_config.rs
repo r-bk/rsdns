@@ -16,7 +16,7 @@ type InterfaceName = arrayvec::ArrayString<INTERFACE_NAME_MAX_LENGTH>;
 
 /// Configuration for resolvers.
 #[derive(Clone, Eq, PartialEq, Debug)]
-pub struct ResolverConf {
+pub struct ResolverConfig {
     pub(crate) nameserver_: SocketAddr,
     pub(crate) bind_addr_: SocketAddr,
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
@@ -27,15 +27,15 @@ pub struct ResolverConf {
     pub(crate) recursion_: Recursion,
 }
 
-impl ResolverConf {
+impl ResolverConfig {
     /// Creates resolver configuration for `nameserver` with default values.
-    pub fn new(nameserver: SocketAddr) -> ResolverConf {
+    pub fn new(nameserver: SocketAddr) -> ResolverConfig {
         let bind_addr = if nameserver.is_ipv4() {
             Self::default_ipv4_bind_address()
         } else {
             Self::default_ipv6_bind_address()
         };
-        ResolverConf {
+        ResolverConfig {
             nameserver_: nameserver,
             bind_addr_: bind_addr,
             #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
@@ -58,10 +58,10 @@ impl ResolverConf {
     ///
     /// # Examples
     /// ```rust
-    /// use rsdns::resolvers::config::ResolverConf;
+    /// use rsdns::resolvers::config::ResolverConfig;
     /// use std::{net::SocketAddr, str::FromStr, time::Duration};
     ///
-    /// let conf1 = ResolverConf::new(SocketAddr::from_str("127.0.0.53:53").unwrap())
+    /// let conf1 = ResolverConfig::new(SocketAddr::from_str("127.0.0.53:53").unwrap())
     ///     .with_query_lifetime(Duration::from_secs(5));
     ///
     /// let conf2 = conf1

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use rsdns::{
     constants::QType,
-    resolvers::config::{ProtocolStrategy, Recursion, ResolverConf},
+    resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
 };
 #[cfg(unix)]
 use std::io::{BufRead, BufReader};
@@ -139,7 +139,7 @@ impl Args {
         }
     }
 
-    pub fn parse(&self) -> Result<(ResolverConf, QType, Vec<String>)> {
+    pub fn parse(&self) -> Result<(ResolverConfig, QType, Vec<String>)> {
         let mut protocol_strategy = ProtocolStrategy::Default;
         let mut nameserver_ip_addr: Option<IpAddr> = None;
         let mut recursion = Recursion::On;
@@ -204,7 +204,7 @@ impl Args {
         };
 
         #[allow(unused_mut)]
-        let mut conf = ResolverConf::new(nameserver)
+        let mut conf = ResolverConfig::new(nameserver)
             .with_protocol_strategy(protocol_strategy)
             .with_recursion(recursion)
             .with_query_timeout(if self.query_timeout > 0 {
