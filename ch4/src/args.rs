@@ -205,18 +205,18 @@ impl Args {
 
         #[allow(unused_mut)]
         let mut conf = ResolverConfig::new(nameserver)
-            .with_protocol_strategy(protocol_strategy)
-            .with_recursion(recursion)
-            .with_query_timeout(if self.query_timeout > 0 {
+            .set_protocol_strategy(protocol_strategy)
+            .set_recursion(recursion)
+            .set_query_timeout(if self.query_timeout > 0 {
                 Some(Duration::from_millis(self.query_timeout))
             } else {
                 None
             })
-            .with_query_lifetime(Duration::from_millis(self.query_lifetime));
+            .set_query_lifetime(Duration::from_millis(self.query_lifetime));
 
         #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
         if let Some(ref bd) = self.bind_device {
-            conf = conf.with_bind_device(Some(&bd))?;
+            conf = conf.set_bind_device(Some(&bd))?;
         }
 
         Ok((conf, qtype, free_args))

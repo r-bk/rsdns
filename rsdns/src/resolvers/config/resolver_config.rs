@@ -62,18 +62,18 @@ impl ResolverConfig {
     /// use std::{net::SocketAddr, str::FromStr, time::Duration};
     ///
     /// let conf1 = ResolverConfig::new(SocketAddr::from_str("127.0.0.53:53").unwrap())
-    ///     .with_query_lifetime(Duration::from_secs(5));
+    ///     .set_query_lifetime(Duration::from_secs(5));
     ///
     /// let conf2 = conf1
     ///     .clone()
-    ///     .with_nameserver(SocketAddr::from_str("8.8.8.8:53").unwrap());
+    ///     .set_nameserver(SocketAddr::from_str("8.8.8.8:53").unwrap());
     ///
     /// assert_eq!(conf1.nameserver(), SocketAddr::from_str("127.0.0.53:53").unwrap());
     /// assert_eq!(conf1.query_lifetime(), Duration::from_secs(5));
     /// assert_eq!(conf2.nameserver(), SocketAddr::from_str("8.8.8.8:53").unwrap());
     /// assert_eq!(conf2.query_lifetime(), Duration::from_secs(5));
     /// ```
-    pub fn with_nameserver(mut self, nameserver: SocketAddr) -> Self {
+    pub fn set_nameserver(mut self, nameserver: SocketAddr) -> Self {
         self.nameserver_ = nameserver;
 
         if self.nameserver_.is_ipv6() && self.bind_addr_ == Self::default_ipv4_bind_address() {
@@ -95,7 +95,7 @@ impl ResolverConfig {
     /// Defines the address UDP sockets are bound to.
     ///
     /// Default: `0.0.0.0:0`.
-    pub fn with_bind_addr(mut self, bind_addr: SocketAddr) -> Self {
+    pub fn set_bind_addr(mut self, bind_addr: SocketAddr) -> Self {
         self.bind_addr_ = bind_addr;
         self
     }
@@ -133,7 +133,7 @@ impl ResolverConfig {
         docsrs,
         doc(cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2")))
     )]
-    pub fn with_bind_device(mut self, interface_name: Option<&str>) -> Result<Self> {
+    pub fn set_bind_device(mut self, interface_name: Option<&str>) -> Result<Self> {
         match interface_name {
             Some(bd) => {
                 if bd.is_empty() || bd.len() >= self.interface_.capacity() {
@@ -162,11 +162,11 @@ impl ResolverConfig {
     /// Sets the query lifetime duration.
     ///
     /// Query lifetime duration is the upper bound on the overall query duration, including all
-    /// UDP retries. This value should be greater than [Self::with_query_timeout] if the latter
+    /// UDP retries. This value should be greater than [Self::query_timeout] if the latter
     /// is set.
     ///
     /// Default: `10 sec`.
-    pub fn with_query_lifetime(mut self, query_lifetime: Duration) -> Self {
+    pub fn set_query_lifetime(mut self, query_lifetime: Duration) -> Self {
         self.query_lifetime_ = query_lifetime;
         self
     }
@@ -181,13 +181,13 @@ impl ResolverConfig {
     /// Sets the UDP query timeout duration.
     ///
     /// Denotes the time to resend an unanswered UDP query. This value should be smaller than
-    /// [Self::with_query_lifetime]. During query lifetime it may be resent several times before
+    /// [Self::query_lifetime]. During query lifetime it may be resent several times before
     /// timing out.
     ///
     /// This option may be `None`, in which case an unanswered UDP query is never resent.
     ///
     /// Default: `2 sec`.
-    pub fn with_query_timeout(mut self, query_timeout: Option<Duration>) -> Self {
+    pub fn set_query_timeout(mut self, query_timeout: Option<Duration>) -> Self {
         self.query_timeout_ = query_timeout;
         self
     }
@@ -200,7 +200,7 @@ impl ResolverConfig {
     /// Sets the protocol strategy.
     ///
     /// See [`ProtocolStrategy`] for more info.
-    pub fn with_protocol_strategy(mut self, strategy: ProtocolStrategy) -> Self {
+    pub fn set_protocol_strategy(mut self, strategy: ProtocolStrategy) -> Self {
         self.protocol_strategy_ = strategy;
         self
     }
@@ -217,7 +217,7 @@ impl ResolverConfig {
     /// Specifies if to set the recursion flag in the query.
     ///
     /// Default: `Recursion::On`.
-    pub fn with_recursion(mut self, recursion: Recursion) -> Self {
+    pub fn set_recursion(mut self, recursion: Recursion) -> Self {
         self.recursion_ = recursion;
         self
     }
