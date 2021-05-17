@@ -1,5 +1,5 @@
 //! Defines configuration for resolvers.
-use crate::resolvers::conf::{ProtocolStrategy, Recursion};
+use crate::resolvers::config::{ProtocolStrategy, Recursion};
 use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     time::Duration,
@@ -58,7 +58,7 @@ impl ResolverConf {
     ///
     /// # Examples
     /// ```rust
-    /// use rsdns::resolvers::conf::ResolverConf;
+    /// use rsdns::resolvers::config::ResolverConf;
     /// use std::{net::SocketAddr, str::FromStr, time::Duration};
     ///
     /// let conf1 = ResolverConf::new(SocketAddr::from_str("127.0.0.53:53").unwrap())

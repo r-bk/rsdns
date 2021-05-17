@@ -20,4 +20,4 @@ pub mod smol;
 /// Resolver implementation with [`std`](https://doc.rust-lang.org/std).
 pub mod std;
 
-pub mod conf;
+pub mod config;

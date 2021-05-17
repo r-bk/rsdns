@@ -1,6 +1,6 @@
 use crate::{
     constants::{QClass, QType},
-    resolvers::conf::ResolverConf,
+    resolvers::config::ResolverConf,
     Result,
 };
 

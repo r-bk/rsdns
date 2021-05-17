@@ -2,7 +2,7 @@ use crate::{
   constants::{QType, QClass},
   resolvers::{
       {{ crate_module_name }}::ResolverImpl,
-      conf::ResolverConf,
+      config::ResolverConf,
   },
   Result
 };
