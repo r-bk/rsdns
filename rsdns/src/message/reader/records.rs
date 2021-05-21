@@ -23,6 +23,48 @@ use std::convert::TryFrom;
 /// - `Some(Ok((`[`MessageSection`]`, `[`ResourceRecord`]`)))` - if a record was read successfully
 /// - `Some(Err(_))` - on error
 /// - `None` - if there is nothing left to read, or a previous call resulted in error
+///
+/// # Examples
+///
+/// ```rust
+/// use rsdns::{
+///     constants::MessageSection,
+///     message::reader::MessageReader,
+///     records::ResourceRecord,
+/// };
+///
+/// fn print_addresses(buf: &[u8]) -> rsdns::Result<()> {
+///     let mr = MessageReader::new(buf)?;
+///
+///     for record in mr.records() {
+///         let (section, record) = record?;
+///
+///         if section != MessageSection::Answer {
+///             // skip addresses in sections after Answer
+///             break;
+///         }
+///
+///         match record {
+///             ResourceRecord::A(ref rec) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
+///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
+///                 );
+///             }
+///             ResourceRecord::Aaaa(ref rec) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; ipv6: {}",
+///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
+///                 );
+///             }
+///             _ => continue,
+///         }
+///     }
+///
+///     Ok(())
+/// }
+///
+/// ```
 pub struct Records<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,

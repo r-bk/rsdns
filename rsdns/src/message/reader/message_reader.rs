@@ -26,21 +26,34 @@ use crate::{
 ///     records::ResourceRecord,
 /// };
 ///
-/// fn read_message(buf: &[u8]) -> rsdns::Result<()> {
+/// fn print_answers(buf: &[u8]) -> rsdns::Result<()> {
 ///     let mr = MessageReader::new(buf)?;
 ///
-///     // mr.header() returns the parsed Header
-///     // mr.questions() returns an iterator over the questions section
+///     let header = mr.header();
+///
+///     println!("ID: {}", header.id);
+///     println!("Type: {}", header.flags.message_type());
+///     println!("Questions: {} Answers: {}", header.qd_count, header.an_count);
+///
+///     for (index, question) in mr.questions().enumerate() {
+///         let q = question?;
+///         println!("Question {}: {} {} {}", index, q.qname, q.qtype, q.qclass);
+///     }
 ///
 ///     for record in mr.records() {
 ///         let (section, record) = record?;
 ///
 ///         if section != MessageSection::Answer {
-///             // skip other sections
 ///             break;
 ///         }
 ///
 ///         match record {
+///             ResourceRecord::Cname(ref rec) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; Cname: {}",
+///                     rec.name, rec.rclass, rec.ttl, rec.rdata.cname
+///                 );
+///             }
 ///             ResourceRecord::A(ref rec) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
@@ -53,7 +66,7 @@ use crate::{
 ///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
 ///                 );
 ///             }
-///             _ => println!("{:?} {:?}", section, record),
+///             _ => println!("{:?}", record),
 ///         }
 ///     }
 ///
