@@ -58,20 +58,22 @@ impl ResolverConfig {
     ///
     /// # Examples
     /// ```rust
-    /// use rsdns::resolvers::config::ResolverConfig;
-    /// use std::{net::SocketAddr, str::FromStr, time::Duration};
-    ///
-    /// let conf1 = ResolverConfig::new(SocketAddr::from_str("127.0.0.53:53").unwrap())
+    /// # use rsdns::resolvers::config::ResolverConfig;
+    /// # use std::{net::SocketAddr, str::FromStr, time::Duration};
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// let conf1 = ResolverConfig::new(SocketAddr::from_str("127.0.0.53:53")?)
     ///     .set_query_lifetime(Duration::from_secs(5));
     ///
     /// let conf2 = conf1
     ///     .clone()
-    ///     .set_nameserver(SocketAddr::from_str("8.8.8.8:53").unwrap());
+    ///     .set_nameserver(SocketAddr::from_str("8.8.8.8:53")?);
     ///
-    /// assert_eq!(conf1.nameserver(), SocketAddr::from_str("127.0.0.53:53").unwrap());
+    /// assert_eq!(conf1.nameserver(), SocketAddr::from_str("127.0.0.53:53")?);
     /// assert_eq!(conf1.query_lifetime(), Duration::from_secs(5));
-    /// assert_eq!(conf2.nameserver(), SocketAddr::from_str("8.8.8.8:53").unwrap());
+    /// assert_eq!(conf2.nameserver(), SocketAddr::from_str("8.8.8.8:53")?);
     /// assert_eq!(conf2.query_lifetime(), Duration::from_secs(5));
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn set_nameserver(mut self, nameserver: SocketAddr) -> Self {
         self.nameserver_ = nameserver;
