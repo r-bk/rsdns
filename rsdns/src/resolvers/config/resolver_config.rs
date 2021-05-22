@@ -84,6 +84,10 @@ impl ResolverConfig {
             self.bind_addr_ = Self::default_ipv6_bind_address();
         }
 
+        if self.nameserver_.is_ipv4() && self.bind_addr_ == Self::default_ipv6_bind_address() {
+            self.bind_addr_ = Self::default_ipv4_bind_address();
+        }
+
         self
     }
 
