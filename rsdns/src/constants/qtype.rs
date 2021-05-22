@@ -61,7 +61,7 @@ pub enum QType {
 impl QType {
     /// Converts `QType` to a static string.
     #[inline]
-    pub fn as_str(self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         self.into()
     }
 }
@@ -101,7 +101,7 @@ impl TryFrom<u16> for QType {
 
 impl Display for QType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        write!(f, "{}", self.to_str())
     }
 }
 
@@ -129,7 +129,7 @@ mod tests {
                 _ => {
                     assert_eq!(
                         qtype as u16,
-                        RType::from_str(qtype.as_str()).unwrap() as u16
+                        RType::from_str(qtype.to_str()).unwrap() as u16
                     );
                 }
             }

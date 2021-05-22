@@ -27,7 +27,7 @@ pub enum QClass {
 
 impl QClass {
     /// Converts `QClass` to a static string.
-    pub fn as_str(self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         self.into()
     }
 }
@@ -51,7 +51,7 @@ impl TryFrom<u16> for QClass {
 
 impl Display for QClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        write!(f, "{}", self.to_str())
     }
 }
 
@@ -79,7 +79,7 @@ mod tests {
             }
             assert_eq!(
                 qclass as u16,
-                RClass::from_str(qclass.as_str()).unwrap() as u16
+                RClass::from_str(qclass.to_str()).unwrap() as u16
             );
         }
     }

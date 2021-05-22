@@ -50,7 +50,7 @@ pub enum RType {
 
 impl RType {
     /// Converts `RType` to a static string.
-    pub fn as_str(self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         self.into()
     }
 }
@@ -86,7 +86,7 @@ impl TryFrom<u16> for RType {
 
 impl Display for RType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        write!(f, "{}", self.to_str())
     }
 }
 

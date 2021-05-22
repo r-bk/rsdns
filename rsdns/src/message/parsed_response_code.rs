@@ -52,7 +52,7 @@ impl ParsedResponseCode {
     /// Converts parsed opcode to a string slice.
     pub fn as_str(self) -> &'static str {
         match self {
-            Self::Some(response_code) => response_code.as_str(),
+            Self::Some(response_code) => response_code.to_str(),
             Self::Reserved(bits) => Self::reserved_as_str(bits),
         }
     }

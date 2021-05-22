@@ -24,7 +24,7 @@ pub enum OpCode {
 
 impl OpCode {
     /// Converts `OpCode` to a static string.
-    pub fn as_str(self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         self.into()
     }
 }
@@ -46,7 +46,7 @@ impl TryFrom<u8> for OpCode {
 
 impl Display for OpCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        write!(f, "{}", self.to_str())
     }
 }
 

@@ -49,14 +49,14 @@ impl ParsedOpCode {
     }
 
     /// Converts parsed opcode to a string slice.
-    pub fn as_str(self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         match self {
-            Self::Some(opcode) => opcode.as_str(),
-            Self::Reserved(bits) => Self::reserved_as_str(bits),
+            Self::Some(opcode) => opcode.to_str(),
+            Self::Reserved(bits) => Self::reserved_to_str(bits),
         }
     }
 
-    fn reserved_as_str(bits: u8) -> &'static str {
+    fn reserved_to_str(bits: u8) -> &'static str {
         match bits {
             3 => "OPCODE(3)",
             4 => "OPCODE(4)",
@@ -78,6 +78,6 @@ impl ParsedOpCode {
 
 impl Display for ParsedOpCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        write!(f, "{}", self.to_str())
     }
 }
