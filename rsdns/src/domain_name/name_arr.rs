@@ -47,10 +47,9 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
     /// let dn = DomainNameArr::new();
-    ///
     /// assert_eq!(dn.len(), 0);
     /// assert!(dn.is_empty());
     /// ```
@@ -64,8 +63,8 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
     /// let dn = DomainNameArr::new_root();
     /// assert_eq!(dn.len(), 1);
     /// assert_eq!(dn.as_str(), ".");
@@ -81,13 +80,18 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
-    /// let dn = DomainNameArr::from("example.com").unwrap();
+    /// # use rsdns::DomainNameArr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// let dn = DomainNameArr::from("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
-    /// let dn = DomainNameArr::from("sub.example.com.").unwrap();
+    /// let dn = DomainNameArr::from("sub.example.com.")?;
     /// assert_eq!(dn.as_str(), "sub.example.com.");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     pub fn from(s: &str) -> Result<Self> {
         super::check_name(s)?;
@@ -118,16 +122,21 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// let dn = DomainNameArr::new();
     /// assert_eq!(dn.as_str(), "");
     ///
-    /// let dn = DomainNameArr::from("example.com").unwrap();
+    /// let dn = DomainNameArr::from("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
-    /// let dn = DomainNameArr::from(".").unwrap();
+    /// let dn = DomainNameArr::from(".")?;
     /// assert_eq!(dn.as_str(), ".");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     #[inline(always)]
     pub fn as_str(&self) -> &str {
@@ -142,13 +151,19 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// #
     /// let dn = DomainNameArr::new();
     /// assert_eq!(dn.len(), 0);
     ///
-    /// let dn = DomainNameArr::from("example.com").unwrap();
+    /// let dn = DomainNameArr::from("example.com")?;
     /// assert_eq!(dn.len(), 12); // includes the root zone
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     #[inline(always)]
     pub fn len(&self) -> usize {
@@ -162,14 +177,20 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    /// use std::str::FromStr;
-    ///
-    /// let dn = DomainNameArr::from_str("example.com").unwrap();
+    /// # use rsdns::DomainNameArr;
+    /// # use std::str::FromStr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// #
+    /// let dn = DomainNameArr::from_str("example.com")?;
     /// assert_eq!(dn.is_empty(), false);
     ///
     /// let dn = DomainNameArr::new();
     /// assert_eq!(dn.is_empty(), true);
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     #[inline(always)]
     pub fn is_empty(&self) -> bool {
@@ -181,10 +202,12 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    /// use std::str::FromStr;
-    ///
-    /// let mut dn = DomainNameArr::from_str("example.com").unwrap();
+    /// # use rsdns::DomainNameArr;
+    /// # use std::str::FromStr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// #
+    /// let mut dn = DomainNameArr::from_str("example.com")?;
     /// assert_eq!(dn.is_empty(), false);
     /// assert_eq!(dn.len(), 12);
     /// assert_eq!(dn.as_str(), "example.com.");
@@ -193,6 +216,10 @@ impl DomainNameArr {
     /// assert_eq!(dn.is_empty(), true);
     /// assert_eq!(dn.len(), 0);
     /// assert_eq!(dn.as_str(), "");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     #[inline(always)]
     pub fn clear(&mut self) {
@@ -207,15 +234,21 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// #
     /// let mut dn = DomainNameArr::new();
     ///
-    /// dn.push_label_bytes(b"example").unwrap();
+    /// dn.push_label_bytes(b"example")?;
     /// assert_eq!(dn.as_str(), "example.");
     ///
-    /// dn.push_label_bytes(b"com").unwrap();
+    /// dn.push_label_bytes(b"com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     pub fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
         super::check_label_bytes(label)?;
@@ -242,15 +275,21 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// #
     /// let mut dn = DomainNameArr::new();
     ///
-    /// dn.push_label("example").unwrap();
+    /// dn.push_label("example")?;
     /// assert_eq!(dn.as_str(), "example.");
     ///
-    /// dn.push_label("com").unwrap();
+    /// dn.push_label("com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     pub fn push_label(&mut self, label: &str) -> Result<()> {
         super::check_label(label)?;
@@ -271,19 +310,25 @@ impl DomainNameArr {
     /// # Examples
     ///
     /// ```
-    /// use rsdns::DomainNameArr;
-    ///
+    /// # use rsdns::DomainNameArr;
+    /// #
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// #
     /// let mut dn = DomainNameArr::new();
     /// assert!(dn.is_empty());
     ///
     /// dn.set_root();
     /// assert_eq!(dn.as_str(), ".");
     ///
-    /// dn = DomainNameArr::from("example.com").unwrap();
+    /// dn = DomainNameArr::from("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
     /// dn.set_root();
     /// assert_eq!(dn.as_str(), ".");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # foo().unwrap();
     /// ```
     pub fn set_root(&mut self) {
         self.arr.clear();
