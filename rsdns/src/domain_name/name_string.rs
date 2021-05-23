@@ -13,10 +13,11 @@ use std::{
 /// Construction of [DomainNameString] involves dynamic memory allocation.
 ///
 /// [DomainNameString] is used in resource record data, where usage of
-/// [DomainNameArr](crate::DomainNameArr) would make the size of the structure too large.
+/// [DomainNameArrayString](crate::DomainNameArrayString) would make the size of the structure
+/// too large.
 /// For example, the [Soa](crate::records::Soa) record includes two domain names in the record data.
 /// This, together with the domain name in the record header, would make the size of the structure
-/// at least 765 bytes long if [DomainNameArr](crate::DomainNameArr) was used.
+/// at least 765 bytes long if [DomainNameArrayString](crate::DomainNameArrayString) was used.
 ///
 /// [DomainNameString] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.

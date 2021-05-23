@@ -3,7 +3,7 @@ macro_rules! rr {
         $(#[$outer])*
         pub struct $RR {
             /// A domain name to which this resource record pertains.
-            pub name: crate::DomainNameArr,
+            pub name: crate::DomainNameArrayString,
             /// Resource record class.
             pub rclass: crate::constants::RClass,
             /// The time (in seconds) that the resource record may be cached before it should

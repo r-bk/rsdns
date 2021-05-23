@@ -1,4 +1,4 @@
-use crate::{DomainNameArr, DomainNameString, Result};
+use crate::{DomainNameArrayString, DomainNameString, Result};
 
 pub trait DomainNameBuilder {
     fn is_empty(&self) -> bool;
@@ -23,7 +23,7 @@ impl DomainNameBuilder for DomainNameString {
     }
 }
 
-impl DomainNameBuilder for DomainNameArr {
+impl DomainNameBuilder for DomainNameArrayString {
     #[inline(always)]
     fn is_empty(&self) -> bool {
         self.is_empty()

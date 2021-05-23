@@ -65,7 +65,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        DomainNameArr,
+        DomainNameArrayString,
     };
     use std::str::FromStr;
 
@@ -88,9 +88,9 @@ mod tests {
             assert_eq!(&arr[..len], ex.1);
 
             let mut cursor = Cursor::new(&arr[..len]);
-            let dn: DomainNameArr = cursor.read().unwrap();
+            let dn: DomainNameArrayString = cursor.read().unwrap();
 
-            assert_eq!(dn, DomainNameArr::from_str(ex.0).unwrap());
+            assert_eq!(dn, DomainNameArrayString::from_str(ex.0).unwrap());
         }
     }
 
@@ -127,11 +127,11 @@ mod tests {
             assert_eq!(len, 255);
 
             let mut cursor = Cursor::new(&arr[..len]);
-            let dn: DomainNameArr = cursor.read().unwrap();
+            let dn: DomainNameArrayString = cursor.read().unwrap();
 
             assert_eq!(
                 dn,
-                DomainNameArr::from_str(&long_label[..long_label.len() - 2]).unwrap()
+                DomainNameArrayString::from_str(&long_label[..long_label.len() - 2]).unwrap()
             );
             assert_eq!(dn.len(), 254);
         }

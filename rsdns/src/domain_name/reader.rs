@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    DomainNameArr, DomainNameBuilder, DomainNameString, Error, Result,
+    DomainNameArrayString, DomainNameBuilder, DomainNameString, Error, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
@@ -16,8 +16,8 @@ pub struct DomainNameReader<'a> {
 }
 
 impl<'a> DomainNameReader<'a> {
-    pub fn read(cursor: &mut Cursor<'a>) -> Result<DomainNameArr> {
-        let mut dn = DomainNameArr::new();
+    pub fn read(cursor: &mut Cursor<'a>) -> Result<DomainNameArrayString> {
+        let mut dn = DomainNameArrayString::new();
         Self::read_internal(cursor, &mut dn)?;
         Ok(dn)
     }
@@ -143,9 +143,9 @@ impl<'a> DomainNameReader<'a> {
     }
 }
 
-impl Reader<DomainNameArr> for Cursor<'_> {
+impl Reader<DomainNameArrayString> for Cursor<'_> {
     #[inline]
-    fn read(&mut self) -> Result<DomainNameArr> {
+    fn read(&mut self) -> Result<DomainNameArrayString> {
         DomainNameReader::read(self)
     }
 }
@@ -276,7 +276,7 @@ mod tests {
     fn test_cursor_read() {
         let packet = b"\x03sub\x07example\x03com\x00";
         let mut cursor = Cursor::new(&packet[..]);
-        let dn: DomainNameArr = cursor.read().unwrap();
+        let dn: DomainNameArrayString = cursor.read().unwrap();
 
         assert_eq!(dn.as_str(), "sub.example.com.");
     }
