@@ -67,6 +67,7 @@ mod tests {
         bytes::{Cursor, Reader},
         DomainNameArr,
     };
+    use std::str::FromStr;
 
     #[test]
     fn test_write_good_flow() {
@@ -89,7 +90,7 @@ mod tests {
             let mut cursor = Cursor::new(&arr[..len]);
             let dn: DomainNameArr = cursor.read().unwrap();
 
-            assert_eq!(dn, DomainNameArr::from(ex.0).unwrap());
+            assert_eq!(dn, DomainNameArr::from_str(ex.0).unwrap());
         }
     }
 
@@ -130,7 +131,7 @@ mod tests {
 
             assert_eq!(
                 dn,
-                DomainNameArr::from(&long_label[..long_label.len() - 2]).unwrap()
+                DomainNameArr::from_str(&long_label[..long_label.len() - 2]).unwrap()
             );
             assert_eq!(dn.len(), 254);
         }

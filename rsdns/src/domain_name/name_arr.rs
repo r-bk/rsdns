@@ -75,25 +75,7 @@ impl DomainNameArr {
         dn
     }
 
-    /// Creates a domain name from a string slice.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use rsdns::DomainNameArr;
-    /// #
-    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
-    /// let dn = DomainNameArr::from("example.com")?;
-    /// assert_eq!(dn.as_str(), "example.com.");
-    ///
-    /// let dn = DomainNameArr::from("sub.example.com.")?;
-    /// assert_eq!(dn.as_str(), "sub.example.com.");
-    /// #
-    /// # Ok(())
-    /// # }
-    /// # foo().unwrap();
-    /// ```
-    pub fn from(s: &str) -> Result<Self> {
+    fn from(s: &str) -> Result<Self> {
         super::check_name(s)?;
 
         let mut dn = Self {
@@ -123,15 +105,16 @@ impl DomainNameArr {
     ///
     /// ```
     /// # use rsdns::DomainNameArr;
+    /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// let dn = DomainNameArr::new();
     /// assert_eq!(dn.as_str(), "");
     ///
-    /// let dn = DomainNameArr::from("example.com")?;
+    /// let dn = DomainNameArr::from_str("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
-    /// let dn = DomainNameArr::from(".")?;
+    /// let dn = DomainNameArr::from_str(".")?;
     /// assert_eq!(dn.as_str(), ".");
     /// #
     /// # Ok(())
@@ -152,13 +135,14 @@ impl DomainNameArr {
     ///
     /// ```
     /// # use rsdns::DomainNameArr;
+    /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
     /// let dn = DomainNameArr::new();
     /// assert_eq!(dn.len(), 0);
     ///
-    /// let dn = DomainNameArr::from("example.com")?;
+    /// let dn = DomainNameArr::from_str("example.com")?;
     /// assert_eq!(dn.len(), 12); // includes the root zone
     /// #
     /// # Ok(())
@@ -311,6 +295,7 @@ impl DomainNameArr {
     ///
     /// ```
     /// # use rsdns::DomainNameArr;
+    /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
@@ -320,7 +305,7 @@ impl DomainNameArr {
     /// dn.set_root();
     /// assert_eq!(dn.as_str(), ".");
     ///
-    /// dn = DomainNameArr::from("example.com")?;
+    /// dn = DomainNameArr::from_str("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
     /// dn.set_root();

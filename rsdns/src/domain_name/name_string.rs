@@ -75,26 +75,7 @@ impl DomainNameString {
         }
     }
 
-    /// Creates a domain name from a string slice.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use rsdns::DomainNameString;
-    /// #
-    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
-    /// #
-    /// let dn = DomainNameString::from("example.com")?;
-    /// assert_eq!(dn.as_str(), "example.com.");
-    ///
-    /// let dn = DomainNameString::from("sub.example.com.")?;
-    /// assert_eq!(dn.as_str(), "sub.example.com.");
-    /// #
-    /// # Ok(())
-    /// # }
-    /// foo().unwrap();
-    /// ```
-    pub fn from(s: &str) -> Result<Self> {
+    fn from(s: &str) -> Result<Self> {
         super::check_name(s)?;
 
         let mut dn = Self {
@@ -124,16 +105,17 @@ impl DomainNameString {
     ///
     /// ```
     /// # use rsdns::DomainNameString;
+    /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
     /// let dn = DomainNameString::new();
     /// assert_eq!(dn.as_str(), "");
     ///
-    /// let dn = DomainNameString::from("example.com")?;
+    /// let dn = DomainNameString::from_str("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
-    /// let dn = DomainNameString::from(".")?;
+    /// let dn = DomainNameString::from_str(".")?;
     /// assert_eq!(dn.as_str(), ".");
     /// #
     /// # Ok(())
@@ -154,13 +136,14 @@ impl DomainNameString {
     ///
     /// ```
     /// # use rsdns::DomainNameString;
+    /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
     /// let dn = DomainNameString::new();
     /// assert_eq!(dn.len(), 0);
     ///
-    /// let dn = DomainNameString::from("example.com")?;
+    /// let dn = DomainNameString::from_str("example.com")?;
     /// assert_eq!(dn.len(), 12); // includes the root zone
     /// #
     /// # Ok(())
@@ -311,6 +294,7 @@ impl DomainNameString {
     ///
     /// ```
     /// # use rsdns::DomainNameString;
+    /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
@@ -320,7 +304,7 @@ impl DomainNameString {
     /// dn.set_root();
     /// assert_eq!(dn.as_str(), ".");
     ///
-    /// dn = DomainNameString::from("example.com")?;
+    /// dn = DomainNameString::from_str("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
     /// dn.set_root();
