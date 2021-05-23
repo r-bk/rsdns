@@ -1,4 +1,4 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, Result};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, DomainNameArrayString, Error, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -404,6 +404,20 @@ impl Hash for DomainNameString {
 impl Display for DomainNameString {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
+    }
+}
+
+impl From<DomainNameString> for String {
+    fn from(name: DomainNameString) -> Self {
+        name.str_
+    }
+}
+
+impl From<DomainNameArrayString> for DomainNameString {
+    fn from(name: DomainNameArrayString) -> Self {
+        Self {
+            str_: name.as_str().to_string(),
+        }
     }
 }
 

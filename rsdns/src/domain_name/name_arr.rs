@@ -1,4 +1,4 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, Result};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, DomainNameString, Error, Result};
 use arrayvec::ArrayString;
 use std::{
     cmp::Ordering,
@@ -404,6 +404,15 @@ impl Hash for DomainNameArrayString {
 impl Display for DomainNameArrayString {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
+    }
+}
+
+impl From<DomainNameString> for DomainNameArrayString {
+    fn from(name: DomainNameString) -> Self {
+        Self {
+            // DomainNameString is valid, so this unwrap is not expected to panic
+            arr: ArrayType::from(name.as_str()).unwrap(),
+        }
     }
 }
 
