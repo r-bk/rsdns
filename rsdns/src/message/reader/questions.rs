@@ -10,22 +10,22 @@ use crate::{bytes::Cursor, message::Question, Result};
 ///
 /// # Examples
 ///
-/// ```
-/// use rsdns::{
-///     message::reader::MessageReader,
-///     Result,
-/// };
+/// ```rust
+/// # use rsdns::{
+/// #     message::reader::MessageReader,
+/// #     Result,
+/// # };
+/// #
+/// # fn print_questions(buf: &[u8]) -> Result<()> {
+/// let mut message_reader = MessageReader::new(buf)?;
 ///
-/// fn print_questions(buf: &[u8]) -> Result<()> {
-///     let mut message_reader = MessageReader::new(buf)?;
-///
-///     for question in message_reader.questions() {
-///         let question = question?;
-///         println!("{} {} {}", question.qname, question.qtype, question.qclass);
-///     }
-///
-///     Ok(())
+/// for question in message_reader.questions() {
+///     let question = question?;
+///     println!("{} {} {}", question.qname, question.qtype, question.qclass);
 /// }
+/// #
+/// #   Ok(())
+/// # }
 /// ```
 pub struct Questions<'a> {
     cursor: Cursor<'a>,
