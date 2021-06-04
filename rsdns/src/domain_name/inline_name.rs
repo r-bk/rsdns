@@ -65,11 +65,11 @@ impl InlineName {
     /// ```
     /// # use rsdns::InlineName;
     /// #
-    /// let dn = InlineName::new_root();
+    /// let dn = InlineName::root();
     /// assert_eq!(dn.len(), 1);
     /// assert_eq!(dn.as_str(), ".");
     /// ```
-    pub fn new_root() -> Self {
+    pub fn root() -> Self {
         let mut dn = Self::default();
         dn.set_root();
         dn
@@ -632,7 +632,7 @@ mod tests {
         );
 
         assert_eq!(InlineName::new(), "");
-        assert_eq!(InlineName::new_root(), ".");
+        assert_eq!(InlineName::root(), ".");
     }
 
     #[test]
@@ -650,7 +650,7 @@ mod tests {
         assert_ne!(dn2, "Sub.examp1e.com.");
 
         assert_ne!(InlineName::new(), ".");
-        assert_ne!(InlineName::new_root(), "");
+        assert_ne!(InlineName::root(), "");
     }
 
     #[test]
@@ -676,10 +676,7 @@ mod tests {
         assert_eq!(Ordering::Equal, dn1.cmp(&dn2));
         assert_eq!(Ordering::Less, dn1.cmp(&dn3));
         assert_eq!(Ordering::Greater, dn3.cmp(&dn1));
-        assert_eq!(
-            Ordering::Equal,
-            InlineName::new_root().cmp(&InlineName::new_root())
-        );
+        assert_eq!(Ordering::Equal, InlineName::root().cmp(&InlineName::root()));
         assert_eq!(Ordering::Equal, InlineName::new().cmp(&InlineName::new()));
     }
 
@@ -694,7 +691,7 @@ mod tests {
         assert_eq!(Some(Ordering::Greater), dn3.partial_cmp(&dn1));
         assert_eq!(
             Some(Ordering::Equal),
-            InlineName::new_root().partial_cmp(&InlineName::new_root())
+            InlineName::root().partial_cmp(&InlineName::root())
         );
         assert_eq!(
             Some(Ordering::Equal),

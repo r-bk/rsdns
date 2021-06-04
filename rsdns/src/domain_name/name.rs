@@ -66,11 +66,11 @@ impl Name {
     /// ```
     /// # use rsdns::Name;
     /// #
-    /// let dn = Name::new_root();
+    /// let dn = Name::root();
     /// assert_eq!(dn.len(), 1);
     /// assert_eq!(dn.as_str(), ".");
     /// ```
-    pub fn new_root() -> Self {
+    pub fn root() -> Self {
         Self {
             str_: String::from("."),
         }
@@ -631,7 +631,7 @@ mod tests {
         assert_eq!(Name::from("sub.example.com.").unwrap(), "sub.example.com");
 
         assert_eq!(Name::new(), "");
-        assert_eq!(Name::new_root(), ".");
+        assert_eq!(Name::root(), ".");
     }
 
     #[test]
@@ -649,7 +649,7 @@ mod tests {
         assert_ne!(dn2, "Sub.examp1e.com.");
 
         assert_ne!(Name::new(), ".");
-        assert_ne!(Name::new_root(), "");
+        assert_ne!(Name::root(), "");
     }
 
     #[test]
@@ -675,7 +675,7 @@ mod tests {
         assert_eq!(Ordering::Equal, dn1.cmp(&dn2));
         assert_eq!(Ordering::Less, dn1.cmp(&dn3));
         assert_eq!(Ordering::Greater, dn3.cmp(&dn1));
-        assert_eq!(Ordering::Equal, Name::new_root().cmp(&Name::new_root()));
+        assert_eq!(Ordering::Equal, Name::root().cmp(&Name::root()));
         assert_eq!(Ordering::Equal, Name::new().cmp(&Name::new()));
     }
 
@@ -690,7 +690,7 @@ mod tests {
         assert_eq!(Some(Ordering::Greater), dn3.partial_cmp(&dn1));
         assert_eq!(
             Some(Ordering::Equal),
-            Name::new_root().partial_cmp(&Name::new_root())
+            Name::root().partial_cmp(&Name::root())
         );
         assert_eq!(Some(Ordering::Equal), Name::new().partial_cmp(&Name::new()));
     }
