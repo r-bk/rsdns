@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::{MessageSection, RClass, RType},
+    constants::{RClass, RType, RecordsSection},
     message::{reader::SectionTracker, Header},
     records::{self, ResourceRecord},
     Error, Result,
@@ -9,8 +9,8 @@ use std::convert::TryFrom;
 
 /// An iterator over the resource record sections of a message.
 ///
-/// Records are read from the [Answer](MessageSection::Answer),
-/// [Authority](MessageSection::Authority) and [Additional](MessageSection::Additional)
+/// Records are read from the [Answer](RecordsSection::Answer),
+/// [Authority](RecordsSection::Authority) and [Additional](RecordsSection::Additional)
 /// message sections sequentially in this order. On every iteration a single resource record
 /// is read and returned together with its corresponding section type.
 /// Unknown resource record types are silently skipped.
@@ -20,7 +20,7 @@ use std::convert::TryFrom;
 ///
 /// Returns:
 ///
-/// - `Some(Ok((`[`MessageSection`]`, `[`ResourceRecord`]`)))` - if a record was read successfully
+/// - `Some(Ok((`[`RecordsSection`]`, `[`ResourceRecord`]`)))` - if a record was read successfully
 /// - `Some(Err(_))` - on error
 /// - `None` - if there is nothing left to read, or a previous call resulted in error
 ///
@@ -28,7 +28,7 @@ use std::convert::TryFrom;
 ///
 /// ```rust
 /// use rsdns::{
-///     constants::MessageSection,
+///     constants::RecordsSection,
 ///     message::reader::MessageReader,
 ///     records::ResourceRecord,
 /// };
@@ -39,7 +39,7 @@ use std::convert::TryFrom;
 ///     for record in mr.records() {
 ///         let (section, record) = record?;
 ///
-///         if section != MessageSection::Answer {
+///         if section != RecordsSection::Answer {
 ///             // skip addresses in sections after Answer
 ///             break;
 ///         }
@@ -91,7 +91,7 @@ impl<'a> Records<'a> {
         }
     }
 
-    fn read(&mut self) -> Option<Result<(MessageSection, ResourceRecord)>> {
+    fn read(&mut self) -> Option<Result<(RecordsSection, ResourceRecord)>> {
         if !self.err {
             let res = self.read_impl();
             if res.is_ok() {
@@ -107,7 +107,7 @@ impl<'a> Records<'a> {
         }
     }
 
-    fn read_impl(&mut self) -> Result<(MessageSection, ResourceRecord)> {
+    fn read_impl(&mut self) -> Result<(RecordsSection, ResourceRecord)> {
         loop {
             let section = self.section_tracker.next_section();
 
@@ -170,7 +170,7 @@ impl<'a> Records<'a> {
 }
 
 impl Iterator for Records<'_> {
-    type Item = Result<(MessageSection, ResourceRecord)>;
+    type Item = Result<(RecordsSection, ResourceRecord)>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {

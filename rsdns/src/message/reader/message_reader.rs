@@ -21,7 +21,7 @@ use crate::{
 ///
 /// ```rust
 /// use rsdns::{
-///     constants::MessageSection,
+///     constants::RecordsSection,
 ///     message::reader::MessageReader,
 ///     records::ResourceRecord,
 /// };
@@ -43,7 +43,7 @@ use crate::{
 ///     for record in mr.records() {
 ///         let (section, record) = record?;
 ///
-///         if section != MessageSection::Answer {
+///         if section != RecordsSection::Answer {
 ///             break;
 ///         }
 ///

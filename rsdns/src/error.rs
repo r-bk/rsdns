@@ -1,5 +1,3 @@
-use crate::constants::MessageSection;
-
 /// Errors returned by [rsdns](crate).
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
@@ -55,8 +53,6 @@ pub enum Error {
     CursorNotInWindow,
     #[error("cursor window error: expected {0}, actual {1}")]
     CursorWindowError(usize, usize),
-    #[error("section {0:?} is not valid in this context")]
-    BadMessageSection(MessageSection),
     #[error("iterator exhausted")]
     IterationStop,
 }
