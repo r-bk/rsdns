@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::{QClass, QType},
-    DomainNameArrayString, Result,
+    InlineName, Result,
 };
 use std::convert::TryFrom;
 
@@ -13,7 +13,7 @@ use std::convert::TryFrom;
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct Question {
     /// Domain name to query.
-    pub qname: DomainNameArrayString,
+    pub qname: InlineName,
     /// Question type.
     pub qtype: QType,
     /// Question class.

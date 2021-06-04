@@ -50,7 +50,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        DomainNameArrayString,
+        InlineName,
     };
     use std::convert::TryFrom;
 
@@ -71,7 +71,7 @@ mod tests {
 
         let size = c.u16_be().unwrap();
         let header: Header = c.read().unwrap();
-        let dn: DomainNameArrayString = c.read().unwrap();
+        let dn: InlineName = c.read().unwrap();
         let qt = QType::try_from(c.u16_be().unwrap()).unwrap();
         let qc = QClass::try_from(c.u16_be().unwrap()).unwrap();
 

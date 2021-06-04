@@ -1,4 +1,4 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, DomainNameArrayString, Error, Result};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, InlineName, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -13,11 +13,11 @@ use std::{
 /// Construction of [Name] involves dynamic memory allocation.
 ///
 /// [Name] is used in resource record data, where usage of
-/// [DomainNameArrayString](crate::DomainNameArrayString) would make the size of the structure
+/// [InlineName](crate::InlineName) would make the size of the structure
 /// too large.
 /// For example, the [Soa](crate::records::Soa) record includes two domain names in the record data.
 /// This, together with the domain name in the record header, would make the size of the structure
-/// at least 765 bytes long if [DomainNameArrayString](crate::DomainNameArrayString) was used.
+/// at least 765 bytes long if [InlineName](crate::InlineName) was used.
 ///
 /// [Name] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.
@@ -413,8 +413,8 @@ impl From<Name> for String {
     }
 }
 
-impl From<DomainNameArrayString> for Name {
-    fn from(name: DomainNameArrayString) -> Self {
+impl From<InlineName> for Name {
+    fn from(name: InlineName) -> Self {
         Self {
             str_: name.as_str().to_string(),
         }
