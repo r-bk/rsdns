@@ -22,10 +22,10 @@ pub trait NameContract: PartialOrd + Ord + PartialEq + Eq + FromStr + Debug + Di
     fn clear(&mut self);
 
     /// Appends a label to the domain name.
-    fn push_label_bytes(&mut self, label: &[u8]) -> Result<()>;
+    fn append_label_bytes(&mut self, label: &[u8]) -> Result<()>;
 
     /// Appends a label to the domain name.
-    fn push_label(&mut self, label: &str) -> Result<()>;
+    fn append_label(&mut self, label: &str) -> Result<()>;
 
     /// Sets the domain name to denote the root DNS zone `.`.
     fn set_root(&mut self);

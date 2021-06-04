@@ -87,7 +87,7 @@ impl<'a> DomainNameReader<'a> {
                 break;
             } else if Self::is_length(length) {
                 let label = self.cursor.slice(length as usize)?;
-                dn.push_label_bytes(label)?;
+                dn.append_label_bytes(label)?;
             } else if Self::is_pointer(length) {
                 let o2 = self.cursor.u8()?;
                 let offset = Self::pointer_to_offset(length, o2);

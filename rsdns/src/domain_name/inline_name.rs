@@ -224,17 +224,17 @@ impl InlineName {
     /// #
     /// let mut dn = InlineName::new();
     ///
-    /// dn.push_label_bytes(b"example")?;
+    /// dn.append_label_bytes(b"example")?;
     /// assert_eq!(dn.as_str(), "example.");
     ///
-    /// dn.push_label_bytes(b"com")?;
+    /// dn.append_label_bytes(b"com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     /// #
     /// # Ok(())
     /// # }
     /// # foo().unwrap();
     /// ```
-    pub fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
+    pub fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
         super::check_label_bytes(label)?;
 
         // at this point the label is proven to be valid,
@@ -254,7 +254,7 @@ impl InlineName {
 
     /// Appends a label to the domain name.
     ///
-    /// This is a string slice equivalent of [`InlineName::push_label_bytes`].
+    /// This is a string slice equivalent of [`InlineName::append_label_bytes`].
     ///
     /// # Examples
     ///
@@ -265,17 +265,17 @@ impl InlineName {
     /// #
     /// let mut dn = InlineName::new();
     ///
-    /// dn.push_label("example")?;
+    /// dn.append_label("example")?;
     /// assert_eq!(dn.as_str(), "example.");
     ///
-    /// dn.push_label("com")?;
+    /// dn.append_label("com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     /// #
     /// # Ok(())
     /// # }
     /// # foo().unwrap();
     /// ```
-    pub fn push_label(&mut self, label: &str) -> Result<()> {
+    pub fn append_label(&mut self, label: &str) -> Result<()> {
         super::check_label(label)?;
 
         if self.arr.try_push_str(label).is_err() {
@@ -438,13 +438,13 @@ impl super::NameContract for InlineName {
     }
 
     #[inline(always)]
-    fn push_label_bytes(&mut self, label: &[u8]) -> Result<()> {
-        self.push_label_bytes(label)
+    fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
+        self.append_label_bytes(label)
     }
 
     #[inline(always)]
-    fn push_label(&mut self, label: &str) -> Result<()> {
-        self.push_label(label)
+    fn append_label(&mut self, label: &str) -> Result<()> {
+        self.append_label(label)
     }
 
     #[inline(always)]
@@ -546,43 +546,43 @@ mod tests {
         let mut dn = InlineName::new();
         assert_eq!(dn.len(), 0);
 
-        dn.push_label("example").unwrap();
+        dn.append_label("example").unwrap();
         assert_eq!(dn.len(), 8);
 
-        dn.push_label("com").unwrap();
+        dn.append_label("com").unwrap();
         assert_eq!(dn.len(), 12);
     }
 
     #[test]
-    fn test_push_label_too_long() {
+    fn test_append_label_too_long() {
         let l_63 = "a".repeat(63);
         let l_62 = "b".repeat(62);
 
         let mut dn = InlineName::new();
 
-        dn.push_label(&l_63).unwrap();
+        dn.append_label(&l_63).unwrap();
         assert_eq!(dn.len(), 64);
 
-        dn.push_label(&l_63).unwrap();
+        dn.append_label(&l_63).unwrap();
         assert_eq!(dn.len(), 128);
 
-        dn.push_label(&l_63).unwrap();
+        dn.append_label(&l_63).unwrap();
         assert_eq!(dn.len(), 192);
 
         // test total size > 255
         {
             let mut dn = dn.clone();
-            dn.push_label("small").unwrap();
+            dn.append_label("small").unwrap();
 
-            let res = dn.push_label(&l_63);
+            let res = dn.append_label(&l_63);
             assert!(matches!(res, Err(Error::DomainNameTooLong)));
         }
 
         // test total size == 255
-        let res = dn.clone().push_label(&l_63);
+        let res = dn.clone().append_label(&l_63);
         assert!(matches!(res, Err(Error::DomainNameTooLong)));
 
-        dn.push_label(&l_62).unwrap();
+        dn.append_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);
     }
 
