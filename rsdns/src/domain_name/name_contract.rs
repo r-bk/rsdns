@@ -5,7 +5,7 @@ use std::{
 };
 
 /// An interface of a domain name.
-pub trait Name: PartialOrd + Ord + PartialEq + Eq + FromStr + Debug + Display {
+pub trait NameContract: PartialOrd + Ord + PartialEq + Eq + FromStr + Debug + Display {
     /// Returns the domain name as string slice.
     fn as_str(&self) -> &str;
 

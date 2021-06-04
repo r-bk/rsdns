@@ -416,7 +416,7 @@ impl From<DomainNameString> for DomainNameArrayString {
     }
 }
 
-impl super::Name for DomainNameArrayString {
+impl super::NameContract for DomainNameArrayString {
     #[inline(always)]
     fn as_str(&self) -> &str {
         self.as_str()
