@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    DomainNameArrayString, DomainNameBuilder, DomainNameString, Error, Result,
+    DomainNameArrayString, DomainNameBuilder, Error, Name, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
@@ -22,8 +22,8 @@ impl<'a> DomainNameReader<'a> {
         Ok(dn)
     }
 
-    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<DomainNameString> {
-        let mut dn = DomainNameString::new();
+    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<Name> {
+        let mut dn = Name::new();
         Self::read_internal(cursor, &mut dn)?;
         Ok(dn)
     }
@@ -150,9 +150,9 @@ impl Reader<DomainNameArrayString> for Cursor<'_> {
     }
 }
 
-impl Reader<DomainNameString> for Cursor<'_> {
+impl Reader<Name> for Cursor<'_> {
     #[inline]
-    fn read(&mut self) -> Result<DomainNameString> {
+    fn read(&mut self) -> Result<Name> {
         DomainNameReader::read_string(self)
     }
 }

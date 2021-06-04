@@ -13,7 +13,7 @@ macro_rules! rr_dn_data {
         #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
         pub struct $RR {
             $(#[$dn_outer])*
-            pub $DN: crate::DomainNameString,
+            pub $DN: crate::Name,
         }
 
         rr_data!($RR, $RRT);

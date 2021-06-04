@@ -10,16 +10,16 @@ use std::{
 /// A domain name backed by [String].
 ///
 /// This struct implements the domain name using the standard [String].
-/// Construction of [DomainNameString] involves dynamic memory allocation.
+/// Construction of [Name] involves dynamic memory allocation.
 ///
-/// [DomainNameString] is used in resource record data, where usage of
+/// [Name] is used in resource record data, where usage of
 /// [DomainNameArrayString](crate::DomainNameArrayString) would make the size of the structure
 /// too large.
 /// For example, the [Soa](crate::records::Soa) record includes two domain names in the record data.
 /// This, together with the domain name in the record header, would make the size of the structure
 /// at least 765 bytes long if [DomainNameArrayString](crate::DomainNameArrayString) was used.
 ///
-/// [DomainNameString] stores the name in the canonical form `example.com.`.
+/// [Name] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.
 ///
 /// Domain name max length, as defined in
@@ -28,7 +28,7 @@ use std::{
 /// max length of a domain name without the root zone is 253 bytes.
 ///
 /// Domain name is case insensitive. Hence, when compared, both sides are converted to
-/// ASCII lowercase. Use [`DomainNameString::as_str`] when exact match is required.
+/// ASCII lowercase. Use [`Name::as_str`] when exact match is required.
 ///
 /// Specifications:
 ///
@@ -36,19 +36,19 @@ use std::{
 /// - [RFC 1035 ~2.3.4](https://tools.ietf.org/html/rfc1035#section-2.3.4)
 /// - [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
 #[derive(Debug, Default, Clone)]
-pub struct DomainNameString {
+pub struct Name {
     str_: String,
 }
 
-impl DomainNameString {
+impl Name {
     /// Creates an empty domain name.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// #
-    /// let dn = DomainNameString::new();
+    /// let dn = Name::new();
     /// assert_eq!(dn.len(), 0);
     /// assert!(dn.is_empty());
     /// ```
@@ -64,9 +64,9 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// #
-    /// let dn = DomainNameString::new_root();
+    /// let dn = Name::new_root();
     /// assert_eq!(dn.len(), 1);
     /// assert_eq!(dn.as_str(), ".");
     /// ```
@@ -105,18 +105,18 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let dn = DomainNameString::new();
+    /// let dn = Name::new();
     /// assert_eq!(dn.as_str(), "");
     ///
-    /// let dn = DomainNameString::from_str("example.com")?;
+    /// let dn = Name::from_str("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
-    /// let dn = DomainNameString::from_str(".")?;
+    /// let dn = Name::from_str(".")?;
     /// assert_eq!(dn.as_str(), ".");
     /// #
     /// # Ok(())
@@ -136,15 +136,15 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let dn = DomainNameString::new();
+    /// let dn = Name::new();
     /// assert_eq!(dn.len(), 0);
     ///
-    /// let dn = DomainNameString::from_str("example.com")?;
+    /// let dn = Name::from_str("example.com")?;
     /// assert_eq!(dn.len(), 12); // includes the root zone
     /// #
     /// # Ok(())
@@ -163,15 +163,15 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let dn = DomainNameString::from_str("example.com")?;
+    /// let dn = Name::from_str("example.com")?;
     /// assert_eq!(dn.is_empty(), false);
     ///
-    /// let dn = DomainNameString::new();
+    /// let dn = Name::new();
     /// assert_eq!(dn.is_empty(), true);
     /// #
     /// # Ok(())
@@ -188,12 +188,12 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let mut dn = DomainNameString::from_str("example.com")?;
+    /// let mut dn = Name::from_str("example.com")?;
     /// assert_eq!(dn.is_empty(), false);
     /// assert_eq!(dn.len(), 12);
     /// assert_eq!(dn.as_str(), "example.com.");
@@ -220,11 +220,11 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let mut dn = DomainNameString::new();
+    /// let mut dn = Name::new();
     ///
     /// dn.push_label_bytes(b"example")?;
     /// assert_eq!(dn.as_str(), "example.");
@@ -255,16 +255,16 @@ impl DomainNameString {
 
     /// Appends a label to the domain name.
     ///
-    /// This is a string slice equivalent of [`DomainNameString::push_label_bytes`].
+    /// This is a string slice equivalent of [`Name::push_label_bytes`].
     ///
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let mut dn = DomainNameString::new();
+    /// let mut dn = Name::new();
     ///
     /// dn.push_label("example")?;
     /// assert_eq!(dn.as_str(), "example.");
@@ -294,18 +294,18 @@ impl DomainNameString {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::DomainNameString;
+    /// # use rsdns::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let mut dn = DomainNameString::new();
+    /// let mut dn = Name::new();
     /// assert!(dn.is_empty());
     ///
     /// dn.set_root();
     /// assert_eq!(dn.as_str(), ".");
     ///
-    /// dn = DomainNameString::from_str("example.com")?;
+    /// dn = Name::from_str("example.com")?;
     /// assert_eq!(dn.as_str(), "example.com.");
     ///
     /// dn.set_root();
@@ -321,7 +321,7 @@ impl DomainNameString {
     }
 }
 
-impl TryFrom<&str> for DomainNameString {
+impl TryFrom<&str> for Name {
     type Error = Error;
 
     fn try_from(value: &str) -> Result<Self> {
@@ -329,7 +329,7 @@ impl TryFrom<&str> for DomainNameString {
     }
 }
 
-impl FromStr for DomainNameString {
+impl FromStr for Name {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
@@ -337,13 +337,13 @@ impl FromStr for DomainNameString {
     }
 }
 
-impl AsRef<str> for DomainNameString {
+impl AsRef<str> for Name {
     fn as_ref(&self) -> &str {
         &self.str_
     }
 }
 
-impl PartialEq for DomainNameString {
+impl PartialEq for Name {
     fn eq(&self, other: &Self) -> bool {
         self.str_
             .as_bytes()
@@ -351,13 +351,13 @@ impl PartialEq for DomainNameString {
     }
 }
 
-impl PartialOrd for DomainNameString {
+impl PartialOrd for Name {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl Ord for DomainNameString {
+impl Ord for Name {
     fn cmp(&self, other: &Self) -> Ordering {
         for i in 0..self.len().min(other.len()) {
             let left = unsafe { self.str_.as_bytes().get_unchecked(i) };
@@ -371,7 +371,7 @@ impl Ord for DomainNameString {
     }
 }
 
-impl PartialEq<&str> for DomainNameString {
+impl PartialEq<&str> for Name {
     fn eq(&self, other: &&str) -> bool {
         let l_is_root = self.str_.as_bytes() == b".";
         let r_is_root = *other == ".";
@@ -391,9 +391,9 @@ impl PartialEq<&str> for DomainNameString {
     }
 }
 
-impl Eq for DomainNameString {}
+impl Eq for Name {}
 
-impl Hash for DomainNameString {
+impl Hash for Name {
     fn hash<H: Hasher>(&self, state: &mut H) {
         for b in self.str_.as_bytes() {
             state.write_u8(b.to_ascii_lowercase());
@@ -401,19 +401,19 @@ impl Hash for DomainNameString {
     }
 }
 
-impl Display for DomainNameString {
+impl Display for Name {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }
 }
 
-impl From<DomainNameString> for String {
-    fn from(name: DomainNameString) -> Self {
+impl From<Name> for String {
+    fn from(name: Name) -> Self {
         name.str_
     }
 }
 
-impl From<DomainNameArrayString> for DomainNameString {
+impl From<DomainNameArrayString> for Name {
     fn from(name: DomainNameArrayString) -> Self {
         Self {
             str_: name.as_str().to_string(),
@@ -421,7 +421,7 @@ impl From<DomainNameArrayString> for DomainNameString {
     }
 }
 
-impl super::NameContract for DomainNameString {
+impl super::NameContract for Name {
     #[inline(always)]
     fn as_str(&self) -> &str {
         self.as_str()
@@ -465,7 +465,7 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let dn = DomainNameString::new();
+        let dn = Name::new();
 
         assert!(dn.is_empty());
         assert_eq!(dn.len(), 0);
@@ -473,7 +473,7 @@ mod tests {
 
     #[test]
     fn test_default() {
-        let dn: DomainNameString = Default::default();
+        let dn: Name = Default::default();
 
         assert!(dn.is_empty());
         assert_eq!(dn.len(), 0);
@@ -516,7 +516,7 @@ mod tests {
         ];
 
         for sc in success_cases {
-            let dn = DomainNameString::from(sc).unwrap();
+            let dn = Name::from(sc).unwrap();
             let expected = if sc.ends_with(".") {
                 sc.to_string()
             } else {
@@ -542,13 +542,13 @@ mod tests {
         ];
 
         for fc in failure_cases {
-            assert!(DomainNameString::from(fc).is_err())
+            assert!(Name::from(fc).is_err())
         }
     }
 
     #[test]
     fn test_len() {
-        let mut dn = DomainNameString::new();
+        let mut dn = Name::new();
         assert_eq!(dn.len(), 0);
 
         dn.push_label("example").unwrap();
@@ -563,7 +563,7 @@ mod tests {
         let l_63 = "a".repeat(63);
         let l_62 = "b".repeat(62);
 
-        let mut dn = DomainNameString::new();
+        let mut dn = Name::new();
 
         dn.push_label(&l_63).unwrap();
         assert_eq!(dn.len(), 64);
@@ -593,9 +593,9 @@ mod tests {
 
     #[test]
     fn test_eq() {
-        let dn1 = DomainNameString::from("example.com").unwrap();
-        let dn2 = DomainNameString::from("EXAMPLE.COM").unwrap();
-        let dn3 = DomainNameString::from("eXaMpLe.cOm").unwrap();
+        let dn1 = Name::from("example.com").unwrap();
+        let dn2 = Name::from("EXAMPLE.COM").unwrap();
+        let dn3 = Name::from("eXaMpLe.cOm").unwrap();
 
         assert_eq!(dn1, dn2);
         assert_eq!(dn1, dn3);
@@ -604,9 +604,9 @@ mod tests {
 
     #[test]
     fn test_neq() {
-        let dn1 = DomainNameString::from("example.com").unwrap();
-        let dn2 = DomainNameString::from("sub.example.com").unwrap();
-        let dn3 = DomainNameString::from("Sub.examp1e.com").unwrap();
+        let dn1 = Name::from("example.com").unwrap();
+        let dn2 = Name::from("sub.example.com").unwrap();
+        let dn3 = Name::from("Sub.examp1e.com").unwrap();
 
         assert_ne!(dn1, dn2);
         assert_ne!(dn1, dn3);
@@ -615,8 +615,8 @@ mod tests {
 
     #[test]
     fn test_eq_str() {
-        let dn1 = DomainNameString::from("example.com").unwrap();
-        let dn2 = DomainNameString::from("EXAMPLE.COM").unwrap();
+        let dn1 = Name::from("example.com").unwrap();
+        let dn2 = Name::from("EXAMPLE.COM").unwrap();
 
         assert_eq!(dn1, "EXAMPLE.COM.");
         assert_eq!(dn1, "EXAMPLE.COM");
@@ -627,23 +627,17 @@ mod tests {
         assert_eq!(dn2, "eXaMpLe.cOm");
         assert_eq!(dn2, "eXaMpLe.cOm.");
 
-        assert_eq!(
-            DomainNameString::from("sub.example.com").unwrap(),
-            "sub.example.com."
-        );
-        assert_eq!(
-            DomainNameString::from("sub.example.com.").unwrap(),
-            "sub.example.com"
-        );
+        assert_eq!(Name::from("sub.example.com").unwrap(), "sub.example.com.");
+        assert_eq!(Name::from("sub.example.com.").unwrap(), "sub.example.com");
 
-        assert_eq!(DomainNameString::new(), "");
-        assert_eq!(DomainNameString::new_root(), ".");
+        assert_eq!(Name::new(), "");
+        assert_eq!(Name::new_root(), ".");
     }
 
     #[test]
     fn test_neq_str() {
-        let dn1 = DomainNameString::from("example.com").unwrap();
-        let dn2 = DomainNameString::from("sub.example.com").unwrap();
+        let dn1 = Name::from("example.com").unwrap();
+        let dn2 = Name::from("sub.example.com").unwrap();
 
         assert_ne!(dn1, "sub.example.com");
         assert_ne!(dn1, "sub.example.com.");
@@ -654,59 +648,50 @@ mod tests {
         assert_ne!(dn2, "Sub.examp1e.com");
         assert_ne!(dn2, "Sub.examp1e.com.");
 
-        assert_ne!(DomainNameString::new(), ".");
-        assert_ne!(DomainNameString::new_root(), "");
+        assert_ne!(Name::new(), ".");
+        assert_ne!(Name::new_root(), "");
     }
 
     #[test]
     fn test_hash() {
-        let dn = DomainNameString::from("example.com").unwrap();
+        let dn = Name::from("example.com").unwrap();
 
         let mut s = HashSet::new();
         s.insert(dn);
 
-        assert!(s.contains(&DomainNameString::from("example.com.").unwrap()));
-        assert!(s.contains(&DomainNameString::from("eXaMpLe.COM").unwrap()));
-        assert!(s.contains(&DomainNameString::from("EXAMPLE.COM").unwrap()));
+        assert!(s.contains(&Name::from("example.com.").unwrap()));
+        assert!(s.contains(&Name::from("eXaMpLe.COM").unwrap()));
+        assert!(s.contains(&Name::from("EXAMPLE.COM").unwrap()));
 
-        assert!(!s.contains(&DomainNameString::from("suB.Example.com.").unwrap()));
+        assert!(!s.contains(&Name::from("suB.Example.com.").unwrap()));
     }
 
     #[test]
     fn test_ord() {
-        let dn1 = DomainNameString::from("example.com").unwrap();
-        let dn2 = DomainNameString::from("ExaMplE.com").unwrap();
-        let dn3 = DomainNameString::from("Sub.example.com").unwrap();
+        let dn1 = Name::from("example.com").unwrap();
+        let dn2 = Name::from("ExaMplE.com").unwrap();
+        let dn3 = Name::from("Sub.example.com").unwrap();
 
         assert_eq!(Ordering::Equal, dn1.cmp(&dn2));
         assert_eq!(Ordering::Less, dn1.cmp(&dn3));
         assert_eq!(Ordering::Greater, dn3.cmp(&dn1));
-        assert_eq!(
-            Ordering::Equal,
-            DomainNameString::new_root().cmp(&DomainNameString::new_root())
-        );
-        assert_eq!(
-            Ordering::Equal,
-            DomainNameString::new().cmp(&DomainNameString::new())
-        );
+        assert_eq!(Ordering::Equal, Name::new_root().cmp(&Name::new_root()));
+        assert_eq!(Ordering::Equal, Name::new().cmp(&Name::new()));
     }
 
     #[test]
     fn test_partial_ord() {
-        let dn1 = DomainNameString::from("example.com").unwrap();
-        let dn2 = DomainNameString::from("ExaMplE.com").unwrap();
-        let dn3 = DomainNameString::from("Sub.example.com").unwrap();
+        let dn1 = Name::from("example.com").unwrap();
+        let dn2 = Name::from("ExaMplE.com").unwrap();
+        let dn3 = Name::from("Sub.example.com").unwrap();
 
         assert_eq!(Some(Ordering::Equal), dn1.partial_cmp(&dn2));
         assert_eq!(Some(Ordering::Less), dn1.partial_cmp(&dn3));
         assert_eq!(Some(Ordering::Greater), dn3.partial_cmp(&dn1));
         assert_eq!(
             Some(Ordering::Equal),
-            DomainNameString::new_root().partial_cmp(&DomainNameString::new_root())
+            Name::new_root().partial_cmp(&Name::new_root())
         );
-        assert_eq!(
-            Some(Ordering::Equal),
-            DomainNameString::new().partial_cmp(&DomainNameString::new())
-        );
+        assert_eq!(Some(Ordering::Equal), Name::new().partial_cmp(&Name::new()));
     }
 }

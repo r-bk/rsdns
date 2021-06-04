@@ -1,4 +1,4 @@
-use crate::{DomainNameArrayString, DomainNameString, Result};
+use crate::{DomainNameArrayString, Name, Result};
 
 pub trait DomainNameBuilder {
     fn is_empty(&self) -> bool;
@@ -6,7 +6,7 @@ pub trait DomainNameBuilder {
     fn push_label_bytes(&mut self, label: &[u8]) -> Result<()>;
 }
 
-impl DomainNameBuilder for DomainNameString {
+impl DomainNameBuilder for Name {
     #[inline(always)]
     fn is_empty(&self) -> bool {
         self.is_empty()

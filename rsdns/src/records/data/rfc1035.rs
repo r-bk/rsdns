@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::RType,
-    DomainNameString, Result,
+    Name, Result,
 };
 use std::net::Ipv4Addr;
 
@@ -177,12 +177,12 @@ pub struct Minfo {
     /// A domain name which specifies a mailbox which is responsible for the mailing list
     /// or mailbox.  If this domain name names the root, the owner of the MINFO RR is
     /// responsible for itself.
-    pub rmailbx: DomainNameString,
+    pub rmailbx: Name,
 
     /// A domain name which specifies a mailbox which is to receive error messages related
     /// to the mailing list or mailbox specified by the owner of the MINFO RR. If this domain
     /// name names the root, errors should be returned to the sender of the message.
-    pub emailbx: DomainNameString,
+    pub emailbx: Name,
 }
 
 rr_data!(Minfo, RType::MINFO);
@@ -222,7 +222,7 @@ pub struct Mx {
     /// Lower values are preferred.
     pub preference: u16,
     /// A domain name which specifies a host willing to act as a mail exchange for the owner name.
-    pub exchange: DomainNameString,
+    pub exchange: Name,
 }
 
 rr_data!(Mx, RType::MX);
@@ -297,9 +297,9 @@ rr_dn_data!(
 pub struct Soa {
     /// The domain name of the name server that was the original or primary source of
     /// data for this zone.
-    pub mname: DomainNameString,
+    pub mname: Name,
     /// A domain name which specifies the mailbox of the person responsible for this zone.
-    pub rname: DomainNameString,
+    pub rname: Name,
     /// The version number of the original copy of the zone. Zone transfers preserve this value.
     /// This value wraps and should be compared using sequence space arithmetic.
     pub serial: u32,
