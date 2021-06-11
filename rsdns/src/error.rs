@@ -42,6 +42,8 @@ pub enum ProtocolError {
     CursorWindowError(usize, usize),
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
+    #[error("resource record header position mismatches the reader's current position")]
+    HeaderPositionMismatch,
 }
 
 /// Errors returned by [rsdns](crate).

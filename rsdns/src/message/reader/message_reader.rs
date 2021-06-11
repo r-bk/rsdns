@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
     message::{
-        reader::{Questions, Records},
+        reader::{Questions, Records, RecordsReader},
         Header,
     },
     Result,
@@ -110,6 +110,15 @@ impl<'a> MessageReader<'a> {
     /// Returns an iterator over the resource record sections of the message.
     pub fn records(&self) -> Records {
         Records::new(Cursor::with_pos(self.buf, self.an_offset), &self.header)
+    }
+
+    /// Returns a low-level records reader.
+    ///
+    /// The records reader allows the most customizable and efficient way of reading the records,
+    /// at the expense of API ergonomics.
+    /// Use [MessageReader::records] if simple iterator is enough.
+    pub fn records_reader(&self) -> RecordsReader {
+        RecordsReader::new(Cursor::with_pos(self.buf, self.an_offset), &self.header)
     }
 
     fn find_an_offset(mut cursor: Cursor, qd_count: usize) -> Result<usize> {
