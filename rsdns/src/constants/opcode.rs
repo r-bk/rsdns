@@ -8,7 +8,6 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// Query opcode.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[allow(missing_docs)]
 #[derive(
     Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
 )]
