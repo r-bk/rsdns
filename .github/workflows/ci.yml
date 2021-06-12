@@ -74,7 +74,7 @@ jobs:
         name: show ch4 info
         if: ${{ matrix.feature != 'all' }}
         env:
-          RUST_BACKTRACE: "1"
+          RUST_BACKTRACE: "full"
         with:
           command: run
           args: -- --info
