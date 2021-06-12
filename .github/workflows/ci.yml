@@ -73,6 +73,8 @@ jobs:
       - uses: actions-rs/cargo@v1
         name: show ch4 info
         if: ${{ matrix.feature != 'all' }}
+        env:
+          RUST_BACKTRACE: "1"
         with:
           command: run
           args: -- --info
