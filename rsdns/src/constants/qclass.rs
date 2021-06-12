@@ -7,6 +7,9 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query class.
 ///
+/// This enumeration includes all supported classes. Both data and query classes are included.
+/// For data classes only see [RClass](crate::constants::RClass).
+///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(
     Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
