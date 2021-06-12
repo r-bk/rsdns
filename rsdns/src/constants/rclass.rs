@@ -1,4 +1,4 @@
-use crate::Error;
+use crate::{constants::QClass, Error};
 use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},
@@ -50,6 +50,13 @@ impl TryFrom<u16> for RClass {
     }
 }
 
+impl PartialEq<QClass> for RClass {
+    #[inline]
+    fn eq(&self, other: &QClass) -> bool {
+        (*self as u16) == (*other as u16)
+    }
+}
+
 impl Display for RClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
@@ -68,5 +75,12 @@ mod tests {
         }
 
         assert!(matches!(RClass::try_from(0), Err(Error::ReservedRClass(0))));
+    }
+
+    #[test]
+    fn test_eq_qclass() {
+        for rclass in RClass::iter() {
+            assert_eq!(rclass, QClass::try_from(rclass as u16).unwrap());
+        }
     }
 }
