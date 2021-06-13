@@ -30,6 +30,10 @@ jobs:
           - net-tokio
           - net-smol
           - all
+        exclude:
+          - runs_on: macos-latest
+            feature: net-async-std
+            rust: beta
         include:
           - runs_on: ubuntu-latest
             feature: net-tokio,socket2
