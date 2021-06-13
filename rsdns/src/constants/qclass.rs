@@ -8,7 +8,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query class.
 ///
-/// This enumeration includes all supported classes. Both data and query classes are included.
+/// This enumeration includes both data and query classes.
 /// For data classes only see [RClass].
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)

@@ -9,7 +9,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// Resource record class.
 ///
 /// This enumeration includes data classes only.
-/// For enumeration of all supported ones, including query classes, see [QClass].
+/// For enumeration of data and query classes see [QClass].
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
 #[derive(
