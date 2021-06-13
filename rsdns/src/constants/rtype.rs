@@ -1,5 +1,6 @@
-use crate::Error;
+use crate::{constants::QType, Error};
 use std::{
+    cmp::Ordering,
     convert::TryFrom,
     fmt::{self, Display, Formatter},
 };
@@ -87,6 +88,20 @@ impl TryFrom<u16> for RType {
 impl Display for RType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
+    }
+}
+
+impl PartialEq<QType> for RType {
+    #[inline]
+    fn eq(&self, other: &QType) -> bool {
+        (*self as u16) == (*other as u16)
+    }
+}
+
+impl PartialOrd<QType> for RType {
+    #[inline]
+    fn partial_cmp(&self, other: &QType) -> Option<Ordering> {
+        (*self as u16).partial_cmp(&(*other as u16))
     }
 }
 
