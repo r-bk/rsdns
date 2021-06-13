@@ -1,5 +1,6 @@
 use crate::{constants::RClass, Error};
 use std::{
+    cmp::Ordering,
     convert::TryFrom,
     fmt::{self, Display, Formatter},
 };
@@ -61,6 +62,13 @@ impl Display for QClass {
 impl PartialEq<RClass> for QClass {
     fn eq(&self, other: &RClass) -> bool {
         (*self as u16) == (*other as u16)
+    }
+}
+
+impl PartialOrd<RClass> for QClass {
+    #[inline]
+    fn partial_cmp(&self, other: &RClass) -> Option<Ordering> {
+        (*self as u16).partial_cmp(&(*other as u16))
     }
 }
 
