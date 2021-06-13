@@ -60,6 +60,7 @@ impl Display for QClass {
 }
 
 impl PartialEq<RClass> for QClass {
+    #[inline]
     fn eq(&self, other: &RClass) -> bool {
         (*self as u16) == (*other as u16)
     }
