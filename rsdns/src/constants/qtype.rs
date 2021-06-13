@@ -8,6 +8,9 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query type.
 ///
+/// This enumeration includes data and query types.
+/// For data types only see [RType].
+///
 /// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 /// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
 #[derive(
