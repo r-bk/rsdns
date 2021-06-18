@@ -1,6 +1,6 @@
 use crate::{
     constants::{OpCode, RCode},
-    message::{MessageType, ParsedOpCode, ParsedRCode},
+    message::{MessageType, OperationCode, ParsedRCode},
 };
 use std::convert::TryFrom;
 
@@ -60,13 +60,10 @@ impl Flags {
     }
 
     /// Returns the message opcode.
-    pub fn opcode(self) -> ParsedOpCode {
+    #[inline]
+    pub fn opcode(self) -> OperationCode {
         let bits = ((self.bits & 0b0111_1000_0000_0000) >> 11) as u8;
-        if let Ok(opcode) = OpCode::try_from(bits) {
-            ParsedOpCode::Some(opcode)
-        } else {
-            ParsedOpCode::Reserved(bits)
-        }
+        bits.into()
     }
 
     /// Sets the message opcode.
@@ -246,13 +243,13 @@ mod tests {
             let f = Flags {
                 bits: (opcode as u16) << 11,
             };
-            assert_eq!(f.opcode().unwrap(), opcode);
+            assert_eq!(f.opcode(), opcode);
 
             let mut f = Flags::default();
             assert_eq!(u16::from(f), 0);
 
             f.set_opcode(opcode);
-            assert_eq!(f.opcode().unwrap(), opcode);
+            assert_eq!(f.opcode(), opcode);
             assert_eq!((u16::from(f) & 0b0111_1000_0000_0000) >> 11, opcode as u16);
         }
 
@@ -261,10 +258,7 @@ mod tests {
                 let f = Flags {
                     bits: (i << 11) as u16,
                 };
-                match f.opcode() {
-                    ParsedOpCode::Reserved(v) => assert_eq!(v, i as u8),
-                    _ => panic!("unexpected success"),
-                }
+                assert_eq!(f.opcode(), i as u8);
             }
         }
     }
