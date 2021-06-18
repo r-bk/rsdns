@@ -12,7 +12,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
     Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
 )]
 #[allow(clippy::upper_case_acronyms)]
-pub enum ResponseCode {
+pub enum RCode {
     /// No error condition
     NOERROR = 0,
     /// Format error - the name server was unable to interpret the query.
@@ -28,32 +28,32 @@ pub enum ResponseCode {
     REFUSED = 5,
 }
 
-impl ResponseCode {
-    /// Converts `ResponseCode` to a static string.
+impl RCode {
+    /// Converts an rcode to a static string.
     pub fn to_str(self) -> &'static str {
         self.into()
     }
 }
 
-impl TryFrom<u8> for ResponseCode {
+impl TryFrom<u8> for RCode {
     type Error = Error;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => ResponseCode::NOERROR,
-            1 => ResponseCode::FORMERR,
-            2 => ResponseCode::SERVFAIL,
-            3 => ResponseCode::NXDOMAIN,
-            4 => ResponseCode::NOTIMP,
-            5 => ResponseCode::REFUSED,
-            _ => return Err(Error::ReservedResponseCode(value)),
+            0 => RCode::NOERROR,
+            1 => RCode::FORMERR,
+            2 => RCode::SERVFAIL,
+            3 => RCode::NXDOMAIN,
+            4 => RCode::NOTIMP,
+            5 => RCode::REFUSED,
+            _ => return Err(Error::ReservedRCode(value)),
         };
 
         Ok(me)
     }
 }
 
-impl Display for ResponseCode {
+impl Display for RCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
     }
@@ -66,13 +66,13 @@ mod tests {
 
     #[test]
     fn test_try_from() {
-        for r_code in ResponseCode::iter() {
-            assert_eq!(r_code, ResponseCode::try_from(r_code as u8).unwrap());
+        for r_code in RCode::iter() {
+            assert_eq!(r_code, RCode::try_from(r_code as u8).unwrap());
         }
 
         assert!(matches!(
-            ResponseCode::try_from(128),
-            Err(Error::ReservedResponseCode(128))
+            RCode::try_from(128),
+            Err(Error::ReservedRCode(128))
         ));
     }
 }

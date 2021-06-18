@@ -1,36 +1,36 @@
-use crate::constants::ResponseCode;
+use crate::constants::RCode;
 use std::fmt::{self, Display, Formatter};
 
-/// Parsed [ResponseCode].
+/// Parsed [RCode].
 ///
-/// This is an option-like wrapper around [ResponseCode] to account for reserved bits
+/// This is an option-like wrapper around [RCode] to account for reserved bits
 /// in the protocol definition. It is written for interoperability with more updated
 /// DNS protocol implementations.
 #[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub enum ParsedResponseCode {
-    /// a recognized [ResponseCode]
-    Some(ResponseCode),
-    /// a reserved response code still not implemented in the [ResponseCode] enumeration
+pub enum ParsedRCode {
+    /// a recognized [RCode]
+    Some(RCode),
+    /// a reserved response code still not implemented in the [RCode] enumeration
     Reserved(u8),
 }
 
-impl ParsedResponseCode {
-    /// Checks if parsed response code is a recognized [ResponseCode].
+impl ParsedRCode {
+    /// Checks if parsed response code is a recognized [RCode].
     pub fn is_some(self) -> bool {
-        matches!(self, ParsedResponseCode::Some(..))
+        matches!(self, ParsedRCode::Some(..))
     }
 
     /// Checks if parsed response code is a reserved value.
     pub fn is_reserved(self) -> bool {
-        matches!(self, ParsedResponseCode::Reserved(..))
+        matches!(self, ParsedRCode::Reserved(..))
     }
 
-    /// Unwraps the [ResponseCode] value.
+    /// Unwraps the [RCode] value.
     ///
     /// # Panics
     ///
     /// Panics if the self value is not [`Some`](Self::Some).
-    pub fn unwrap(self) -> ResponseCode {
+    pub fn unwrap(self) -> RCode {
         if let Self::Some(response_code) = self {
             return response_code;
         }
@@ -74,7 +74,7 @@ impl ParsedResponseCode {
     }
 }
 
-impl Display for ParsedResponseCode {
+impl Display for ParsedRCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }

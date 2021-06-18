@@ -4,16 +4,16 @@ mod opcode;
 mod qclass;
 mod qtype;
 mod rclass;
+mod rcode;
 mod records_section;
-mod response_code;
 mod rtype;
 
 pub use opcode::*;
 pub use qclass::*;
 pub use qtype::*;
 pub use rclass::*;
+pub use rcode::*;
 pub use records_section::*;
-pub use response_code::*;
 pub use rtype::*;
 
 /// Domain name max length.

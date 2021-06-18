@@ -1,6 +1,6 @@
 use crate::{
-    constants::{OpCode, ResponseCode},
-    message::{MessageType, ParsedOpCode, ParsedResponseCode},
+    constants::{OpCode, RCode},
+    message::{MessageType, ParsedOpCode, ParsedRCode},
 };
 use std::convert::TryFrom;
 
@@ -146,17 +146,17 @@ impl Flags {
     }
 
     /// Returns the response code.
-    pub fn response_code(self) -> ParsedResponseCode {
+    pub fn response_code(self) -> ParsedRCode {
         let bits = (self.bits & 0b0000_0000_0000_1111) as u8;
-        if let Ok(response_code) = ResponseCode::try_from(bits) {
-            ParsedResponseCode::Some(response_code)
+        if let Ok(response_code) = RCode::try_from(bits) {
+            ParsedRCode::Some(response_code)
         } else {
-            ParsedResponseCode::Reserved(bits)
+            ParsedRCode::Reserved(bits)
         }
     }
 
     /// Sets the response code.
-    pub fn set_response_code(&mut self, rcode: ResponseCode) -> Self {
+    pub fn set_response_code(&mut self, rcode: RCode) -> Self {
         self.bits |= rcode as u16;
         *self
     }
@@ -271,7 +271,7 @@ mod tests {
 
     #[test]
     fn test_response_code() {
-        for rcode in ResponseCode::iter() {
+        for rcode in RCode::iter() {
             let f = Flags { bits: rcode as u16 };
             assert_eq!(f.response_code().unwrap(), rcode);
 
@@ -284,10 +284,10 @@ mod tests {
         }
 
         for i in 0..16 {
-            if ResponseCode::iter().find(|rc| *rc as u16 == i).is_none() {
+            if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { bits: i as u16 };
                 match f.response_code() {
-                    ParsedResponseCode::Reserved(v) => assert_eq!(v, i as u8),
+                    ParsedRCode::Reserved(v) => assert_eq!(v, i as u8),
                     _ => panic!("unexpected success"),
                 }
             }
