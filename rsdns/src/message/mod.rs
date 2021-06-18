@@ -8,6 +8,7 @@ mod operation_code;
 mod query_writer;
 mod question;
 pub mod reader;
+mod record_type;
 mod response_code;
 
 pub use flags::*;
@@ -17,4 +18,5 @@ pub use operation_code::*;
 #[allow(unused_imports)]
 pub(crate) use query_writer::*;
 pub use question::*;
+pub use record_type::*;
 pub use response_code::*;
