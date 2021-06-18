@@ -9,6 +9,7 @@ mod parsed_rcode;
 mod query_writer;
 mod question;
 pub mod reader;
+mod response_code;
 
 pub use flags::*;
 pub use header::*;
@@ -18,3 +19,4 @@ pub use parsed_rcode::*;
 #[allow(unused_imports)]
 pub(crate) use query_writer::*;
 pub use question::*;
+pub use response_code::*;

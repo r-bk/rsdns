@@ -1,0 +1,95 @@
+use crate::{constants::RCode, Error};
+use std::{
+    cmp::Ordering,
+    convert::TryFrom,
+    fmt::{self, Display, Formatter},
+};
+
+/// Parsed query response code.
+///
+/// This struct represents an RCode parsed from a DNS message.
+/// It may include a value still not supported by the [RCode] enumeration.
+///
+/// Convenience methods are provided to handle both supported and not supported values.
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
+pub struct ResponseCode {
+    pub(crate) value: u16,
+}
+
+impl ResponseCode {
+    /// Converts the RCode to a static string slice.
+    ///
+    /// This is equivalent to calling `to_str` on the corresponding [RCode] value.
+    /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RCODE"` is
+    /// returned.
+    ///
+    /// For numeric representation of an unsupported value see the
+    /// underlying implementation of the [Display] trait.
+    pub fn to_str(self) -> &'static str {
+        match RCode::try_from(self.value) {
+            Ok(rc) => rc.to_str(),
+            _ => "UNRECOGNIZED_RCODE",
+        }
+    }
+}
+
+impl From<u16> for ResponseCode {
+    #[inline]
+    fn from(value: u16) -> Self {
+        Self { value }
+    }
+}
+
+impl From<RCode> for ResponseCode {
+    #[inline]
+    fn from(rc: RCode) -> Self {
+        Self { value: rc as u16 }
+    }
+}
+
+impl TryFrom<ResponseCode> for RCode {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(rc: ResponseCode) -> Result<Self, Self::Error> {
+        RCode::try_from(rc.value)
+    }
+}
+
+impl Display for ResponseCode {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match RCode::try_from(self.value) {
+            Ok(c) => write!(f, "{}", c.to_str())?,
+            _ => write!(f, "RCODE({})", self.value)?,
+        }
+        Ok(())
+    }
+}
+
+impl PartialEq<RCode> for ResponseCode {
+    #[inline]
+    fn eq(&self, other: &RCode) -> bool {
+        self.value == *other as u16
+    }
+}
+
+impl PartialEq<ResponseCode> for RCode {
+    #[inline]
+    fn eq(&self, other: &ResponseCode) -> bool {
+        (*self as u16) == other.value
+    }
+}
+
+impl PartialOrd<RCode> for ResponseCode {
+    #[inline]
+    fn partial_cmp(&self, other: &RCode) -> Option<Ordering> {
+        self.value.partial_cmp(&(*other as u16))
+    }
+}
+
+impl PartialOrd<ResponseCode> for RCode {
+    #[inline]
+    fn partial_cmp(&self, other: &ResponseCode) -> Option<Ordering> {
+        (*self as u16).partial_cmp(&other.value)
+    }
+}
