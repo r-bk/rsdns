@@ -13,7 +13,7 @@ pub enum Error {
     #[error("reserved query opcode: {0}")]
     ReservedOpCode(u8),
     #[error("reserved response code: {0}")]
-    ReservedRCode(u8),
+    ReservedRCode(u16),
     #[error("io error")]
     IoError(#[from] std::io::Error),
     #[error("domain name label invalid character")]

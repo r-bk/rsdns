@@ -11,7 +11,7 @@ pub enum ParsedRCode {
     /// a recognized [RCode]
     Some(RCode),
     /// a reserved response code still not implemented in the [RCode] enumeration
-    Reserved(u8),
+    Reserved(u16),
 }
 
 impl ParsedRCode {
@@ -37,12 +37,12 @@ impl ParsedRCode {
         panic!("unwrap called on a reserved response code");
     }
 
-    /// Unwraps the reserved [u8] value.
+    /// Unwraps the reserved [u16] value.
     ///
     /// # Panics
     ///
     /// Panics if the self value is not [`Reserved`](Self::Reserved).
-    pub fn unwrap_reserved(self) -> u8 {
+    pub fn unwrap_reserved(self) -> u16 {
         if let Self::Reserved(response_code) = self {
             return response_code;
         }
@@ -57,7 +57,7 @@ impl ParsedRCode {
         }
     }
 
-    fn reserved_as_str(bits: u8) -> &'static str {
+    fn reserved_as_str(bits: u16) -> &'static str {
         match bits {
             6 => "RCODE(6)",
             7 => "RCODE(7)",

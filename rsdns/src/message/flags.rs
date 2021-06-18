@@ -144,7 +144,7 @@ impl Flags {
 
     /// Returns the response code.
     pub fn response_code(self) -> ParsedRCode {
-        let bits = (self.bits & 0b0000_0000_0000_1111) as u8;
+        let bits = self.bits & 0b0000_0000_0000_1111;
         if let Ok(response_code) = RCode::try_from(bits) {
             ParsedRCode::Some(response_code)
         } else {
@@ -281,7 +281,7 @@ mod tests {
             if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { bits: i as u16 };
                 match f.response_code() {
-                    ParsedRCode::Reserved(v) => assert_eq!(v, i as u8),
+                    ParsedRCode::Reserved(v) => assert_eq!(v, i as u16),
                     _ => panic!("unexpected success"),
                 }
             }

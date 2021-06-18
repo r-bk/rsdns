@@ -35,10 +35,10 @@ impl RCode {
     }
 }
 
-impl TryFrom<u8> for RCode {
+impl TryFrom<u16> for RCode {
     type Error = Error;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
             0 => RCode::NOERROR,
             1 => RCode::FORMERR,
@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn test_try_from() {
         for r_code in RCode::iter() {
-            assert_eq!(r_code, RCode::try_from(r_code as u8).unwrap());
+            assert_eq!(r_code, RCode::try_from(r_code as u16).unwrap());
         }
 
         assert!(matches!(
