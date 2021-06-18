@@ -17,7 +17,7 @@ use std::{
 /// too large.
 /// For example, the [Soa](crate::records::Soa) record includes two domain names in the record data.
 /// This, together with the domain name in the record header, would make the size of the structure
-/// at least 765 bytes long if [InlineName](crate::InlineName) was used.
+/// at least 765 bytes long, if [InlineName](crate::InlineName) was used.
 ///
 /// [Name] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.

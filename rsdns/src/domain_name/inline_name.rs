@@ -29,7 +29,7 @@ type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 /// max length of a domain name without the root zone is 253 bytes.
 ///
 /// Domain name is case insensitive. Hence, when compared, both sides are converted to
-/// ASCII lowercase. Use [`InlineName::as_str`] when exact match is required.gi
+/// ASCII lowercase. Use [`InlineName::as_str`] when exact match is required.
 ///
 /// Specifications:
 ///
