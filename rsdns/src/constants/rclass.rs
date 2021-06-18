@@ -6,7 +6,7 @@ use std::{
 };
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
-/// Resource record class.
+/// Record class.
 ///
 /// This enumeration includes data classes only.
 /// For enumeration of data and query classes see [QClass].

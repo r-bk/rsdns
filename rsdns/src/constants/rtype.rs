@@ -6,7 +6,7 @@ use std::{
 };
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
-/// Resource record type.
+/// Record type.
 ///
 /// This enumeration includes data types only.
 /// For data and query types see [QType].
