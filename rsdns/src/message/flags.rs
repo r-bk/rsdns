@@ -1,8 +1,7 @@
 use crate::{
     constants::{OpCode, RCode},
-    message::{MessageType, OperationCode, ParsedRCode},
+    message::{MessageType, OperationCode, ResponseCode},
 };
-use std::convert::TryFrom;
 
 macro_rules! get_bit {
     ($e:expr, $l:literal) => {
@@ -143,13 +142,9 @@ impl Flags {
     }
 
     /// Returns the response code.
-    pub fn response_code(self) -> ParsedRCode {
+    pub fn response_code(self) -> ResponseCode {
         let bits = self.bits & 0b0000_0000_0000_1111;
-        if let Ok(response_code) = RCode::try_from(bits) {
-            ParsedRCode::Some(response_code)
-        } else {
-            ParsedRCode::Reserved(bits)
-        }
+        bits.into()
     }
 
     /// Sets the response code.
@@ -182,6 +177,8 @@ impl std::convert::From<Flags> for u16 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Error;
+    use std::convert::TryFrom;
     use strum::IntoEnumIterator;
 
     type FlagGet = fn(Flags) -> bool;
@@ -267,23 +264,23 @@ mod tests {
     fn test_response_code() {
         for rcode in RCode::iter() {
             let f = Flags { bits: rcode as u16 };
-            assert_eq!(f.response_code().unwrap(), rcode);
+            assert_eq!(f.response_code(), rcode);
 
             let mut f = Flags::default();
             assert_eq!(u16::from(f), 0);
 
             f.set_response_code(rcode);
-            assert_eq!(f.response_code().unwrap(), rcode);
+            assert_eq!(f.response_code(), rcode);
             assert_eq!(u16::from(f) & 0b0000_0000_0000_1111, rcode as u16);
         }
 
         for i in 0..16 {
             if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
                 let f = Flags { bits: i as u16 };
-                match f.response_code() {
-                    ParsedRCode::Reserved(v) => assert_eq!(v, i as u16),
-                    _ => panic!("unexpected success"),
-                }
+                matches!(
+                    RCode::try_from(f.response_code()),
+                    Err(Error::ReservedRCode(v)) if v == i
+                );
             }
         }
     }
