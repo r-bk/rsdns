@@ -9,6 +9,7 @@ mod query_type;
 mod query_writer;
 mod question;
 pub mod reader;
+mod record_class;
 mod record_type;
 mod response_code;
 
@@ -20,5 +21,6 @@ pub use query_type::*;
 #[allow(unused_imports)]
 pub(crate) use query_writer::*;
 pub use question::*;
+pub use record_class::*;
 pub use record_type::*;
 pub use response_code::*;
