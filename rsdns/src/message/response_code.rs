@@ -93,3 +93,31 @@ impl PartialOrd<ResponseCode> for RCode {
         (*self as u16).partial_cmp(&other.value)
     }
 }
+
+impl PartialEq<u16> for ResponseCode {
+    #[inline]
+    fn eq(&self, other: &u16) -> bool {
+        self.value == *other
+    }
+}
+
+impl PartialEq<ResponseCode> for u16 {
+    #[inline]
+    fn eq(&self, other: &ResponseCode) -> bool {
+        *self == other.value
+    }
+}
+
+impl PartialOrd<u16> for ResponseCode {
+    #[inline]
+    fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
+        self.value.partial_cmp(other)
+    }
+}
+
+impl PartialOrd<ResponseCode> for u16 {
+    #[inline]
+    fn partial_cmp(&self, other: &ResponseCode) -> Option<Ordering> {
+        self.partial_cmp(&other.value)
+    }
+}
