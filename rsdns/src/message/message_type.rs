@@ -16,6 +16,18 @@ impl MessageType {
     pub fn as_str(self) -> &'static str {
         self.into()
     }
+
+    /// Checks if message type is [Query](MessageType::Query).
+    #[inline]
+    pub fn is_query(self) -> bool {
+        matches!(self, MessageType::Query)
+    }
+
+    /// Checks if message type is [Response](MessageType::Response).
+    #[inline]
+    pub fn is_response(self) -> bool {
+        matches!(self, MessageType::Response)
+    }
 }
 
 impl From<bool> for MessageType {
