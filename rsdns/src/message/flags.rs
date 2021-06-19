@@ -43,7 +43,7 @@ impl Flags {
     }
 
     /// Sets the message type.
-    pub fn set_message_type(&mut self, message_type: MessageType) -> Self {
+    pub(crate) fn set_message_type(&mut self, message_type: MessageType) -> Self {
         let value: bool = message_type.into();
         set_bit!(self.bits, 15, value);
         *self
@@ -57,7 +57,7 @@ impl Flags {
     }
 
     /// Sets the message opcode.
-    pub fn set_opcode(&mut self, opcode: OpCode) -> Self {
+    pub(crate) fn set_opcode(&mut self, opcode: OpCode) -> Self {
         let mask = 0b0111_1000_0000_0000;
         self.bits = (self.bits & !mask) | (opcode as u16) << 11;
         *self
@@ -72,7 +72,7 @@ impl Flags {
     }
 
     /// Sets the authoritative answer flag.
-    pub fn set_authoritative_answer(&mut self, value: bool) -> Self {
+    pub(crate) fn set_authoritative_answer(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 10, value);
         *self
     }
@@ -86,7 +86,7 @@ impl Flags {
     }
 
     /// Sets the truncated flag.
-    pub fn set_truncated(&mut self, value: bool) -> Self {
+    pub(crate) fn set_truncated(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 9, value);
         *self
     }
@@ -100,7 +100,7 @@ impl Flags {
     }
 
     /// Sets the recursion desired flag.
-    pub fn set_recursion_desired(&mut self, value: bool) -> Self {
+    pub(crate) fn set_recursion_desired(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 8, value);
         *self
     }
@@ -114,7 +114,7 @@ impl Flags {
     }
 
     /// Sets the recursion available flag.
-    pub fn set_recursion_available(&mut self, value: bool) -> Self {
+    pub(crate) fn set_recursion_available(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 7, value);
         *self
     }
@@ -122,12 +122,12 @@ impl Flags {
     /// Returns the Z field.
     ///
     /// Z - reserved for future use
-    pub fn z(self) -> u8 {
+    pub(crate) fn z(self) -> u8 {
         (self.bits >> 4) as u8
     }
 
     /// Sets the Z field.
-    pub fn set_z(&mut self, value: u8) -> Self {
+    pub(crate) fn set_z(&mut self, value: u8) -> Self {
         self.bits |= ((value & 0b0000_0111) << 4) as u16;
         *self
     }
@@ -139,7 +139,7 @@ impl Flags {
     }
 
     /// Sets the response code.
-    pub fn set_response_code(&mut self, rcode: RCode) -> Self {
+    pub(crate) fn set_response_code(&mut self, rcode: RCode) -> Self {
         self.bits |= rcode as u16;
         *self
     }
