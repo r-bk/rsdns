@@ -29,7 +29,10 @@ pub struct Flags {
 }
 
 impl Flags {
-    /// Creates new (zero) Flags.
+    /// Creates new (default) Flags.
+    ///
+    /// Default Flags have message type [Query](MessageType::Query),
+    /// and operation code [QUERY](OpCode::QUERY).
     pub fn new() -> Flags {
         Flags { bits: 0 }
     }
