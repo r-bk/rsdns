@@ -43,10 +43,10 @@ impl Flags {
 
     /// Sets the message type.
     #[cfg(test)]
-    pub(crate) fn set_message_type(&mut self, message_type: MessageType) -> Self {
+    pub(crate) fn set_message_type(&mut self, message_type: MessageType) -> &mut Self {
         let value: bool = message_type.into();
         set_bit!(self.bits, 15, value);
-        *self
+        self
     }
 
     /// Returns the message opcode.
@@ -58,10 +58,10 @@ impl Flags {
 
     /// Sets the message opcode.
     #[cfg(test)]
-    pub(crate) fn set_opcode(&mut self, opcode: OpCode) -> Self {
+    pub(crate) fn set_opcode(&mut self, opcode: OpCode) -> &mut Self {
         let mask = 0b0111_1000_0000_0000;
         self.bits = (self.bits & !mask) | (opcode as u16) << 11;
-        *self
+        self
     }
 
     /// Returns the authoritative answer flag.
@@ -74,9 +74,9 @@ impl Flags {
 
     /// Sets the authoritative answer flag.
     #[cfg(test)]
-    pub(crate) fn set_authoritative_answer(&mut self, value: bool) -> Self {
+    pub(crate) fn set_authoritative_answer(&mut self, value: bool) -> &mut Self {
         set_bit!(self.bits, 10, value);
-        *self
+        self
     }
 
     /// Returns the truncated flag.
@@ -89,9 +89,9 @@ impl Flags {
 
     /// Sets the truncated flag.
     #[cfg(test)]
-    pub(crate) fn set_truncated(&mut self, value: bool) -> Self {
+    pub(crate) fn set_truncated(&mut self, value: bool) -> &mut Self {
         set_bit!(self.bits, 9, value);
-        *self
+        self
     }
 
     /// Returns the recursion desired flag.
@@ -103,9 +103,9 @@ impl Flags {
     }
 
     /// Sets the recursion desired flag.
-    pub(crate) fn set_recursion_desired(&mut self, value: bool) -> Self {
+    pub(crate) fn set_recursion_desired(&mut self, value: bool) -> &mut Self {
         set_bit!(self.bits, 8, value);
-        *self
+        self
     }
 
     /// Returns the recursion available flag.
@@ -118,9 +118,9 @@ impl Flags {
 
     /// Sets the recursion available flag.
     #[cfg(test)]
-    pub(crate) fn set_recursion_available(&mut self, value: bool) -> Self {
+    pub(crate) fn set_recursion_available(&mut self, value: bool) -> &mut Self {
         set_bit!(self.bits, 7, value);
-        *self
+        self
     }
 
     /// Returns the Z field.
@@ -133,9 +133,9 @@ impl Flags {
 
     /// Sets the Z field.
     #[cfg(test)]
-    pub(crate) fn set_z(&mut self, value: u8) -> Self {
+    pub(crate) fn set_z(&mut self, value: u8) -> &mut Self {
         self.bits |= ((value & 0b0000_0111) << 4) as u16;
-        *self
+        self
     }
 
     /// Returns the response code.
@@ -146,9 +146,9 @@ impl Flags {
 
     /// Sets the response code.
     #[cfg(test)]
-    pub(crate) fn set_response_code(&mut self, rcode: RCode) -> Self {
+    pub(crate) fn set_response_code(&mut self, rcode: RCode) -> &mut Self {
         self.bits |= rcode as u16;
-        *self
+        self
     }
 }
 
@@ -180,7 +180,7 @@ mod tests {
     use strum::IntoEnumIterator;
 
     type FlagGet = fn(Flags) -> bool;
-    type FlagSet = fn(&mut Flags, bool) -> Flags;
+    type FlagSet = fn(&mut Flags, bool) -> &mut Flags;
 
     fn test_bool_flag(get: FlagGet, set: FlagSet, mask: u16) {
         let mut f = Flags::default();

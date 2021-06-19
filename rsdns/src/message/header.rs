@@ -74,7 +74,7 @@ mod tests {
     fn test_serialization() {
         let mut rng = rand::thread_rng();
 
-        let flags = Flags::new()
+        let flags = *Flags::new()
             .set_message_type(rand::random::<bool>().into())
             .set_authoritative_answer(rand::random())
             .set_recursion_available(rand::random())

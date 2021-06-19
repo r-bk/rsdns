@@ -29,7 +29,7 @@ impl<'a> QueryWriter<'a> {
     pub fn write(&mut self, qname: &str, qtype: QType, qclass: QClass) -> Result<usize> {
         let header = Header {
             id: self.id,
-            flags: Flags::new().set_recursion_desired(self.recursion_desired),
+            flags: *Flags::new().set_recursion_desired(self.recursion_desired),
             qd_count: 1,
             ..Default::default()
         };
