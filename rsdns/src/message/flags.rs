@@ -1,7 +1,6 @@
-use crate::{
-    constants::{OpCode, RCode},
-    message::{MessageType, OperationCode, ResponseCode},
-};
+#[cfg(test)]
+use crate::constants::{OpCode, RCode};
+use crate::message::{MessageType, OperationCode, ResponseCode};
 
 macro_rules! get_bit {
     ($e:expr, $l:literal) => {
@@ -32,7 +31,7 @@ impl Flags {
     /// Creates new (default) Flags.
     ///
     /// Default Flags have message type [Query](MessageType::Query),
-    /// and operation code [QUERY](OpCode::QUERY).
+    /// and operation code [QUERY](crate::constants::OpCode::QUERY).
     pub fn new() -> Flags {
         Flags { bits: 0 }
     }
@@ -43,6 +42,7 @@ impl Flags {
     }
 
     /// Sets the message type.
+    #[cfg(test)]
     pub(crate) fn set_message_type(&mut self, message_type: MessageType) -> Self {
         let value: bool = message_type.into();
         set_bit!(self.bits, 15, value);
@@ -57,6 +57,7 @@ impl Flags {
     }
 
     /// Sets the message opcode.
+    #[cfg(test)]
     pub(crate) fn set_opcode(&mut self, opcode: OpCode) -> Self {
         let mask = 0b0111_1000_0000_0000;
         self.bits = (self.bits & !mask) | (opcode as u16) << 11;
@@ -72,6 +73,7 @@ impl Flags {
     }
 
     /// Sets the authoritative answer flag.
+    #[cfg(test)]
     pub(crate) fn set_authoritative_answer(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 10, value);
         *self
@@ -86,6 +88,7 @@ impl Flags {
     }
 
     /// Sets the truncated flag.
+    #[cfg(test)]
     pub(crate) fn set_truncated(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 9, value);
         *self
@@ -114,6 +117,7 @@ impl Flags {
     }
 
     /// Sets the recursion available flag.
+    #[cfg(test)]
     pub(crate) fn set_recursion_available(&mut self, value: bool) -> Self {
         set_bit!(self.bits, 7, value);
         *self
@@ -122,11 +126,13 @@ impl Flags {
     /// Returns the Z field.
     ///
     /// Z - reserved for future use
+    #[cfg(test)]
     pub(crate) fn z(self) -> u8 {
         (self.bits >> 4) as u8
     }
 
     /// Sets the Z field.
+    #[cfg(test)]
     pub(crate) fn set_z(&mut self, value: u8) -> Self {
         self.bits |= ((value & 0b0000_0111) << 4) as u16;
         *self
@@ -139,6 +145,7 @@ impl Flags {
     }
 
     /// Sets the response code.
+    #[cfg(test)]
     pub(crate) fn set_response_code(&mut self, rcode: RCode) -> Self {
         self.bits |= rcode as u16;
         *self
