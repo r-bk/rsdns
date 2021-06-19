@@ -115,7 +115,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
     fn format_flags(header: &Header) -> String {
         let mut flags_str = Vec::new();
 
-        if header.flags.is_response() {
+        if header.flags.message_type().is_response() {
             flags_str.push("qr");
         }
         if header.flags.authoritative_answer() {

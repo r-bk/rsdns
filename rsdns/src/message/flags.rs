@@ -46,18 +46,6 @@ impl Flags {
         *self
     }
 
-    /// Checks if the message type is [Query](MessageType::Query).
-    #[inline]
-    pub fn is_query(&self) -> bool {
-        self.message_type() == MessageType::Query
-    }
-
-    /// Checks if the message type is [Response](MessageType::Response).
-    #[inline]
-    pub fn is_response(&self) -> bool {
-        self.message_type() == MessageType::Response
-    }
-
     /// Returns the message opcode.
     #[inline]
     pub fn opcode(self) -> OperationCode {
