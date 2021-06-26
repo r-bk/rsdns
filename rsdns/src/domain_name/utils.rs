@@ -1,22 +1,22 @@
 use crate::{
     constants::{DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH},
-    Error, Result,
+    ProtocolError, ProtocolResult,
 };
 
-pub fn check_label_bytes(label: &[u8]) -> Result<()> {
+pub fn check_label_bytes(label: &[u8]) -> ProtocolResult<()> {
     if label.is_empty() {
-        return Err(Error::DomainNameLabelMalformed);
+        return Err(ProtocolError::DomainNameLabelMalformed);
     }
 
     let len = label.len();
 
     if len > DOMAIN_NAME_LABEL_MAX_LENGTH {
-        return Err(Error::DomainNameLabelTooLong(len));
+        return Err(ProtocolError::DomainNameLabelTooLong(len));
     }
 
     for b in label.iter().cloned() {
         if !(b.is_ascii_alphanumeric() || b == b'-') {
-            return Err(Error::DomainNameLabelInvalidChar);
+            return Err(ProtocolError::DomainNameLabelInvalidChar);
         }
     }
 
@@ -24,10 +24,10 @@ pub fn check_label_bytes(label: &[u8]) -> Result<()> {
     // so it is sound to access it unchecked at the first and last bytes
     unsafe {
         if !label.get_unchecked(0).is_ascii_alphabetic() {
-            return Err(Error::DomainNameLabelMalformed);
+            return Err(ProtocolError::DomainNameLabelMalformed);
         }
         if !label.get_unchecked(len - 1).is_ascii_alphanumeric() {
-            return Err(Error::DomainNameLabelMalformed);
+            return Err(ProtocolError::DomainNameLabelMalformed);
         }
     }
 
@@ -35,13 +35,13 @@ pub fn check_label_bytes(label: &[u8]) -> Result<()> {
 }
 
 #[inline(always)]
-pub fn check_label(label: &str) -> Result<()> {
+pub fn check_label(label: &str) -> ProtocolResult<()> {
     check_label_bytes(label.as_bytes())
 }
 
-pub fn check_name_bytes(name: &[u8]) -> Result<()> {
+pub fn check_name_bytes(name: &[u8]) -> ProtocolResult<()> {
     if name.is_empty() {
-        return Err(Error::DomainNameLabelMalformed);
+        return Err(ProtocolError::DomainNameLabelMalformed);
     }
 
     // root domain name
@@ -81,14 +81,14 @@ pub fn check_name_bytes(name: &[u8]) -> Result<()> {
     };
 
     if len > effective_max_length {
-        return Err(Error::DomainNameTooLong);
+        return Err(ProtocolError::DomainNameTooLong);
     }
 
     Ok(())
 }
 
 #[inline(always)]
-pub fn check_name(name: &str) -> Result<()> {
+pub fn check_name(name: &str) -> ProtocolResult<()> {
     check_name_bytes(name.as_bytes())
 }
 
@@ -102,29 +102,35 @@ mod tests {
 
         for m in malformed {
             let res = check_label_bytes(m);
-            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
 
             let res = check_label(std::str::from_utf8(m).unwrap());
-            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
         }
 
         let invalid_char: &[&[u8]] = &[b"la.el", b"\tabel"];
         for ic in invalid_char {
             let res = check_label_bytes(ic);
-            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar)
+            ));
 
             let res = check_label(std::str::from_utf8(ic).unwrap());
-            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar)
+            ));
         }
 
         let l_64 = "a".repeat(64);
         let too_large = &[l_64.as_bytes()];
         for tl in too_large {
             let res = check_label_bytes(tl);
-            assert!(matches!(res, Err(Error::DomainNameLabelTooLong(l)) if l == tl.len()));
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelTooLong(l)) if l == tl.len()));
 
             let res = check_label(std::str::from_utf8(tl).unwrap());
-            assert!(matches!(res, Err(Error::DomainNameLabelTooLong(l)) if l == tl.len()));
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelTooLong(l)) if l == tl.len()));
         }
 
         let l_63 = "a".repeat(63);
@@ -165,20 +171,26 @@ mod tests {
 
         for m in malformed {
             let res = check_name_bytes(m);
-            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
 
             let res = check_name(std::str::from_utf8(m).unwrap());
-            assert!(matches!(res, Err(Error::DomainNameLabelMalformed)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
         }
 
         let invalid_char: &[&[u8]] = &[b"examp|e.com."];
 
         for ic in invalid_char {
             let res = check_name_bytes(ic);
-            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar)
+            ));
 
             let res = check_name(std::str::from_utf8(ic).unwrap());
-            assert!(matches!(res, Err(Error::DomainNameLabelInvalidChar)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar)
+            ));
         }
 
         let l_63 = "a".repeat(63);
@@ -194,10 +206,10 @@ mod tests {
         let too_long = &[dn_254.as_str()];
         for tl in too_long {
             let res = check_name(tl);
-            assert!(matches!(res, Err(Error::DomainNameTooLong)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
 
             let res = check_name_bytes(tl.as_bytes());
-            assert!(matches!(res, Err(Error::DomainNameTooLong)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
         }
     }
 }

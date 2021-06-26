@@ -175,7 +175,7 @@ impl std::convert::From<Flags> for u16 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Error;
+    use crate::{Error, ProtocolError};
     use std::convert::TryFrom;
     use strum::IntoEnumIterator;
 
@@ -277,7 +277,7 @@ mod tests {
                 let f = Flags { bits: i as u16 };
                 matches!(
                     RCode::try_from(f.response_code()),
-                    Err(Error::ReservedRCode(v)) if v == i
+                    Err(Error::ProtocolError(ProtocolError::ReservedRCode(v))) if v == i
                 );
             }
         }

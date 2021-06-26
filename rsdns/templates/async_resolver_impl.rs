@@ -2,7 +2,7 @@ use crate::{
     constants::{QType, QClass},
     resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
     message::{reader::MessageReader, Flags, QueryWriter},
-    Error, Result,
+    Error, Result, ProtocolError,
 };
 
 {% if crate_name == "tokio" %}
@@ -130,7 +130,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
         let response_size = u16::from_be_bytes(response_size_buf) as usize;
 
         if response_size > self.buf.len() {
-            return Err(Error::BufferTooShort(response_size));
+            return Err(Error::from(ProtocolError::BufferTooShort(response_size)));
         }
 
         sock.read_exact(&mut self.buf[..response_size]).await?;

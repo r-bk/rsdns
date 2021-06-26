@@ -1,4 +1,4 @@
-use crate::Result;
+use crate::ProtocolResult;
 use std::{
     fmt::{Debug, Display},
     str::FromStr,
@@ -22,10 +22,10 @@ pub trait NameContract: PartialOrd + Ord + PartialEq + Eq + FromStr + Debug + Di
     fn clear(&mut self);
 
     /// Appends a label to the domain name.
-    fn append_label_bytes(&mut self, label: &[u8]) -> Result<()>;
+    fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()>;
 
     /// Appends a label to the domain name.
-    fn append_label(&mut self, label: &str) -> Result<()>;
+    fn append_label(&mut self, label: &str) -> ProtocolResult<()>;
 
     /// Sets the domain name to denote the root DNS zone `.`.
     fn set_root(&mut self);

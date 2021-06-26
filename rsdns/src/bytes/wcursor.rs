@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use crate::{ProtocolError, ProtocolResult};
 
 #[derive(Debug)]
 pub struct WCursor<'a> {
@@ -46,16 +46,16 @@ impl<'a> WCursor<'a> {
     }
 
     #[inline]
-    pub fn slice(&mut self, size: usize) -> Result<&mut [u8]> {
+    pub fn slice(&mut self, size: usize) -> ProtocolResult<&mut [u8]> {
         if self.len() >= size {
             Ok(unsafe { self.buf.get_unchecked_mut(self.pos..self.pos + size) })
         } else {
-            Err(Error::BufferTooShort(self.pos() + size))
+            Err(ProtocolError::BufferTooShort(self.pos() + size))
         }
     }
 
     #[inline]
-    pub fn u16_be(&mut self, val: u16) -> Result<()> {
+    pub fn u16_be(&mut self, val: u16) -> ProtocolResult<()> {
         w_be!(self, u16, val)
     }
 
@@ -65,7 +65,7 @@ impl<'a> WCursor<'a> {
     }
 
     #[inline]
-    pub fn u8(&mut self, val: u8) -> Result<()> {
+    pub fn u8(&mut self, val: u8) -> ProtocolResult<()> {
         unsafe { *self.slice(1)?.get_unchecked_mut(0) = val };
         self.pos += 1;
         Ok(())
@@ -78,7 +78,7 @@ impl<'a> WCursor<'a> {
     }
 
     #[inline]
-    pub fn bytes(&mut self, buf: &[u8]) -> Result<()> {
+    pub fn bytes(&mut self, buf: &[u8]) -> ProtocolResult<()> {
         let slice = self.slice(buf.len())?;
         slice.copy_from_slice(buf);
         self.pos += buf.len();

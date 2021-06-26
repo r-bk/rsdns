@@ -20,5 +20,6 @@ pub mod records;
 pub mod resolvers;
 
 pub use domain_name::*;
-pub use error::Error;
+pub(crate) use error::ProtocolResult;
 pub use error::Result;
+pub use error::{Error, ProtocolError};

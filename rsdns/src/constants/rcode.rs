@@ -1,4 +1,4 @@
-use crate::Error;
+use crate::{Error, ProtocolError};
 use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},
@@ -46,7 +46,7 @@ impl TryFrom<u16> for RCode {
             3 => RCode::NXDOMAIN,
             4 => RCode::NOTIMP,
             5 => RCode::REFUSED,
-            _ => return Err(Error::ReservedRCode(value)),
+            _ => return Err(Error::from(ProtocolError::ReservedRCode(value))),
         };
 
         Ok(me)
@@ -72,7 +72,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from(128),
-            Err(Error::ReservedRCode(128))
+            Err(Error::ProtocolError(ProtocolError::ReservedRCode(128)))
         ));
     }
 }

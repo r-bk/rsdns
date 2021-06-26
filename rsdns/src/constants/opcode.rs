@@ -1,4 +1,4 @@
-use crate::Error;
+use crate::{Error, ProtocolError};
 use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},
@@ -36,7 +36,7 @@ impl TryFrom<u8> for OpCode {
             0 => OpCode::QUERY,
             1 => OpCode::IQUERY,
             2 => OpCode::STATUS,
-            _ => return Err(Error::ReservedOpCode(value)),
+            _ => return Err(Error::from(ProtocolError::ReservedOpCode(value))),
         };
 
         Ok(me)
@@ -62,7 +62,7 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from(128),
-            Err(Error::ReservedOpCode(128))
+            Err(Error::ProtocolError(ProtocolError::ReservedOpCode(128)))
         ));
     }
 }

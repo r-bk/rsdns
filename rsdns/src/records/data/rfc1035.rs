@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::RType,
-    Name, Result,
+    Name, ProtocolResult,
 };
 use std::net::Ipv4Addr;
 
@@ -19,7 +19,7 @@ pub struct A {
 rr_data!(A, RType::A);
 
 impl RrDataReader<A> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<A> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<A> {
         self.window(rd_len)?;
         let rr = Ok(A {
             address: self.read()?,
@@ -62,7 +62,7 @@ pub struct Hinfo {
 rr_data!(Hinfo, RType::HINFO);
 
 impl RrDataReader<Hinfo> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Hinfo> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Hinfo> {
         self.window(rd_len)?;
         let rr = Ok(Hinfo {
             cpu: self.read_character_string()?,
@@ -100,7 +100,7 @@ pub struct Wks {
 rr_data!(Wks, RType::WKS);
 
 impl RrDataReader<Wks> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Wks> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Wks> {
         self.window(rd_len)?;
         let rr = Ok(Wks {
             address: self.read()?,
@@ -188,7 +188,7 @@ pub struct Minfo {
 rr_data!(Minfo, RType::MINFO);
 
 impl RrDataReader<Minfo> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Minfo> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Minfo> {
         self.window(rd_len)?;
         let rr = Ok(Minfo {
             rmailbx: self.read()?,
@@ -228,7 +228,7 @@ pub struct Mx {
 rr_data!(Mx, RType::MX);
 
 impl RrDataReader<Mx> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Mx> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Mx> {
         self.window(rd_len)?;
         let rr = Ok(Mx {
             preference: self.u16_be()?,
@@ -253,7 +253,7 @@ pub struct Null {
 rr_data!(Null, RType::NULL);
 
 impl RrDataReader<Null> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Null> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Null> {
         self.window(rd_len)?;
         let rr = Ok(Null {
             anything: Vec::from(self.slice(rd_len)?),
@@ -317,7 +317,7 @@ pub struct Soa {
 rr_data!(Soa, RType::SOA);
 
 impl RrDataReader<Soa> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Soa> {
+    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Soa> {
         self.window(rd_len)?;
         let rr = Ok(Soa {
             mname: self.read()?,
@@ -348,7 +348,7 @@ pub struct Txt {
 rr_data!(Txt, RType::TXT);
 
 impl RrDataReader<Txt> for Cursor<'_> {
-    fn read_rr_data(&mut self, mut rd_len: usize) -> Result<Txt> {
+    fn read_rr_data(&mut self, mut rd_len: usize) -> ProtocolResult<Txt> {
         self.window(rd_len)?;
         let mut text = Vec::with_capacity(rd_len);
         while rd_len > 0 {

@@ -42,7 +42,7 @@ macro_rules! w_be {
             $self.pos += std::mem::size_of::<$t>();
             Ok(())
         } else {
-            Err(Error::BufferTooShort(std::mem::size_of::<$t>()))
+            Err(ProtocolError::BufferTooShort(std::mem::size_of::<$t>()))
         }
     }};
 }

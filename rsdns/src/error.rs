@@ -1,7 +1,7 @@
-/// Errors returned by [rsdns](crate).
+/// Protocol errors.
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
-pub enum Error {
+pub enum ProtocolError {
     #[error("reserved resource record type: {0}")]
     ReservedRType(u16),
     #[error("reserved query type: {0}")]
@@ -14,8 +14,6 @@ pub enum Error {
     ReservedOpCode(u8),
     #[error("reserved response code: {0}")]
     ReservedRCode(u16),
-    #[error("io error")]
-    IoError(#[from] std::io::Error),
     #[error("domain name label invalid character")]
     DomainNameLabelInvalidChar,
     #[error("domain name label is malformed")]
@@ -36,8 +34,24 @@ pub enum Error {
     EndOfBuffer,
     #[error("buffer window end reached unexpectedly")]
     EndOfWindow,
+    #[error("cursor is already in window mode")]
+    CursorAlreadyInWindow,
+    #[error("cursor not in window mode")]
+    CursorNotInWindow,
+    #[error("cursor window error: expected {0}, actual {1}")]
+    CursorWindowError(usize, usize),
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
+}
+
+/// Errors returned by [rsdns](crate).
+#[allow(missing_docs)]
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("io error")]
+    IoError(#[from] std::io::Error),
+    #[error("protocol error: {0}")]
+    ProtocolError(#[from] ProtocolError),
     #[error("operation timed-out")]
     Timeout,
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
@@ -47,15 +61,12 @@ pub enum Error {
     )]
     #[error("device name is too long or contains forbidden characters - '/' or whitespace")]
     BadBindDevice,
-    #[error("cursor is already in window mode")]
-    CursorAlreadyInWindow,
-    #[error("cursor not in window mode")]
-    CursorNotInWindow,
-    #[error("cursor window error: expected {0}, actual {1}")]
-    CursorWindowError(usize, usize),
     #[error("iterator exhausted")]
     IterationStop,
 }
 
 /// Result returned by [rsdns](crate).
 pub type Result<T> = std::result::Result<T, Error>;
+
+/// Result returned by protocol-related functions.
+pub(crate) type ProtocolResult<T> = std::result::Result<T, ProtocolError>;

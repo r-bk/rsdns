@@ -1,4 +1,4 @@
-use crate::{constants::RClass, Error};
+use crate::{constants::RClass, Error, ProtocolError};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -46,7 +46,7 @@ impl TryFrom<u16> for QClass {
             3 => QClass::CH,
             4 => QClass::HS,
             255 => QClass::ANY,
-            _ => return Err(Error::ReservedQClass(value)),
+            _ => return Err(Error::from(ProtocolError::ReservedQClass(value))),
         };
 
         Ok(me)
@@ -86,7 +86,10 @@ mod tests {
             assert_eq!(qclass, QClass::try_from(qclass as u16).unwrap());
         }
 
-        assert!(matches!(QClass::try_from(0), Err(Error::ReservedQClass(0))));
+        assert!(matches!(
+            QClass::try_from(0),
+            Err(Error::ProtocolError(ProtocolError::ReservedQClass(0)))
+        ));
     }
 
     #[test]

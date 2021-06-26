@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader, WCursor, Writer},
     constants::HEADER_LENGTH,
     message::Flags,
-    Error, Result,
+    ProtocolError, ProtocolResult,
 };
 
 /// Message header.
@@ -27,7 +27,7 @@ pub struct Header {
 }
 
 impl Writer<Header> for WCursor<'_> {
-    fn write(&mut self, h: &Header) -> Result<usize> {
+    fn write(&mut self, h: &Header) -> ProtocolResult<usize> {
         if self.len() >= HEADER_LENGTH {
             unsafe {
                 self.u16_be_unchecked(h.id);
@@ -39,13 +39,13 @@ impl Writer<Header> for WCursor<'_> {
             }
             Ok(HEADER_LENGTH)
         } else {
-            Err(Error::EndOfBuffer)
+            Err(ProtocolError::EndOfBuffer)
         }
     }
 }
 
 impl Reader<Header> for Cursor<'_> {
-    fn read(&mut self) -> Result<Header> {
+    fn read(&mut self) -> ProtocolResult<Header> {
         if self.len() >= HEADER_LENGTH {
             unsafe {
                 Ok(Header {
@@ -58,7 +58,7 @@ impl Reader<Header> for Cursor<'_> {
                 })
             }
         } else {
-            Err(Error::EndOfBuffer)
+            Err(ProtocolError::EndOfBuffer)
         }
     }
 }
@@ -111,22 +111,22 @@ mod tests {
         let mut empty_arr = [0u8; 0];
         let mut small_arr = [0u8; HEADER_LENGTH - 1];
 
-        let res: Result<Header> = Cursor::new(&empty_arr[..]).read();
-        assert!(matches!(res, Err(Error::EndOfBuffer)));
+        let res: ProtocolResult<Header> = Cursor::new(&empty_arr[..]).read();
+        assert!(matches!(res, Err(ProtocolError::EndOfBuffer)));
 
-        let res: Result<Header> = Cursor::new(&small_arr[..]).read();
-        assert!(matches!(res, Err(Error::EndOfBuffer)));
+        let res: ProtocolResult<Header> = Cursor::new(&small_arr[..]).read();
+        assert!(matches!(res, Err(ProtocolError::EndOfBuffer)));
 
         let header = Header::default();
 
         assert!(matches!(
             WCursor::new(&mut empty_arr[..]).write(&header),
-            Err(Error::EndOfBuffer)
+            Err(ProtocolError::EndOfBuffer)
         ));
 
         assert!(matches!(
             WCursor::new(&mut small_arr[..]).write(&header),
-            Err(Error::EndOfBuffer)
+            Err(ProtocolError::EndOfBuffer)
         ));
     }
 }

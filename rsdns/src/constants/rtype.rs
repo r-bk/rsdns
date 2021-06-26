@@ -1,4 +1,4 @@
-use crate::{constants::QType, Error};
+use crate::{constants::QType, Error, ProtocolError};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -83,7 +83,7 @@ impl TryFrom<u16> for RType {
             15 => RType::MX,
             16 => RType::TXT,
             28 => RType::AAAA,
-            _ => return Err(Error::ReservedRType(value)),
+            _ => return Err(Error::from(ProtocolError::ReservedRType(value))),
         };
 
         Ok(me)
@@ -121,6 +121,9 @@ mod tests {
             assert_eq!(rr_type, RType::try_from(rr_type as u16).unwrap());
         }
 
-        assert!(matches!(RType::try_from(0), Err(Error::ReservedRType(0))));
+        assert!(matches!(
+            RType::try_from(0),
+            Err(Error::ProtocolError(ProtocolError::ReservedRType(0)))
+        ));
     }
 }

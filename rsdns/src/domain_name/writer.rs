@@ -1,8 +1,8 @@
-use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, Error, Result};
+use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, ProtocolError, ProtocolResult};
 
 impl WCursor<'_> {
     #[inline]
-    fn write_label(&mut self, label: &[u8]) -> Result<()> {
+    fn write_label(&mut self, label: &[u8]) -> ProtocolResult<()> {
         super::check_label_bytes(label)?;
         if self.len() > label.len() {
             unsafe {
@@ -11,17 +11,17 @@ impl WCursor<'_> {
             }
             Ok(())
         } else {
-            Err(Error::BufferTooShort(self.pos() + label.len() + 1))
+            Err(ProtocolError::BufferTooShort(self.pos() + label.len() + 1))
         }
     }
 
-    pub fn write_domain_name(&mut self, name: &str) -> Result<usize> {
+    pub fn write_domain_name(&mut self, name: &str) -> ProtocolResult<usize> {
         self.write_domain_name_bytes(name.as_bytes())
     }
 
-    pub fn write_domain_name_bytes(&mut self, name: &[u8]) -> Result<usize> {
+    pub fn write_domain_name_bytes(&mut self, name: &[u8]) -> ProtocolResult<usize> {
         if name.is_empty() {
-            return Err(Error::DomainNameLabelMalformed);
+            return Err(ProtocolError::DomainNameLabelMalformed);
         }
 
         let start = self.pos();
@@ -53,7 +53,7 @@ impl WCursor<'_> {
 
         let length = self.pos() - start;
         if length > DOMAIN_NAME_MAX_LENGTH {
-            return Err(Error::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong);
         }
 
         Ok(length)
@@ -107,7 +107,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(&long_label),
-                Err(Error::DomainNameTooLong)
+                Err(ProtocolError::DomainNameTooLong)
             ));
         }
 
@@ -115,7 +115,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(&long_label[..long_label.len() - 1]),
-                Err(Error::DomainNameTooLong)
+                Err(ProtocolError::DomainNameTooLong)
             ));
         }
 
@@ -157,7 +157,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(s),
-                Err(Error::DomainNameLabelMalformed)
+                Err(ProtocolError::DomainNameLabelMalformed)
             ));
         }
     }

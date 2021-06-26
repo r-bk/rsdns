@@ -1,4 +1,4 @@
-use crate::{Error, Result};
+use crate::{ProtocolError, ProtocolResult};
 
 #[derive(Clone, Debug)]
 pub struct Cursor<'a> {
@@ -35,30 +35,30 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    pub fn window(&mut self, size: usize) -> Result<()> {
+    pub fn window(&mut self, size: usize) -> ProtocolResult<()> {
         if self.orig.is_none() {
             if self.len() >= size {
                 self.orig = Some(self.buf);
                 self.buf = unsafe { self.buf.get_unchecked(..self.pos + size) };
                 Ok(())
             } else {
-                Err(Error::EndOfBuffer)
+                Err(ProtocolError::EndOfBuffer)
             }
         } else {
-            Err(Error::CursorAlreadyInWindow)
+            Err(ProtocolError::CursorAlreadyInWindow)
         }
     }
 
-    pub fn close_window(&mut self) -> Result<()> {
+    pub fn close_window(&mut self) -> ProtocolResult<()> {
         if self.orig.is_some() {
             if self.pos == self.buf.len() {
                 self.buf = self.orig.take().unwrap();
                 Ok(())
             } else {
-                Err(Error::CursorWindowError(self.buf.len(), self.pos))
+                Err(ProtocolError::CursorWindowError(self.buf.len(), self.pos))
             }
         } else {
-            Err(Error::CursorNotInWindow)
+            Err(ProtocolError::CursorNotInWindow)
         }
     }
 
@@ -72,7 +72,7 @@ impl<'a> Cursor<'a> {
         self.pos = pos
     }
 
-    pub fn skip(&mut self, distance: usize) -> Result<()> {
+    pub fn skip(&mut self, distance: usize) -> ProtocolResult<()> {
         if self.len() >= distance {
             self.pos += distance;
             Ok(())
@@ -100,7 +100,7 @@ impl<'a> Cursor<'a> {
         self.len() == 0
     }
 
-    pub fn u16_be(&mut self) -> Result<u16> {
+    pub fn u16_be(&mut self) -> ProtocolResult<u16> {
         r_be!(self, u16)
     }
 
@@ -108,15 +108,15 @@ impl<'a> Cursor<'a> {
         ru_be!(self, u16)
     }
 
-    pub fn u32_be(&mut self) -> Result<u32> {
+    pub fn u32_be(&mut self) -> ProtocolResult<u32> {
         r_be!(self, u32)
     }
 
-    pub fn u128_be(&mut self) -> Result<u128> {
+    pub fn u128_be(&mut self) -> ProtocolResult<u128> {
         r_be!(self, u128)
     }
 
-    pub fn u8(&mut self) -> Result<u8> {
+    pub fn u8(&mut self) -> ProtocolResult<u8> {
         if !self.is_empty() {
             let v = unsafe { *self.buf.get_unchecked(self.pos) };
             self.pos += 1;
@@ -126,7 +126,7 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    pub fn slice(&mut self, size: usize) -> Result<&[u8]> {
+    pub fn slice(&mut self, size: usize) -> ProtocolResult<&[u8]> {
         if self.len() >= size {
             let pos = self.pos;
             self.pos += size;
@@ -137,11 +137,11 @@ impl<'a> Cursor<'a> {
     }
 
     #[inline]
-    fn bound_error(&self) -> Error {
+    fn bound_error(&self) -> ProtocolError {
         if self.orig.is_none() {
-            Error::EndOfBuffer
+            ProtocolError::EndOfBuffer
         } else {
-            Error::EndOfWindow
+            ProtocolError::EndOfWindow
         }
     }
 }

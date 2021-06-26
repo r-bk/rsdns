@@ -1,4 +1,6 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, InlineName, Result};
+use crate::{
+    constants::DOMAIN_NAME_MAX_LENGTH, Error, InlineName, ProtocolError, ProtocolResult, Result,
+};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -212,31 +214,7 @@ impl Name {
         self.str_.clear();
     }
 
-    /// Appends a label to the domain name.
-    ///
-    /// This function is dedicated to a parser which needs to construct
-    /// a domain name label by label, as they are read from the DNS on-wire representation.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use rsdns::Name;
-    /// #
-    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
-    /// #
-    /// let mut dn = Name::new();
-    ///
-    /// dn.append_label_bytes(b"example")?;
-    /// assert_eq!(dn.as_str(), "example.");
-    ///
-    /// dn.append_label_bytes(b"com")?;
-    /// assert_eq!(dn.as_str(), "example.com.");
-    /// #
-    /// # Ok(())
-    /// # }
-    /// # foo().unwrap();
-    /// ```
-    pub fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
+    pub(crate) fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
         super::check_label_bytes(label)?;
 
         // at this point the label is proven to be valid,
@@ -244,7 +222,7 @@ impl Name {
         let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
 
         if self.str_.len() + label_as_str.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
-            return Err(Error::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong);
         }
 
         self.str_.push_str(label_as_str);
@@ -253,34 +231,11 @@ impl Name {
         Ok(())
     }
 
-    /// Appends a label to the domain name.
-    ///
-    /// This is a string slice equivalent of [`Name::append_label_bytes`].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use rsdns::Name;
-    /// #
-    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
-    /// #
-    /// let mut dn = Name::new();
-    ///
-    /// dn.append_label("example")?;
-    /// assert_eq!(dn.as_str(), "example.");
-    ///
-    /// dn.append_label("com")?;
-    /// assert_eq!(dn.as_str(), "example.com.");
-    /// #
-    /// # Ok(())
-    /// # }
-    /// # foo().unwrap();
-    /// ```
-    pub fn append_label(&mut self, label: &str) -> Result<()> {
+    pub(crate) fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
         super::check_label(label)?;
 
         if self.str_.len() + label.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
-            return Err(Error::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong);
         }
 
         self.str_.push_str(label);
@@ -443,12 +398,12 @@ impl super::NameContract for Name {
     }
 
     #[inline(always)]
-    fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
+    fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
         self.append_label_bytes(label)
     }
 
     #[inline(always)]
-    fn append_label(&mut self, label: &str) -> Result<()> {
+    fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
         self.append_label(label)
     }
 
@@ -580,12 +535,12 @@ mod tests {
             dn.append_label("small").unwrap();
 
             let res = dn.append_label(&l_63);
-            assert!(matches!(res, Err(Error::DomainNameTooLong)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
         }
 
         // test total size == 255
         let res = dn.clone().append_label(&l_63);
-        assert!(matches!(res, Err(Error::DomainNameTooLong)));
+        assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
 
         dn.append_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);
