@@ -120,7 +120,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
     }
 
     async fn tcp_exchange(&mut self) -> Result<usize> {
-        let mut sock = tcp_socket(&self.config).await?;
+        let mut sock = tcp_socket(self.config).await?;
 
         sock.write_all(&self.msg).await?;
 
