@@ -55,7 +55,7 @@ impl<'a, 'b, 'c, 'd> Output<'a, 'b, 'c, 'd> {
     }
 
     fn print_message(&self) -> Result<()> {
-        let mut mr = MessageReader::new(&self.msg)?;
+        let mut mr = MessageReader::new(self.msg)?;
         println!("{}", Self::format_response_header(mr.header())?);
         println!("{}", Self::format_question(&mut mr)?);
         Ok(())
