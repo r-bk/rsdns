@@ -216,7 +216,7 @@ impl Args {
 
         #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
         if let Some(ref bd) = self.bind_device {
-            conf = conf.set_bind_device(Some(&bd))?;
+            conf = conf.set_bind_device(Some(bd))?;
         }
 
         Ok((conf, qtype, free_args))
