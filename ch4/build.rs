@@ -1,4 +1,5 @@
 use std::{env, path::Path, process::Command};
+use sysinfo::{ProcessorExt, RefreshKind, System, SystemExt};
 use tera::{Context, Tera};
 
 fn main() {
@@ -11,7 +12,38 @@ fn main() {
 
     built::write_built_file().expect("built failed");
     gen_ch4_version();
+    export_sysinfo();
     write_main();
+}
+
+fn export_sysinfo() {
+    let na = Some("n/a".to_string());
+    let mut name = na.clone();
+    let mut os_version = na.clone();
+    let mut cpu_vendor = na.clone();
+    let mut cpu_brand = na.clone();
+
+    if System::IS_SUPPORTED {
+        let system = System::new_with_specifics(RefreshKind::new().with_cpu());
+        name = system.name().or_else(|| na.clone());
+        os_version = system.long_os_version().or_else(|| na.clone());
+        cpu_vendor = Some(system.global_processor_info().vendor_id().to_string());
+        cpu_brand = Some(system.global_processor_info().brand().to_string());
+    }
+
+    println!("cargo:rustc-env=CH4_SYSINFO_NAME={}", name.unwrap());
+    println!(
+        "cargo:rustc-env=CH4_SYSINFO_OS_VERSION={}",
+        os_version.unwrap()
+    );
+    println!(
+        "cargo:rustc-env=CH4_SYSINFO_CPU_VENDOR={}",
+        cpu_vendor.unwrap()
+    );
+    println!(
+        "cargo:rustc-env=CH4_SYSINFO_CPU_BRAND={}",
+        cpu_brand.unwrap()
+    );
 }
 
 fn gen_ch4_version() {

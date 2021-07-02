@@ -119,6 +119,11 @@ impl Args {
         println!("endianness:          {}", bi::CFG_ENDIAN);
         println!("pointer width:       {}", bi::CFG_POINTER_WIDTH);
 
+        println!("build system name:   {}", env!("CH4_SYSINFO_NAME"));
+        println!("build os version:    {}", env!("CH4_SYSINFO_OS_VERSION"));
+        println!("build cpu vendor:    {}", env!("CH4_SYSINFO_CPU_VENDOR"));
+        println!("build cpu brand:     {}", env!("CH4_SYSINFO_CPU_BRAND"));
+
         cfg_if::cfg_if! {
             if #[cfg(unix)] {
                 if let Ok(dns_servers) = Self::load_resolv_conf() {
