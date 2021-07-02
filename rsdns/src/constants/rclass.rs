@@ -15,16 +15,15 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 #[derive(
     Copy, Clone, Debug, Eq, PartialEq, EnumIter, EnumString, IntoStaticStr, Hash, Ord, PartialOrd,
 )]
-#[allow(clippy::upper_case_acronyms)]
 pub enum RClass {
     /// the internet
-    IN = 1,
+    In = 1,
     /// the CSNET class (obsolete)
-    CS = 2,
+    Cs = 2,
     /// the CHAOS class
-    CH = 3,
+    Ch = 3,
     /// Hesiod
-    HS = 4,
+    Hs = 4,
 }
 
 impl RClass {
@@ -39,10 +38,10 @@ impl TryFrom<u16> for RClass {
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
-            1 => RClass::IN,
-            2 => RClass::CS,
-            3 => RClass::CH,
-            4 => RClass::HS,
+            1 => RClass::In,
+            2 => RClass::Cs,
+            3 => RClass::Ch,
+            4 => RClass::Hs,
             _ => return Err(Error::from(ProtocolError::ReservedRClass(value))),
         };
 

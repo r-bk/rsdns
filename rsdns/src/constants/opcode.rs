@@ -11,14 +11,13 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 #[derive(
     Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
 )]
-#[allow(clippy::upper_case_acronyms)]
 pub enum OpCode {
     /// a standard query
-    QUERY = 0,
+    Query = 0,
     /// an inverse query
-    IQUERY = 1,
+    IQuery = 1,
     /// a server status request
-    STATUS = 2,
+    Status = 2,
 }
 
 impl OpCode {
@@ -33,9 +32,9 @@ impl TryFrom<u8> for OpCode {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         let me = match value {
-            0 => OpCode::QUERY,
-            1 => OpCode::IQUERY,
-            2 => OpCode::STATUS,
+            0 => OpCode::Query,
+            1 => OpCode::IQuery,
+            2 => OpCode::Status,
             _ => return Err(Error::from(ProtocolError::ReservedOpCode(value))),
         };
 

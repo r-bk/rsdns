@@ -15,18 +15,17 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 #[derive(
     Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
 )]
-#[allow(clippy::upper_case_acronyms)]
 pub enum QClass {
     /// the internet
-    IN = 1,
+    In = 1,
     /// the CSNET class (obsolete)
-    CS = 2,
+    Cs = 2,
     /// the CHAOS class
-    CH = 3,
+    Ch = 3,
     /// Hesiod
-    HS = 4,
+    Hs = 4,
     /// any class
-    ANY = 255,
+    Any = 255,
 }
 
 impl QClass {
@@ -41,11 +40,11 @@ impl TryFrom<u16> for QClass {
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
-            1 => QClass::IN,
-            2 => QClass::CS,
-            3 => QClass::CH,
-            4 => QClass::HS,
-            255 => QClass::ANY,
+            1 => QClass::In,
+            2 => QClass::Cs,
+            3 => QClass::Ch,
+            4 => QClass::Hs,
+            255 => QClass::Any,
             _ => return Err(Error::from(ProtocolError::ReservedQClass(value))),
         };
 
@@ -95,7 +94,7 @@ mod tests {
     #[test]
     fn test_rclass_compatibility() {
         for qclass in QClass::iter() {
-            if qclass == QClass::ANY {
+            if qclass == QClass::Any {
                 continue;
             }
             assert_eq!(
