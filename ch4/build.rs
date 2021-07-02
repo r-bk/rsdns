@@ -1,6 +1,5 @@
 use std::{env, path::Path, process::Command};
 use tera::{Context, Tera};
-use vergen::{vergen, Config};
 
 fn main() {
     #[cfg(windows)]
@@ -11,7 +10,6 @@ fn main() {
     );
 
     built::write_built_file().expect("built failed");
-    vergen(Config::default()).expect("vergen failed");
     gen_ch4_version();
     write_main();
 }

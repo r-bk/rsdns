@@ -106,21 +106,18 @@ impl Args {
             "git branch:          {}",
             bi::GIT_HEAD_REF.or(Some("n/a")).unwrap()
         );
-        println!("rustc channel:       {}", env!("VERGEN_RUSTC_CHANNEL"));
-        println!("rustc commit date:   {}", env!("VERGEN_RUSTC_COMMIT_DATE"));
-        println!("rustc commit hash:   {}", env!("VERGEN_RUSTC_COMMIT_HASH"));
-        println!("rustc host triple:   {}", env!("VERGEN_RUSTC_HOST_TRIPLE"));
-        println!("rustc llvm version:  {}", env!("VERGEN_RUSTC_LLVM_VERSION"));
-        println!("rustc semver:        {}", env!("VERGEN_RUSTC_SEMVER"));
+
+        println!("compiler:            {}", bi::RUSTC);
+        println!("rustc:               {}", bi::RUSTC_VERSION);
+        println!(
+            "ci platform:         {}",
+            bi::CI_PLATFORM.or(Some("n/a")).unwrap()
+        );
         println!("cargo features:      {}", bi::FEATURES_STR.to_lowercase());
         println!("cargo profile:       {}", bi::PROFILE);
         println!("cargo target:        {}", bi::TARGET);
         println!("endianness:          {}", bi::CFG_ENDIAN);
         println!("pointer width:       {}", bi::CFG_POINTER_WIDTH);
-        println!("build system name:   {}", env!("VERGEN_SYSINFO_NAME"));
-        println!("build os version:    {}", env!("VERGEN_SYSINFO_OS_VERSION"));
-        println!("build cpu vendor:    {}", env!("VERGEN_SYSINFO_CPU_VENDOR"));
-        println!("build cpu brand:     {}", env!("VERGEN_SYSINFO_CPU_BRAND"));
 
         cfg_if::cfg_if! {
             if #[cfg(unix)] {
