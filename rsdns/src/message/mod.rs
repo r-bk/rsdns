@@ -14,7 +14,6 @@ pub use flags::*;
 pub use header::*;
 pub use message_type::*;
 pub use operation_code::*;
-#[allow(unused_imports)]
 pub(crate) use query_writer::*;
 pub use question::*;
 pub use response_code::*;
