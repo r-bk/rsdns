@@ -3,9 +3,9 @@ use crate::{
     constants::HEADER_LENGTH,
     message::{
         reader::{Questions, Records},
-        Header,
+        Header, Question,
     },
-    Result,
+    Error, ProtocolError, Result,
 };
 
 /// A DNS message reader.
@@ -97,6 +97,17 @@ impl<'a> MessageReader<'a> {
     /// Returns the parsed header.
     pub fn header(&self) -> &Header {
         &self.header
+    }
+
+    /// Returns the first question in the questions section.
+    ///
+    /// Usually a DNS message contains a single question.
+    pub fn question(&self) -> Result<Question> {
+        let mut questions = self.questions();
+        if let Some(res) = questions.next() {
+            return res;
+        }
+        Err(Error::ProtocolError(ProtocolError::NoQuestion))
     }
 
     /// Returns an iterator over the questions section of the message.

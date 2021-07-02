@@ -42,6 +42,8 @@ pub enum ProtocolError {
     CursorWindowError(usize, usize),
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
+    #[error("malformed message: no question")]
+    NoQuestion,
 }
 
 /// Errors returned by [rsdns](crate).
