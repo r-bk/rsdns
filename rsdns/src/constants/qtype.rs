@@ -1,10 +1,10 @@
-use crate::{constants::RType, Error, ProtocolError};
+use crate::{constants::RType, Error, ProtocolError, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
     fmt::{self, Display, Formatter},
+    str::FromStr,
 };
-use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query type.
 ///
@@ -13,9 +13,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 ///
 /// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 /// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
-#[derive(
-    Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
-)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum QType {
     /// a host address (IPv4)
     A = 1,
@@ -62,17 +60,64 @@ pub enum QType {
 }
 
 impl QType {
+    /// Array of all discriminants in this enum.
+    pub const VALUES: [QType; 21] = [
+        QType::A,
+        QType::Ns,
+        QType::Md,
+        QType::Mf,
+        QType::Cname,
+        QType::Soa,
+        QType::Mb,
+        QType::Mg,
+        QType::Mr,
+        QType::Null,
+        QType::Wks,
+        QType::Ptr,
+        QType::Hinfo,
+        QType::Minfo,
+        QType::Mx,
+        QType::Txt,
+        QType::Aaaa,
+        QType::Axfr,
+        QType::Mailb,
+        QType::Maila,
+        QType::Any,
+    ];
+
     /// Converts `QType` to a static string.
     #[inline]
     pub fn to_str(self) -> &'static str {
-        self.into()
+        match self {
+            QType::A => "A",
+            QType::Ns => "NS",
+            QType::Md => "MD",
+            QType::Mf => "MF",
+            QType::Cname => "CNAME",
+            QType::Soa => "SOA",
+            QType::Mb => "MB",
+            QType::Mg => "MG",
+            QType::Mr => "MR",
+            QType::Null => "NULL",
+            QType::Wks => "WKS",
+            QType::Ptr => "PTR",
+            QType::Hinfo => "HINFO",
+            QType::Minfo => "MINFO",
+            QType::Mx => "MX",
+            QType::Txt => "TXT",
+            QType::Aaaa => "AAAA",
+            QType::Axfr => "AXFR",
+            QType::Mailb => "MAILB",
+            QType::Maila => "MAILA",
+            QType::Any => "ANY",
+        }
     }
 }
 
 impl TryFrom<u16> for QType {
     type Error = Error;
 
-    fn try_from(value: u16) -> Result<Self, Self::Error> {
+    fn try_from(value: u16) -> Result<Self> {
         let me = match value {
             1 => QType::A,
             2 => QType::Ns,
@@ -102,6 +147,39 @@ impl TryFrom<u16> for QType {
     }
 }
 
+impl FromStr for QType {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let qtype = match s {
+            "A" => QType::A,
+            "NS" => QType::Ns,
+            "MD" => QType::Md,
+            "MF" => QType::Mf,
+            "CNAME" => QType::Cname,
+            "SOA" => QType::Soa,
+            "MB" => QType::Mb,
+            "MG" => QType::Mg,
+            "MR" => QType::Mr,
+            "NULL" => QType::Null,
+            "WKS" => QType::Wks,
+            "PTR" => QType::Ptr,
+            "HINFO" => QType::Hinfo,
+            "MINFO" => QType::Minfo,
+            "MX" => QType::Mx,
+            "TXT" => QType::Txt,
+            "AAAA" => QType::Aaaa,
+            "AXFR" => QType::Axfr,
+            "MAILB" => QType::Mailb,
+            "MAILA" => QType::Maila,
+            "ANY" => QType::Any,
+            _ => return Err(Error::BadStr),
+        };
+
+        Ok(qtype)
+    }
+}
+
 impl Display for QType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
@@ -127,11 +205,10 @@ mod tests {
     use super::*;
     use crate::constants::RType;
     use std::str::FromStr;
-    use strum::IntoEnumIterator;
 
     #[test]
     fn test_try_from() {
-        for qtype in QType::iter() {
+        for qtype in QType::VALUES {
             assert_eq!(qtype, QType::try_from(qtype as u16).unwrap());
         }
 
@@ -143,7 +220,7 @@ mod tests {
 
     #[test]
     fn test_rtype_compatibility() {
-        for qtype in QType::iter() {
+        for qtype in QType::VALUES {
             match qtype {
                 QType::Axfr | QType::Mailb | QType::Maila | QType::Any => continue,
                 _ => {
@@ -154,5 +231,42 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn test_values() {
+        let mut count = 0;
+
+        for qtype in QType::VALUES {
+            let found = match qtype {
+                QType::A => true,
+                QType::Ns => true,
+                QType::Md => true,
+                QType::Mf => true,
+                QType::Cname => true,
+                QType::Soa => true,
+                QType::Mb => true,
+                QType::Mg => true,
+                QType::Mr => true,
+                QType::Null => true,
+                QType::Wks => true,
+                QType::Ptr => true,
+                QType::Hinfo => true,
+                QType::Minfo => true,
+                QType::Mx => true,
+                QType::Txt => true,
+                QType::Aaaa => true,
+                QType::Axfr => true,
+                QType::Mailb => true,
+                QType::Maila => true,
+                QType::Any => true,
+            };
+
+            if found {
+                count += 1;
+            }
+        }
+
+        assert_eq!(count, QType::VALUES.len());
     }
 }

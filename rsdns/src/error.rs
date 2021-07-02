@@ -65,6 +65,8 @@ pub enum Error {
     BadBindDevice,
     #[error("iterator exhausted")]
     IterationStop,
+    #[error("bad string")]
+    BadStr,
 }
 
 /// Result returned by [rsdns](crate).

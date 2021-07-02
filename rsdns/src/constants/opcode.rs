@@ -3,14 +3,11 @@ use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},
 };
-use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query opcode.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(
-    Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
-)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum OpCode {
     /// a standard query
     Query = 0,
@@ -21,9 +18,16 @@ pub enum OpCode {
 }
 
 impl OpCode {
+    /// Array of all discriminants in this enum.
+    pub const VALUES: [OpCode; 3] = [OpCode::Query, OpCode::IQuery, OpCode::Status];
+
     /// Converts `OpCode` to a static string.
     pub fn to_str(self) -> &'static str {
-        self.into()
+        match self {
+            OpCode::Query => "QUERY",
+            OpCode::IQuery => "IQUERY",
+            OpCode::Status => "STATUS",
+        }
     }
 }
 
@@ -51,11 +55,10 @@ impl Display for OpCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use strum::IntoEnumIterator;
 
     #[test]
     fn test_try_from() {
-        for opcode in OpCode::iter() {
+        for opcode in OpCode::VALUES {
             assert_eq!(opcode, OpCode::try_from(opcode as u8).unwrap());
         }
 
@@ -63,5 +66,24 @@ mod tests {
             OpCode::try_from(128),
             Err(Error::ProtocolError(ProtocolError::ReservedOpCode(128)))
         ));
+    }
+
+    #[test]
+    fn test_values() {
+        let mut count = 0;
+
+        for opcode in OpCode::VALUES {
+            let found = match opcode {
+                OpCode::Query => true,
+                OpCode::IQuery => true,
+                OpCode::Status => true,
+            };
+
+            if found {
+                count += 1;
+            }
+        }
+
+        assert_eq!(count, OpCode::VALUES.len());
     }
 }

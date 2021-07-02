@@ -68,7 +68,6 @@ mod tests {
     use super::*;
     use crate::constants::{OpCode, RCode};
     use rand::seq::IteratorRandom;
-    use strum::IntoEnumIterator;
 
     #[test]
     fn test_serialization() {
@@ -80,8 +79,8 @@ mod tests {
             .set_recursion_available(rand::random())
             .set_recursion_desired(rand::random())
             .set_truncated(rand::random())
-            .set_opcode(OpCode::iter().choose(&mut rng).unwrap())
-            .set_response_code(RCode::iter().choose(&mut rng).unwrap());
+            .set_opcode(*OpCode::VALUES.iter().choose(&mut rng).unwrap())
+            .set_response_code(*RCode::VALUES.iter().choose(&mut rng).unwrap());
 
         let header = Header {
             id: rand::random::<u16>(),

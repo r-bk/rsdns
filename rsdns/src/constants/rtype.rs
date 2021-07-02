@@ -1,10 +1,10 @@
-use crate::{constants::QType, Error, ProtocolError};
+use crate::{constants::QType, Error, ProtocolError, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
     fmt::{self, Display, Formatter},
+    str::FromStr,
 };
-use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Record type.
 ///
@@ -13,9 +13,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 ///
 /// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 /// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
-#[derive(
-    Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
-)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RType {
     /// a host address (IPv4)
     A = 1,
@@ -54,16 +52,84 @@ pub enum RType {
 }
 
 impl RType {
+    /// Array of all discriminants in this enum.
+    pub const VALUES: [RType; 17] = [
+        RType::A,
+        RType::Ns,
+        RType::Md,
+        RType::Mf,
+        RType::Cname,
+        RType::Soa,
+        RType::Mb,
+        RType::Mg,
+        RType::Mr,
+        RType::Null,
+        RType::Wks,
+        RType::Ptr,
+        RType::Hinfo,
+        RType::Minfo,
+        RType::Mx,
+        RType::Txt,
+        RType::Aaaa,
+    ];
+
     /// Converts `RType` to a static string.
     pub fn to_str(self) -> &'static str {
-        self.into()
+        match self {
+            RType::A => "A",
+            RType::Ns => "NS",
+            RType::Md => "MD",
+            RType::Mf => "MF",
+            RType::Cname => "CNAME",
+            RType::Soa => "SOA",
+            RType::Mb => "MB",
+            RType::Mg => "MG",
+            RType::Mr => "MR",
+            RType::Null => "NULL",
+            RType::Wks => "WKS",
+            RType::Ptr => "PTR",
+            RType::Hinfo => "HINFO",
+            RType::Minfo => "MINFO",
+            RType::Mx => "MX",
+            RType::Txt => "TXT",
+            RType::Aaaa => "AAAA",
+        }
+    }
+}
+
+impl FromStr for RType {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let rtype = match s {
+            "A" => RType::A,
+            "NS" => RType::Ns,
+            "MD" => RType::Md,
+            "MF" => RType::Mf,
+            "CNAME" => RType::Cname,
+            "SOA" => RType::Soa,
+            "MB" => RType::Mb,
+            "MG" => RType::Mg,
+            "MR" => RType::Mr,
+            "NULL" => RType::Null,
+            "WKS" => RType::Wks,
+            "PTR" => RType::Ptr,
+            "HINFO" => RType::Hinfo,
+            "MINFO" => RType::Minfo,
+            "MX" => RType::Mx,
+            "TXT" => RType::Txt,
+            "AAAA" => RType::Aaaa,
+            _ => return Err(Error::BadStr),
+        };
+
+        Ok(rtype)
     }
 }
 
 impl TryFrom<u16> for RType {
     type Error = Error;
 
-    fn try_from(value: u16) -> Result<Self, Self::Error> {
+    fn try_from(value: u16) -> Result<Self> {
         let me = match value {
             1 => RType::A,
             2 => RType::Ns,
@@ -112,11 +178,10 @@ impl PartialOrd<QType> for RType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use strum::IntoEnumIterator;
 
     #[test]
     fn test_try_from() {
-        for rr_type in RType::iter() {
+        for rr_type in RType::VALUES {
             assert_eq!(rr_type, RType::try_from(rr_type as u16).unwrap());
         }
 
@@ -124,5 +189,38 @@ mod tests {
             RType::try_from(0),
             Err(Error::ProtocolError(ProtocolError::ReservedRType(0)))
         ));
+    }
+
+    #[test]
+    fn test_values() {
+        let mut count = 0;
+
+        for rtype in RType::VALUES {
+            let found = match rtype {
+                RType::A => true,
+                RType::Ns => true,
+                RType::Md => true,
+                RType::Mf => true,
+                RType::Cname => true,
+                RType::Soa => true,
+                RType::Mb => true,
+                RType::Mg => true,
+                RType::Mr => true,
+                RType::Null => true,
+                RType::Wks => true,
+                RType::Ptr => true,
+                RType::Hinfo => true,
+                RType::Minfo => true,
+                RType::Mx => true,
+                RType::Txt => true,
+                RType::Aaaa => true,
+            };
+
+            if found {
+                count += 1;
+            }
+        }
+
+        assert_eq!(count, RType::VALUES.len());
     }
 }

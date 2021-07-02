@@ -3,14 +3,11 @@ use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},
 };
-use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Response code.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
-#[derive(
-    Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
-)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RCode {
     /// No error condition
     NoError = 0,
@@ -28,9 +25,26 @@ pub enum RCode {
 }
 
 impl RCode {
+    /// Array of all discriminants in this enum.
+    pub const VALUES: [RCode; 6] = [
+        RCode::NoError,
+        RCode::FormErr,
+        RCode::ServFail,
+        RCode::NxDomain,
+        RCode::NotImp,
+        RCode::Refused,
+    ];
+
     /// Converts an rcode to a static string.
     pub fn to_str(self) -> &'static str {
-        self.into()
+        match self {
+            RCode::NoError => "NOERROR",
+            RCode::FormErr => "FORMERR",
+            RCode::ServFail => "SERVFAIL",
+            RCode::NxDomain => "NXDOMAIN",
+            RCode::NotImp => "NOTIMP",
+            RCode::Refused => "REFUSED",
+        }
     }
 }
 
@@ -61,11 +75,10 @@ impl Display for RCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use strum::IntoEnumIterator;
 
     #[test]
     fn test_try_from() {
-        for r_code in RCode::iter() {
+        for r_code in RCode::VALUES {
             assert_eq!(r_code, RCode::try_from(r_code as u16).unwrap());
         }
 
@@ -73,5 +86,27 @@ mod tests {
             RCode::try_from(128),
             Err(Error::ProtocolError(ProtocolError::ReservedRCode(128)))
         ));
+    }
+
+    #[test]
+    fn test_values() {
+        let mut count = 0;
+
+        for rcode in RCode::VALUES {
+            let found = match rcode {
+                RCode::NoError => true,
+                RCode::FormErr => true,
+                RCode::ServFail => true,
+                RCode::NxDomain => true,
+                RCode::NotImp => true,
+                RCode::Refused => true,
+            };
+
+            if found {
+                count += 1;
+            }
+        }
+
+        assert_eq!(count, RCode::VALUES.len());
     }
 }

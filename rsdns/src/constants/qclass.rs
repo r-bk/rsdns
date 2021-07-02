@@ -4,7 +4,6 @@ use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},
 };
-use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Query class.
 ///
@@ -12,9 +11,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// For data classes only see [RClass].
 ///
 /// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
-#[derive(
-    Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
-)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum QClass {
     /// the internet
     In = 1,
@@ -29,9 +26,18 @@ pub enum QClass {
 }
 
 impl QClass {
+    /// Array of all discriminants in this enum.
+    pub const VALUES: [QClass; 5] = [QClass::In, QClass::Cs, QClass::Ch, QClass::Hs, QClass::Any];
+
     /// Converts `QClass` to a static string.
     pub fn to_str(self) -> &'static str {
-        self.into()
+        match self {
+            QClass::In => "IN",
+            QClass::Cs => "CS",
+            QClass::Ch => "CH",
+            QClass::Hs => "HS",
+            QClass::Any => "ANY",
+        }
     }
 }
 
@@ -77,11 +83,10 @@ mod tests {
     use super::*;
     use crate::constants::RClass;
     use std::str::FromStr;
-    use strum::IntoEnumIterator;
 
     #[test]
     fn test_try_from() {
-        for qclass in QClass::iter() {
+        for qclass in QClass::VALUES {
             assert_eq!(qclass, QClass::try_from(qclass as u16).unwrap());
         }
 
@@ -93,7 +98,7 @@ mod tests {
 
     #[test]
     fn test_rclass_compatibility() {
-        for qclass in QClass::iter() {
+        for qclass in QClass::VALUES {
             if qclass == QClass::Any {
                 continue;
             }
@@ -103,5 +108,26 @@ mod tests {
             );
             assert_eq!(qclass, RClass::try_from(qclass as u16).unwrap());
         }
+    }
+
+    #[test]
+    fn test_values() {
+        let mut count = 0;
+
+        for qclass in QClass::VALUES {
+            let found = match qclass {
+                QClass::In => true,
+                QClass::Cs => true,
+                QClass::Ch => true,
+                QClass::Hs => true,
+                QClass::Any => true,
+            };
+
+            if found {
+                count += 1;
+            }
+        }
+
+        assert_eq!(count, QClass::VALUES.len());
     }
 }

@@ -178,7 +178,6 @@ mod tests {
     use super::*;
     use crate::{Error, ProtocolError};
     use std::convert::TryFrom;
-    use strum::IntoEnumIterator;
 
     type FlagGet = fn(Flags) -> bool;
     type FlagSet = fn(&mut Flags, bool) -> &mut Flags;
@@ -235,7 +234,7 @@ mod tests {
 
     #[test]
     fn test_opcode() {
-        for opcode in OpCode::iter() {
+        for opcode in OpCode::VALUES {
             let f = Flags {
                 bits: (opcode as u16) << 11,
             };
@@ -250,7 +249,7 @@ mod tests {
         }
 
         for i in 0..16 {
-            if OpCode::iter().find(|oc| *oc as u16 == i).is_none() {
+            if OpCode::VALUES.iter().find(|oc| **oc as u16 == i).is_none() {
                 let f = Flags {
                     bits: (i << 11) as u16,
                 };
@@ -261,7 +260,7 @@ mod tests {
 
     #[test]
     fn test_response_code() {
-        for rcode in RCode::iter() {
+        for rcode in RCode::VALUES {
             let f = Flags { bits: rcode as u16 };
             assert_eq!(f.response_code(), rcode);
 
@@ -274,7 +273,7 @@ mod tests {
         }
 
         for i in 0..16 {
-            if RCode::iter().find(|rc| *rc as u16 == i).is_none() {
+            if RCode::VALUES.iter().find(|rc| **rc as u16 == i).is_none() {
                 let f = Flags { bits: i as u16 };
                 matches!(
                     RCode::try_from(f.response_code()),

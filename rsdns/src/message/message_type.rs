@@ -1,8 +1,7 @@
 use std::fmt::{self, Display, Formatter};
-use strum_macros::IntoStaticStr;
 
 /// Message type.
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, IntoStaticStr)]
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub enum MessageType {
     /// A query message.
     Query,
@@ -14,7 +13,10 @@ impl MessageType {
     /// Converts MessageType to a static string.
     #[inline]
     pub fn as_str(self) -> &'static str {
-        self.into()
+        match self {
+            MessageType::Query => "Query",
+            MessageType::Response => "Response",
+        }
     }
 
     /// Checks if message type is [Query](MessageType::Query).

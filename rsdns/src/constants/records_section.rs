@@ -1,5 +1,4 @@
 use std::fmt::{self, Display, Formatter};
-use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 /// Message sections conveying resource records.
 ///
@@ -7,9 +6,7 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 /// These are the sections conveying resource records.
 ///
 /// [`RFC 1035 ~4.1.3`](https://tools.ietf.org/html/rfc1035#section-4.1.3)
-#[derive(
-    Copy, Clone, Debug, Eq, Ord, PartialOrd, PartialEq, Hash, EnumIter, EnumString, IntoStaticStr,
-)]
+#[derive(Copy, Clone, Debug, Eq, Ord, PartialOrd, PartialEq, Hash)]
 pub enum RecordsSection {
     /// The answer section.
     Answer = 0,
@@ -22,7 +19,11 @@ pub enum RecordsSection {
 impl RecordsSection {
     /// Converts `RecordsSection` to a static string.
     pub fn to_str(self) -> &'static str {
-        self.into()
+        match self {
+            RecordsSection::Answer => "Answer",
+            RecordsSection::Authority => "Authority",
+            RecordsSection::Additional => "Additional",
+        }
     }
 }
 
