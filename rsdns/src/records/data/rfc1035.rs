@@ -172,7 +172,7 @@ rr_dn_data!(
 /// Mailbox or mail list information.
 ///
 /// [`RFC 1035 ~3.3.7`](https://tools.ietf.org/html/rfc1035#section-3.3.7)
-#[derive(Clone, Eq, PartialEq, Hash, Default, Debug)]
+#[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Minfo {
     /// A domain name which specifies a mailbox which is responsible for the mailing list
     /// or mailbox.  If this domain name names the root, the owner of the MINFO RR is
