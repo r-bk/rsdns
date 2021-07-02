@@ -60,7 +60,7 @@ mod tests {
         let mut qw = QueryWriter::new(&mut query[..], true);
 
         let size = qw
-            .write("host.example.com", QType::CNAME, QClass::IN)
+            .write("host.example.com", QType::Cname, QClass::IN)
             .unwrap();
         assert_eq!(size, 34 + 2);
 
@@ -80,7 +80,7 @@ mod tests {
         assert_eq!(header.id, msg_id);
         assert_eq!(header.qd_count, 1);
         assert_eq!(dn.as_str(), "host.example.com.");
-        assert_eq!(qt, QType::CNAME);
+        assert_eq!(qt, QType::Cname);
         assert_eq!(qc, QClass::IN);
     }
 }

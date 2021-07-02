@@ -16,42 +16,41 @@ use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 #[derive(
     Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, EnumIter, EnumString, IntoStaticStr, Hash,
 )]
-#[allow(clippy::upper_case_acronyms)]
 pub enum RType {
     /// a host address (IPv4)
     A = 1,
     /// an authoritative name server
-    NS = 2,
+    Ns = 2,
     /// a mail destination (obsolete - use MX)
-    MD = 3,
+    Md = 3,
     /// a mail forwarder (obsolete - use MX)
-    MF = 4,
+    Mf = 4,
     /// the canonical name of an alias
-    CNAME = 5,
+    Cname = 5,
     /// marks the start of a zone authority
-    SOA = 6,
+    Soa = 6,
     /// a mailbox domain name
-    MB = 7,
+    Mb = 7,
     /// a mail group member
-    MG = 8,
+    Mg = 8,
     /// a mail rename domain name
-    MR = 9,
+    Mr = 9,
     /// a NULL RR
-    NULL = 10,
+    Null = 10,
     /// a well known service description
-    WKS = 11,
+    Wks = 11,
     /// a domain name pointer
-    PTR = 12,
+    Ptr = 12,
     /// host information
-    HINFO = 13,
+    Hinfo = 13,
     /// mailbox or mail list information
-    MINFO = 14,
+    Minfo = 14,
     /// mail exchange
-    MX = 15,
+    Mx = 15,
     /// text strings
-    TXT = 16,
+    Txt = 16,
     /// a host address (IPv6)
-    AAAA = 28,
+    Aaaa = 28,
 }
 
 impl RType {
@@ -67,22 +66,22 @@ impl TryFrom<u16> for RType {
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         let me = match value {
             1 => RType::A,
-            2 => RType::NS,
-            3 => RType::MD,
-            4 => RType::MF,
-            5 => RType::CNAME,
-            6 => RType::SOA,
-            7 => RType::MB,
-            8 => RType::MG,
-            9 => RType::MR,
-            10 => RType::NULL,
-            11 => RType::WKS,
-            12 => RType::PTR,
-            13 => RType::HINFO,
-            14 => RType::MINFO,
-            15 => RType::MX,
-            16 => RType::TXT,
-            28 => RType::AAAA,
+            2 => RType::Ns,
+            3 => RType::Md,
+            4 => RType::Mf,
+            5 => RType::Cname,
+            6 => RType::Soa,
+            7 => RType::Mb,
+            8 => RType::Mg,
+            9 => RType::Mr,
+            10 => RType::Null,
+            11 => RType::Wks,
+            12 => RType::Ptr,
+            13 => RType::Hinfo,
+            14 => RType::Minfo,
+            15 => RType::Mx,
+            16 => RType::Txt,
+            28 => RType::Aaaa,
             _ => return Err(Error::from(ProtocolError::ReservedRType(value))),
         };
 

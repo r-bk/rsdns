@@ -1,5 +1,5 @@
 macro_rules! rr {
-    ($(#[$outer:meta])* $RR:ident, $RRT:expr) => {
+    ($(#[$outer:meta])* $RR:ident) => {
         $(#[$outer])*
         pub struct $RR {
             /// A domain name to which this resource record pertains.
@@ -15,7 +15,7 @@ macro_rules! rr {
 
         impl $RR {
             /// The record type.
-            pub const RTYPE: crate::constants::RType = $RRT;
+            pub const RTYPE: crate::constants::RType = crate::constants::RType::$RR;
         }
     };
 }

@@ -16,7 +16,7 @@ pub struct A {
     pub address: Ipv4Addr,
 }
 
-rr_data!(A, RType::A);
+rr_data!(A);
 
 impl RrDataReader<A> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<A> {
@@ -36,7 +36,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.1`](https://tools.ietf.org/html/rfc1035#section-3.3.1)
     Cname,
-    RType::CNAME,
     /// A domain name which specifies the canonical or primary name for the owner.
     /// The RR owner name is an alias.
     cname
@@ -59,7 +58,7 @@ pub struct Hinfo {
     pub os: Vec<u8>,
 }
 
-rr_data!(Hinfo, RType::HINFO);
+rr_data!(Hinfo);
 
 impl RrDataReader<Hinfo> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Hinfo> {
@@ -97,7 +96,7 @@ pub struct Wks {
     pub bitmap: Vec<u8>,
 }
 
-rr_data!(Wks, RType::WKS);
+rr_data!(Wks);
 
 impl RrDataReader<Wks> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Wks> {
@@ -119,7 +118,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.3`](https://tools.ietf.org/html/rfc1035#section-3.3.3)
     Mb,
-    RType::MB,
     /// A domain name which specifies a host which has the specified mailbox.
     madname
 );
@@ -133,7 +131,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.4`](https://tools.ietf.org/html/rfc1035#section-3.3.4)
     Md,
-    RType::MD,
     /// A domain name which specifies a host which has a mail agent for the domain which should
     /// be able to deliver mail for the domain.
     madname
@@ -148,7 +145,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.5`](https://tools.ietf.org/html/rfc1035#section-3.3.5)
     Mf,
-    RType::MF,
     /// A domain name which specifies a host which has a mail agent for the domain which will
     /// accept mail for forwarding to the domain.
     madname
@@ -161,7 +157,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.6`](https://tools.ietf.org/html/rfc1035#section-3.3.6)
     Mg,
-    RType::MG,
     /// A domain name which specifies a mailbox which is a member of the mail group specified
     /// by the domain name.
     mgmname
@@ -185,7 +180,7 @@ pub struct Minfo {
     pub emailbx: Name,
 }
 
-rr_data!(Minfo, RType::MINFO);
+rr_data!(Minfo);
 
 impl RrDataReader<Minfo> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Minfo> {
@@ -206,7 +201,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.8`](https://tools.ietf.org/html/rfc1035#section-3.3.8)
     Mr,
-    RType::MR,
     /// A domain name which specifies a mailbox which is the proper rename of the specified mailbox.
     newname
 );
@@ -225,7 +219,7 @@ pub struct Mx {
     pub exchange: Name,
 }
 
-rr_data!(Mx, RType::MX);
+rr_data!(Mx);
 
 impl RrDataReader<Mx> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Mx> {
@@ -250,7 +244,7 @@ pub struct Null {
     pub anything: Vec<u8>,
 }
 
-rr_data!(Null, RType::NULL);
+rr_data!(Null);
 
 impl RrDataReader<Null> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Null> {
@@ -270,7 +264,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.11`](https://tools.ietf.org/html/rfc1035#section-3.3.11)
     Ns,
-    RType::NS,
     /// A domain name  which specifies a host which should be authoritative for the
     /// specified class and domain.
     nsdname
@@ -283,7 +276,6 @@ rr_dn_data!(
     ///
     /// [`RFC 1035 ~3.3.12`](https://tools.ietf.org/html/rfc1035#section-3.3.12)
     Ptr,
-    RType::PTR,
     /// A domain name which points to some location in the domain name space.
     ptrdname
 );
@@ -314,7 +306,7 @@ pub struct Soa {
     pub minimum: u32,
 }
 
-rr_data!(Soa, RType::SOA);
+rr_data!(Soa);
 
 impl RrDataReader<Soa> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Soa> {
@@ -345,7 +337,7 @@ pub struct Txt {
     pub text: Vec<u8>,
 }
 
-rr_data!(Txt, RType::TXT);
+rr_data!(Txt);
 
 impl RrDataReader<Txt> for Cursor<'_> {
     fn read_rr_data(&mut self, mut rd_len: usize) -> ProtocolResult<Txt> {

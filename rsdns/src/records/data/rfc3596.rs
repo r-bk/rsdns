@@ -14,7 +14,7 @@ pub struct Aaaa {
     pub address: Ipv6Addr,
 }
 
-rr_data!(Aaaa, RType::AAAA);
+rr_data!(Aaaa);
 
 impl RrDataReader<Aaaa> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<Aaaa> {

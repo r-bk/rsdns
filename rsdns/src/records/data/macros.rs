@@ -1,14 +1,14 @@
 macro_rules! rr_data {
-    ($RR:ty, $RRT:expr) => {
+    ($RR:ident) => {
         impl $RR {
             /// The RR type.
-            pub const RTYPE: RType = $RRT;
+            pub const RTYPE: RType = RType::$RR;
         }
     };
 }
 
 macro_rules! rr_dn_data {
-    ($(#[$outer:meta])* $RR:ident, $RRT:expr, $(#[$dn_outer:meta])* $DN:ident) => {
+    ($(#[$outer:meta])* $RR:ident, $(#[$dn_outer:meta])* $DN:ident) => {
         $(#[$outer])*
         #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
         pub struct $RR {
@@ -16,7 +16,7 @@ macro_rules! rr_dn_data {
             pub $DN: crate::Name,
         }
 
-        rr_data!($RR, $RRT);
+        rr_data!($RR);
 
         impl crate::bytes::RrDataReader<$RR> for crate::bytes::Cursor<'_> {
             fn read_rr_data(&mut self, rd_len: usize) -> crate::ProtocolResult<$RR> {
