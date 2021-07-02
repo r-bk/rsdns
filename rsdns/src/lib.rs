@@ -7,6 +7,7 @@
 pub(crate) mod bytes;
 pub mod constants;
 mod domain_name;
+pub use domain_name::*;
 mod error;
 pub mod message;
 pub mod records;
@@ -19,7 +20,6 @@ pub mod records;
 ))]
 pub mod resolvers;
 
-pub use domain_name::*;
 pub(crate) use error::ProtocolResult;
 pub use error::Result;
 pub use error::{Error, ProtocolError};

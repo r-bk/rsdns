@@ -1,11 +1,15 @@
 mod inline_name;
-mod name;
-mod name_contract;
-mod reader;
-mod utils;
-mod writer;
-
 pub use inline_name::*;
+
+mod name;
 pub use name::*;
+
+mod name_contract;
 pub(crate) use name_contract::*;
+
+mod reader;
+
+mod utils;
 pub(crate) use utils::*;
+
+mod writer;

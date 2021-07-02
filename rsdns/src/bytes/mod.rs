@@ -2,11 +2,13 @@
 mod macros;
 
 mod cursor;
-mod reader;
-mod wcursor;
-mod writer;
-
 pub use cursor::*;
+
+mod reader;
 pub use reader::*;
+
+mod wcursor;
 pub use wcursor::*;
+
+mod writer;
 pub use writer::*;

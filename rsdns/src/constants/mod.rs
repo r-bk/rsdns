@@ -1,20 +1,27 @@
 //! Constants and definitions.
 
 mod opcode;
-mod qclass;
-mod qtype;
-mod rclass;
-mod rcode;
-mod records_section;
-mod rtype;
-
 pub use opcode::*;
+
+mod qclass;
 pub use qclass::*;
+
+mod qtype;
 pub use qtype::*;
+
+mod rclass;
 pub use rclass::*;
+
+mod rcode;
 pub use rcode::*;
+
+mod records_section;
 pub use records_section::*;
+
+mod rtype;
 pub use rtype::*;
+
+// ----------------------------------------------------------------------------
 
 /// Domain name max length.
 ///
