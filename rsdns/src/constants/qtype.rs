@@ -61,6 +61,7 @@ pub enum QType {
 
 impl QType {
     /// Array of all discriminants in this enum.
+    #[cfg(test)]
     pub const VALUES: [QType; 21] = [
         QType::A,
         QType::Ns,

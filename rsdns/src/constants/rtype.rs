@@ -53,6 +53,7 @@ pub enum RType {
 
 impl RType {
     /// Array of all discriminants in this enum.
+    #[cfg(test)]
     pub const VALUES: [RType; 17] = [
         RType::A,
         RType::Ns,

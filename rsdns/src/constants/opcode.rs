@@ -19,6 +19,7 @@ pub enum OpCode {
 
 impl OpCode {
     /// Array of all discriminants in this enum.
+    #[cfg(test)]
     pub const VALUES: [OpCode; 3] = [OpCode::Query, OpCode::IQuery, OpCode::Status];
 
     /// Converts `OpCode` to a static string.

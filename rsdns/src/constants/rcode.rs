@@ -26,6 +26,7 @@ pub enum RCode {
 
 impl RCode {
     /// Array of all discriminants in this enum.
+    #[cfg(test)]
     pub const VALUES: [RCode; 6] = [
         RCode::NoError,
         RCode::FormErr,

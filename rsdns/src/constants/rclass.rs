@@ -26,6 +26,7 @@ pub enum RClass {
 
 impl RClass {
     /// Array of all discriminants in this enum.
+    #[cfg(test)]
     pub const VALUES: [RClass; 4] = [RClass::In, RClass::Cs, RClass::Ch, RClass::Hs];
 
     /// Converts `RClass` to a static string.

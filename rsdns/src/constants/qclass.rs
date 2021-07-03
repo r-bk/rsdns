@@ -27,6 +27,7 @@ pub enum QClass {
 
 impl QClass {
     /// Array of all discriminants in this enum.
+    #[cfg(test)]
     pub const VALUES: [QClass; 5] = [QClass::In, QClass::Cs, QClass::Ch, QClass::Hs, QClass::Any];
 
     /// Converts `QClass` to a static string.
