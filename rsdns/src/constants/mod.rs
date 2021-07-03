@@ -45,3 +45,10 @@ pub const HEADER_LENGTH: usize = 12;
 ///
 /// Defined in [RFC 1035 ~4.2.2](https://tools.ietf.org/html/rfc1035#section-4.2.2).
 pub const DNS_MESSAGE_MAX_LENGTH: usize = u16::MAX as usize;
+
+/// Maximal CNAME chain length allowed in a response message.
+///
+/// This is [rsdns]-specific constant.
+///
+/// [rsdns]: crate
+pub const CNAME_CHAIN_MAX_LENGTH: usize = 16;

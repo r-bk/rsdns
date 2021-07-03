@@ -22,4 +22,4 @@ pub mod resolvers;
 
 pub(crate) use error::ProtocolResult;
 pub use error::Result;
-pub use error::{Error, ProtocolError};
+pub use error::{AnswerError, Error, ProtocolError};

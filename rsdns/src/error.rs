@@ -1,3 +1,5 @@
+use crate::{constants::CNAME_CHAIN_MAX_LENGTH, message::ResponseCode};
+
 /// Protocol errors.
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
@@ -46,6 +48,22 @@ pub enum ProtocolError {
     NoQuestion,
 }
 
+/// Answer errors.
+#[allow(missing_docs)]
+#[derive(thiserror::Error, Debug)]
+pub enum AnswerError {
+    #[error("message type is not Response")]
+    NotResponse,
+    #[error("response message is truncated")]
+    Truncated,
+    #[error("message contains no records that answer the query")]
+    NoAnswer,
+    #[error("CNAME chain exceeds allowed limit: {}", CNAME_CHAIN_MAX_LENGTH)]
+    CnameChainTooLong,
+    #[error("bad response code: {0}")]
+    BadResponseCode(ResponseCode),
+}
+
 /// Errors returned by [rsdns](crate).
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
@@ -54,6 +72,8 @@ pub enum Error {
     IoError(#[from] std::io::Error),
     #[error("protocol error: {0}")]
     ProtocolError(#[from] ProtocolError),
+    #[error(transparent)]
+    AnswerError(AnswerError),
     #[error("operation timed-out")]
     Timeout,
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
@@ -67,6 +87,8 @@ pub enum Error {
     IterationStop,
     #[error("bad string")]
     BadStr,
+    #[error("internal error: {0}")]
+    InternalError(String),
 }
 
 /// Result returned by [rsdns](crate).
