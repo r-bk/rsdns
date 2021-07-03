@@ -42,7 +42,7 @@ use std::{
 /// [Soa]: crate::records::data::Soa
 #[derive(Debug, Default, Clone)]
 pub struct Name {
-    str_: String,
+    name: String,
 }
 
 impl Name {
@@ -60,7 +60,7 @@ impl Name {
     #[inline(always)]
     pub fn new() -> Self {
         Self {
-            str_: Default::default(),
+            name: Default::default(),
         }
     }
 
@@ -77,7 +77,7 @@ impl Name {
     /// ```
     pub fn root() -> Self {
         Self {
-            str_: String::from("."),
+            name: String::from("."),
         }
     }
 
@@ -87,7 +87,7 @@ impl Name {
         let mut dn = Self {
             // check_name verifies the length of the string,
             // so the following unwrap will not panic.
-            str_: String::from(s),
+            name: String::from(s),
         };
 
         let bytes = s.as_bytes();
@@ -99,7 +99,7 @@ impl Name {
             // check_name verifies the length of the string and ensures that
             // the root zone can be accommodated.
             // Thus the following push is sound and will not panic.
-            dn.str_.push('.');
+            dn.name.push('.');
         }
 
         Ok(dn)
@@ -130,7 +130,7 @@ impl Name {
     /// ```
     #[inline(always)]
     pub fn as_str(&self) -> &str {
-        &self.str_
+        &self.name
     }
 
     /// Returns the length of the domain name in bytes.
@@ -158,7 +158,7 @@ impl Name {
     /// ```
     #[inline(always)]
     pub fn len(&self) -> usize {
-        self.str_.len()
+        self.name.len()
     }
 
     /// Checks if domain name is empty.
@@ -185,7 +185,7 @@ impl Name {
     /// ```
     #[inline(always)]
     pub fn is_empty(&self) -> bool {
-        self.str_.is_empty()
+        self.name.is_empty()
     }
 
     /// Make the domain name empty.
@@ -214,7 +214,7 @@ impl Name {
     /// ```
     #[inline(always)]
     pub fn clear(&mut self) {
-        self.str_.clear();
+        self.name.clear();
     }
 
     pub(crate) fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
@@ -224,12 +224,12 @@ impl Name {
         // which means it is sound to convert it unchecked as a valid label is ASCII
         let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
 
-        if self.str_.len() + label_as_str.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
+        if self.name.len() + label_as_str.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
             return Err(ProtocolError::DomainNameTooLong);
         }
 
-        self.str_.push_str(label_as_str);
-        self.str_.push('.');
+        self.name.push_str(label_as_str);
+        self.name.push('.');
 
         Ok(())
     }
@@ -237,12 +237,12 @@ impl Name {
     pub(crate) fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
         super::check_label(label)?;
 
-        if self.str_.len() + label.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
+        if self.name.len() + label.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
             return Err(ProtocolError::DomainNameTooLong);
         }
 
-        self.str_.push_str(label);
-        self.str_.push('.');
+        self.name.push_str(label);
+        self.name.push('.');
 
         Ok(())
     }
@@ -274,8 +274,8 @@ impl Name {
     /// # foo().unwrap();
     /// ```
     pub fn set_root(&mut self) {
-        self.str_.clear();
-        self.str_.push('.');
+        self.name.clear();
+        self.name.push('.');
     }
 }
 
@@ -297,15 +297,15 @@ impl FromStr for Name {
 
 impl AsRef<str> for Name {
     fn as_ref(&self) -> &str {
-        &self.str_
+        &self.name
     }
 }
 
 impl PartialEq for Name {
     fn eq(&self, other: &Self) -> bool {
-        self.str_
+        self.name
             .as_bytes()
-            .eq_ignore_ascii_case(other.str_.as_bytes())
+            .eq_ignore_ascii_case(other.name.as_bytes())
     }
 }
 
@@ -318,8 +318,8 @@ impl PartialOrd for Name {
 impl Ord for Name {
     fn cmp(&self, other: &Self) -> Ordering {
         for i in 0..self.len().min(other.len()) {
-            let left = unsafe { self.str_.as_bytes().get_unchecked(i) };
-            let right = unsafe { other.str_.as_bytes().get_unchecked(i) };
+            let left = unsafe { self.name.as_bytes().get_unchecked(i) };
+            let right = unsafe { other.name.as_bytes().get_unchecked(i) };
             let ord = left.to_ascii_lowercase().cmp(&right.to_ascii_lowercase());
             if Ordering::Equal != ord {
                 return ord;
@@ -331,7 +331,7 @@ impl Ord for Name {
 
 impl PartialEq<&str> for Name {
     fn eq(&self, other: &&str) -> bool {
-        let l_is_root = self.str_.as_bytes() == b".";
+        let l_is_root = self.name.as_bytes() == b".";
         let r_is_root = *other == ".";
 
         match (l_is_root, r_is_root) {
@@ -340,7 +340,7 @@ impl PartialEq<&str> for Name {
             _ => return false,
         }
 
-        let mut bytes = self.str_.as_bytes();
+        let mut bytes = self.name.as_bytes();
         if !bytes.is_empty() && !other.ends_with('.') {
             bytes = &bytes[..bytes.len() - 1];
         }
@@ -353,7 +353,7 @@ impl Eq for Name {}
 
 impl Hash for Name {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        for b in self.str_.as_bytes() {
+        for b in self.name.as_bytes() {
             state.write_u8(b.to_ascii_lowercase());
         }
     }
@@ -367,14 +367,14 @@ impl Display for Name {
 
 impl From<Name> for String {
     fn from(name: Name) -> Self {
-        name.str_
+        name.name
     }
 }
 
 impl From<InlineName> for Name {
     fn from(name: InlineName) -> Self {
         Self {
-            str_: name.as_str().to_string(),
+            name: name.as_str().to_string(),
         }
     }
 }
@@ -382,7 +382,7 @@ impl From<InlineName> for Name {
 impl From<&InlineName> for Name {
     fn from(name: &InlineName) -> Self {
         Self {
-            str_: name.as_str().to_string(),
+            name: name.as_str().to_string(),
         }
     }
 }
