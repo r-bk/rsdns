@@ -18,7 +18,6 @@ pub struct Answer {
     pub(crate) rrset: RecordSet,
 }
 
-#[allow(dead_code)]
 impl Answer {
     /// Returns the CNAME chain of the resulting RRset.
     ///
