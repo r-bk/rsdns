@@ -59,6 +59,17 @@ impl TryFrom<u16> for QClass {
     }
 }
 
+impl From<RClass> for QClass {
+    fn from(rclass: RClass) -> Self {
+        match rclass {
+            RClass::In => QClass::In,
+            RClass::Cs => QClass::Cs,
+            RClass::Ch => QClass::Ch,
+            RClass::Hs => QClass::Hs,
+        }
+    }
+}
+
 impl Display for QClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
