@@ -71,6 +71,15 @@ impl TryFrom<u16> for RClass {
     }
 }
 
+impl TryFrom<QClass> for RClass {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(value: QClass) -> Result<Self> {
+        Self::try_from(value as u16)
+    }
+}
+
 impl PartialEq<QClass> for RClass {
     #[inline]
     fn eq(&self, other: &QClass) -> bool {

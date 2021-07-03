@@ -156,6 +156,15 @@ impl TryFrom<u16> for RType {
     }
 }
 
+impl TryFrom<QType> for RType {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(value: QType) -> Result<Self> {
+        Self::try_from(value as u16)
+    }
+}
+
 impl Display for RType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
