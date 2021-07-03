@@ -346,6 +346,24 @@ impl PartialEq<&str> for InlineName {
     }
 }
 
+impl PartialEq<Name> for InlineName {
+    #[inline]
+    fn eq(&self, other: &Name) -> bool {
+        self.arr
+            .as_bytes()
+            .eq_ignore_ascii_case(other.as_str().as_bytes())
+    }
+}
+
+impl PartialEq<&Name> for InlineName {
+    #[inline]
+    fn eq(&self, other: &&Name) -> bool {
+        self.arr
+            .as_bytes()
+            .eq_ignore_ascii_case(other.as_str().as_bytes())
+    }
+}
+
 impl Eq for InlineName {}
 
 impl Hash for InlineName {
