@@ -1,6 +1,7 @@
 use crate::{
-  constants::{QType, QClass},
+  constants::{QType, QClass, RType, RClass},
   resolvers::{
+      Answer,
       {{ crate_module_name }}::ResolverImpl,
       config::ResolverConfig,
   },
@@ -39,5 +40,18 @@ impl Resolver {
     #[inline(always)]
     pub {% if async == "true" %}async {% endif -%} fn query_raw(&mut self, qname: &str, qtype: QType, qclass: QClass, buf: &mut [u8]) -> Result<usize> {
         self.internal.query_raw(qname, qtype, qclass, buf){% if async == "true" %}.await{% endif %}
+    }
+
+    /// Issues a DNS query and assembles an answer.
+    ///
+    /// As opposed to [Resolver::query_raw], this method parses the response message and
+    /// resolves CNAME chaining if needed.
+    ///
+    /// Only data record types are allowed.
+    /// For meta-queries (e.g. [QType::Any]) use [Resolver::query_raw].
+    ///
+    /// This method allocates.
+    pub {% if async == "true" %}async {% endif -%} fn query(&mut self, qname: &str, rtype: RType, rclass: RClass) -> Result<Answer> {
+        self.internal.query(qname, rtype, rclass){% if async == "true" %}.await{% endif %}
     }
 }

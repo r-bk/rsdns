@@ -1,6 +1,9 @@
 use crate::{
-    constants::{QType, QClass},
-    resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
+    constants::{QType, QClass, RType, RClass},
+    resolvers::{
+        config::{ProtocolStrategy, Recursion, ResolverConfig},
+        Answer,
+    },
     message::{reader::MessageReader, Flags, QueryWriter},
     Error, Result, ProtocolError,
 };
@@ -68,6 +71,17 @@ impl ResolverImpl {
         };
         ctx.prepare_message()?;
         ctx.query_raw().await
+    }
+
+    pub async fn query(&mut self, qname: &str, rtype: RType, rclass: RClass) -> Result<Answer> {
+        let capacity = u16::MAX as usize;
+        let mut vec: Vec<u8> = Vec::with_capacity(capacity);
+        unsafe { vec.set_len(capacity) };
+
+        let response_len = self.query_raw(qname, rtype.into(), rclass.into(), &mut vec).await?;
+        unsafe { vec.set_len(response_len) };
+
+        Answer::from_msg(&vec)
     }
 }
 

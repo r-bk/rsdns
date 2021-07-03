@@ -1,7 +1,10 @@
 use crate::{
-    constants::{QClass, QType},
+    constants::{QClass, QType, RClass, RType},
     message::{reader::MessageReader, Flags, QueryWriter},
-    resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
+    resolvers::{
+        config::{ProtocolStrategy, Recursion, ResolverConfig},
+        Answer,
+    },
     Error, ProtocolError, Result,
 };
 use std::{
@@ -66,6 +69,17 @@ impl ResolverImpl {
         };
         ctx.prepare_message()?;
         ctx.query_raw()
+    }
+
+    pub fn query(&self, qname: &str, rtype: RType, rclass: RClass) -> Result<Answer> {
+        let capacity = u16::MAX as usize;
+        let mut vec: Vec<u8> = Vec::with_capacity(capacity);
+        unsafe { vec.set_len(capacity) };
+
+        let response_len = self.query_raw(qname, rtype.into(), rclass.into(), &mut vec)?;
+        unsafe { vec.set_len(response_len) };
+
+        Answer::from_msg(&vec)
     }
 }
 
