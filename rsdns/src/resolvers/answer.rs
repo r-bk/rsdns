@@ -98,7 +98,7 @@ impl Answer {
     }
 
     fn extract_rrset(
-        records: &mut Vec<ResourceRecord>,
+        records: &mut Vec<Option<ResourceRecord>>,
         name: &Name,
         rtype: RType,
         rclass: RClass,
@@ -111,18 +111,14 @@ impl Answer {
             rdata: Vec::default(),
         };
 
-        loop {
-            let found_pos = records
-                .iter()
-                .position(|r| r.name == *name && r.rtype == rtype && r.rclass == rclass);
-
-            match found_pos {
-                Some(pos) => {
-                    let rec = records.remove(pos);
-                    rrset.ttl = rrset.ttl.min(rec.ttl);
+        #[allow(clippy::manual_flatten)]
+        for o in records.iter_mut() {
+            if let Some(r) = o {
+                if r.name == *name && r.rtype == rtype && r.rclass == rclass {
+                    rrset.ttl = rrset.ttl.min(r.ttl);
+                    let rec = o.take().unwrap(); // o.is_some() == true, so no panic here
                     rrset.rdata.push(rec.rdata);
                 }
-                None => break,
             }
         }
 
@@ -134,23 +130,27 @@ impl Answer {
     }
 
     fn extract_cname(
-        records: &mut Vec<ResourceRecord>,
+        records: &mut Vec<Option<ResourceRecord>>,
         name: &Name,
         rclass: RClass,
     ) -> Option<ResourceRecord> {
-        let found_pos = records
-            .iter()
-            .position(|r| r.name == name && r.rtype == RType::Cname && r.rclass == rclass);
-
-        found_pos.map(|pos| records.remove(pos))
+        #[allow(clippy::manual_flatten)]
+        for o in records.iter_mut() {
+            if let Some(r) = o {
+                if r.name == name && r.rtype == RType::Cname && r.rclass == rclass {
+                    return o.take();
+                }
+            }
+        }
+        None
     }
 
-    fn read_answer_records(mr: &MessageReader) -> Result<Vec<ResourceRecord>> {
+    fn read_answer_records(mr: &MessageReader) -> Result<Vec<Option<ResourceRecord>>> {
         let mut records = Vec::new();
         for res in mr.records() {
             let (section, record) = res?;
             if section == RecordsSection::Answer {
-                records.push(record);
+                records.push(Some(record));
             } else {
                 // Answer is the first section. Skip the rest.
                 break;
