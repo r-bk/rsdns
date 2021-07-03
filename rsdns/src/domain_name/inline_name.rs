@@ -19,8 +19,8 @@ type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 ///
 /// It is used in cases when dynamic memory allocation is undesirable. In particular, [rsdns](crate)
 /// uses it in resource record header. As a consequence parsing of resource records with no
-/// variable size fields (e.g. [A](crate::records::A), [AAAA](crate::records::Aaaa)) involves
-/// no memory allocation at all.
+/// variable size fields (e.g. [A](crate::records::data::A), [AAAA](crate::records::data::Aaaa))
+/// involves no memory allocation at all.
 ///
 /// [InlineName] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.

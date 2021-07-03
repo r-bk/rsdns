@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::{RClass, RType, RecordsSection},
     message::{reader::SectionTracker, Header},
-    records::{self, ResourceRecord},
+    records::{data::RecordData, ResourceRecord},
     Error, Result,
 };
 use std::convert::TryFrom;
@@ -30,31 +30,31 @@ use std::convert::TryFrom;
 /// use rsdns::{
 ///     constants::RecordsSection,
 ///     message::reader::MessageReader,
-///     records::ResourceRecord,
+///     records::data::RecordData,
 /// };
 ///
 /// fn print_addresses(buf: &[u8]) -> rsdns::Result<()> {
 ///     let mr = MessageReader::new(buf)?;
 ///
-///     for record in mr.records() {
-///         let (section, record) = record?;
+///     for result in mr.records() {
+///         let (section, record) = result?;
 ///
 ///         if section != RecordsSection::Answer {
 ///             // skip addresses in sections after Answer
 ///             break;
 ///         }
 ///
-///         match record {
-///             ResourceRecord::A(ref rec) => {
+///         match record.rdata {
+///             RecordData::A(ref rdata) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
+///                     record.name, record.rclass, record.ttl, rdata.address
 ///                 );
 ///             }
-///             ResourceRecord::Aaaa(ref rec) => {
+///             RecordData::Aaaa(ref rdata) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv6: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
+///                     record.name, record.rclass, record.ttl, rdata.address
 ///                 );
 ///             }
 ///             _ => continue,
@@ -73,12 +73,13 @@ pub struct Records<'a> {
 
 macro_rules! rrr {
     ($self:ident, $rr:ident, $pos:ident, $rclass:ident, $ttl:ident, $rdlen:ident) => {{
-        ResourceRecord::$rr(records::$rr {
+        ResourceRecord {
             name: $self.cursor.clone_with_pos($pos).read()?,
             rclass: $rclass,
+            rtype: RType::$rr,
             $ttl,
-            rdata: $self.cursor.read_rr_data($rdlen)?,
-        })
+            rdata: RecordData::$rr($self.cursor.read_rr_data($rdlen)?),
+        }
     }};
 }
 

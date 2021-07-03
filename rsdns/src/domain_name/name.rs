@@ -15,11 +15,10 @@ use std::{
 /// Construction of [Name] involves dynamic memory allocation.
 ///
 /// [Name] is used in resource record data, where usage of
-/// [InlineName](crate::InlineName) would make the size of the structure
-/// too large.
-/// For example, the [Soa](crate::records::Soa) record includes two domain names in the record data.
-/// This, together with the domain name in the record header, would make the size of the structure
-/// at least 765 bytes long, if [InlineName](crate::InlineName) was used.
+/// [InlineName] would make the size of the [ResourceRecord] structure too large.
+/// For example, the [Soa] record includes two domain names.
+/// This, together with the domain name in the record header, would make the size of
+/// [ResourceRecord] at least 765 bytes long, if [InlineName] was used in record data too.
 ///
 /// [Name] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.
@@ -37,6 +36,10 @@ use std::{
 /// - [RFC 1035 ~2.3.1](https://tools.ietf.org/html/rfc1035#section-2.3.1)
 /// - [RFC 1035 ~2.3.4](https://tools.ietf.org/html/rfc1035#section-2.3.4)
 /// - [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
+///
+/// [InlineName]: crate::InlineName
+/// [ResourceRecord]: crate::records::ResourceRecord
+/// [Soa]: crate::records::data::Soa
 #[derive(Debug, Default, Clone)]
 pub struct Name {
     str_: String,

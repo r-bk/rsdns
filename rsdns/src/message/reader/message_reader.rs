@@ -23,7 +23,7 @@ use crate::{
 /// use rsdns::{
 ///     constants::RecordsSection,
 ///     message::reader::MessageReader,
-///     records::ResourceRecord,
+///     records::data::RecordData,
 /// };
 ///
 /// fn print_answers(buf: &[u8]) -> rsdns::Result<()> {
@@ -40,30 +40,30 @@ use crate::{
 ///         println!("Question {}: {} {} {}", index, q.qname, q.qtype, q.qclass);
 ///     }
 ///
-///     for record in mr.records() {
-///         let (section, record) = record?;
+///     for result in mr.records() {
+///         let (section, record) = result?;
 ///
 ///         if section != RecordsSection::Answer {
 ///             break;
 ///         }
 ///
-///         match record {
-///             ResourceRecord::Cname(ref rec) => {
+///         match record.rdata {
+///             RecordData::Cname(ref rdata) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; Cname: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.rdata.cname
+///                     record.name, record.rclass, record.ttl, rdata.cname
 ///                 );
 ///             }
-///             ResourceRecord::A(ref rec) => {
+///             RecordData::A(ref rdata) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
+///                     record.name, record.rclass, record.ttl, rdata.address
 ///                 );
 ///             }
-///             ResourceRecord::Aaaa(ref rec) => {
+///             RecordData::Aaaa(ref rdata) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv6: {}",
-///                     rec.name, rec.rclass, rec.ttl, rec.rdata.address
+///                     record.name, record.rclass, record.ttl, rdata.address
 ///                 );
 ///             }
 ///             _ => println!("{:?}", record),
