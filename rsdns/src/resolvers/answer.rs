@@ -112,21 +112,17 @@ impl Answer {
         };
 
         loop {
-            let mut found_index = None;
+            let found_pos = records
+                .iter()
+                .position(|r| r.name == *name && r.rtype == rtype && r.rclass == rclass);
 
-            for (index, rec) in records.iter().enumerate() {
-                if rec.name == *name && rec.rtype == rtype && rec.rclass == rclass {
-                    found_index = Some(index);
-                    break;
+            match found_pos {
+                Some(pos) => {
+                    let rec = records.remove(pos);
+                    rrset.ttl = rrset.ttl.min(rec.ttl);
+                    rrset.rdata.push(rec.rdata);
                 }
-            }
-
-            if let Some(index) = found_index {
-                let rec = records.remove(index);
-                rrset.ttl = rrset.ttl.min(rec.ttl);
-                rrset.rdata.push(rec.rdata);
-            } else {
-                break;
+                None => break,
             }
         }
 
@@ -142,20 +138,15 @@ impl Answer {
         name: &Name,
         rclass: RClass,
     ) -> Option<ResourceRecord> {
-        let mut found_index = None;
+        let found_pos = records
+            .iter()
+            .position(|r| r.name == name && r.rtype == RType::Cname && r.rclass == rclass);
 
-        for (index, rec) in records.iter().enumerate() {
-            if rec.name == name && rec.rtype == RType::Cname && rec.rclass == rclass {
-                found_index = Some(index);
-                break;
-            }
+        if let Some(pos) = found_pos {
+            Some(records.remove(pos))
+        } else {
+            None
         }
-
-        if let Some(index) = found_index {
-            return Some(records.remove(index));
-        }
-
-        None
     }
 
     fn read_answer_records(mr: &MessageReader) -> Result<Vec<ResourceRecord>> {
