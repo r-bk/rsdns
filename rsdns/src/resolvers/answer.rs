@@ -70,10 +70,10 @@ impl Answer {
             match Self::extract_rrset(&mut records, &name, rtype, rclass) {
                 Some(rrset) => break rrset,
                 None => {
-                    if cnames.len() >= CNAME_CHAIN_MAX_LENGTH {
-                        return Err(Error::AnswerError(AnswerError::CnameChainTooLong));
-                    }
                     if let Some(cname_rec) = Self::extract_cname(&mut records, &name, rclass) {
+                        if cnames.len() >= CNAME_CHAIN_MAX_LENGTH {
+                            return Err(Error::AnswerError(AnswerError::CnameChainTooLong));
+                        }
                         match cname_rec.rdata {
                             RecordData::Cname(s) => {
                                 cnames.push(s.cname.clone());
