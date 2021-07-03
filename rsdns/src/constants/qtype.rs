@@ -148,6 +148,30 @@ impl TryFrom<u16> for QType {
     }
 }
 
+impl From<RType> for QType {
+    fn from(rtype: RType) -> Self {
+        match rtype {
+            RType::A => QType::A,
+            RType::Ns => QType::Ns,
+            RType::Md => QType::Md,
+            RType::Mf => QType::Mf,
+            RType::Cname => QType::Cname,
+            RType::Soa => QType::Soa,
+            RType::Mb => QType::Mb,
+            RType::Mg => QType::Mg,
+            RType::Mr => QType::Mr,
+            RType::Null => QType::Null,
+            RType::Wks => QType::Wks,
+            RType::Ptr => QType::Ptr,
+            RType::Hinfo => QType::Hinfo,
+            RType::Minfo => QType::Minfo,
+            RType::Mx => QType::Mx,
+            RType::Txt => QType::Txt,
+            RType::Aaaa => QType::Aaaa,
+        }
+    }
+}
+
 impl FromStr for QType {
     type Err = Error;
 
