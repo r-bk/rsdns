@@ -1,10 +1,7 @@
 use crate::{
     constants::{QClass, QType, RClass, RType},
-    message::{reader::MessageReader, Flags, QueryWriter},
-    resolvers::{
-        config::{ProtocolStrategy, Recursion, ResolverConfig},
-        Answer,
-    },
+    message::{reader::MessageReader, Answer, Flags, QueryWriter},
+    resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
     Error, ProtocolError, Result,
 };
 use std::{

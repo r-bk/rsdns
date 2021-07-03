@@ -1,10 +1,7 @@
 use crate::{
     constants::{QType, QClass, RType, RClass},
-    resolvers::{
-        config::{ProtocolStrategy, Recursion, ResolverConfig},
-        Answer,
-    },
-    message::{reader::MessageReader, Flags, QueryWriter},
+    resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
+    message::{reader::MessageReader, Answer, Flags, QueryWriter},
     Error, Result, ProtocolError,
 };
 

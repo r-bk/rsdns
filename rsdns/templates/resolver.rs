@@ -1,7 +1,7 @@
 use crate::{
   constants::{QType, QClass, RType, RClass},
+  message::Answer,
   resolvers::{
-      Answer,
       {{ crate_module_name }}::ResolverImpl,
       config::ResolverConfig,
   },
