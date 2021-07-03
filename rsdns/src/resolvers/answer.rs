@@ -142,11 +142,7 @@ impl Answer {
             .iter()
             .position(|r| r.name == name && r.rtype == RType::Cname && r.rclass == rclass);
 
-        if let Some(pos) = found_pos {
-            Some(records.remove(pos))
-        } else {
-            None
-        }
+        found_pos.map(|pos| records.remove(pos))
     }
 
     fn read_answer_records(mr: &MessageReader) -> Result<Vec<ResourceRecord>> {
