@@ -379,6 +379,14 @@ impl From<InlineName> for Name {
     }
 }
 
+impl From<&InlineName> for Name {
+    fn from(name: &InlineName) -> Self {
+        Self {
+            str_: name.as_str().to_string(),
+        }
+    }
+}
+
 impl super::NameContract for Name {
     #[inline(always)]
     fn as_str(&self) -> &str {
