@@ -46,7 +46,9 @@ impl Answer {
         let flags = mr.header().flags;
 
         if flags.message_type() != MessageType::Response {
-            return Err(Error::AnswerError(AnswerError::NotResponse));
+            return Err(Error::AnswerError(AnswerError::BadMessageType(
+                flags.message_type(),
+            )));
         }
 
         if flags.response_code() != RCode::NoError {

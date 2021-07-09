@@ -1,6 +1,9 @@
 //! Error types.
 
-use crate::{constants::CNAME_CHAIN_MAX_LENGTH, message::ResponseCode};
+use crate::{
+    constants::CNAME_CHAIN_MAX_LENGTH,
+    message::{MessageType, ResponseCode},
+};
 
 /// Variants of [Error::ProtocolError].
 #[allow(missing_docs)]
@@ -54,8 +57,8 @@ pub enum ProtocolError {
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum AnswerError {
-    #[error("message type is not Response")]
-    NotResponse,
+    #[error("message type {0} is incompatible in this context")]
+    BadMessageType(MessageType),
     #[error("response message is truncated")]
     Truncated,
     #[error("message contains no records that answer the query")]
