@@ -8,6 +8,7 @@ license = "MIT OR Apache-2.0"
 keywords = ["dns", "client", "async", "resolver", "tokio", "async-std", "smol"]
 categories = ["asynchronous", "network-programming", "parser-implementations"]
 repository = "https://github.com/r-bk/rsdns"
+resolver = "2"
 
 [dependencies]
 thiserror = "1.0"
