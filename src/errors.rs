@@ -70,7 +70,7 @@ pub enum AnswerError {
 pub enum Error {
     #[error("io error")]
     IoError(#[from] std::io::Error),
-    #[error("protocol error: {0}")]
+    #[error(transparent)]
     ProtocolError(#[from] ProtocolError),
     #[error(transparent)]
     AnswerError(AnswerError),
