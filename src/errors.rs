@@ -78,15 +78,8 @@ pub enum Error {
     AnswerError(AnswerError),
     #[error("operation timed-out")]
     Timeout,
-    #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-    #[cfg_attr(
-        docsrs,
-        doc(cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2")))
-    )]
-    #[error("device name is too long or contains forbidden characters - '/' or whitespace")]
-    BadBindDevice,
-    #[error("bad string")]
-    BadStr,
+    #[error("bad input: {0}")]
+    BadInput(&'static str),
     #[error("internal error: {0}")]
     InternalError(&'static str),
 }

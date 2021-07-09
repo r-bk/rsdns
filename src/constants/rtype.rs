@@ -123,7 +123,7 @@ impl FromStr for RType {
             "MX" => RType::Mx,
             "TXT" => RType::Txt,
             "AAAA" => RType::Aaaa,
-            _ => return Err(Error::BadStr),
+            _ => return Err(Error::BadInput("unrecognized RType str")),
         };
 
         Ok(rtype)

@@ -145,11 +145,13 @@ impl ResolverConfig {
         match interface_name {
             Some(bd) => {
                 if bd.is_empty() || bd.len() >= self.interface_.capacity() {
-                    return Err(Error::BadBindDevice);
+                    return Err(Error::BadInput("invalid interface name length"));
                 }
                 for b in bd.as_bytes() {
                     if b.is_ascii_whitespace() || *b == b'/' {
-                        return Err(Error::BadBindDevice);
+                        return Err(Error::BadInput(
+                            "interface name contains forbidden characters - '/' or whitespace",
+                        ));
                     }
                 }
                 self.interface_.clear();

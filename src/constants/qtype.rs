@@ -201,7 +201,7 @@ impl FromStr for QType {
             "MAILB" => QType::Mailb,
             "MAILA" => QType::Maila,
             "ANY" => QType::Any,
-            _ => return Err(Error::BadStr),
+            _ => return Err(Error::BadInput("unrecognized QType str")),
         };
 
         Ok(qtype)

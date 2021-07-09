@@ -52,7 +52,7 @@ impl FromStr for RClass {
             "CS" => RClass::Cs,
             "CH" => RClass::Ch,
             "HS" => RClass::Hs,
-            _ => return Err(Error::BadStr),
+            _ => return Err(Error::BadInput("unrecognized RClass str")),
         };
         Ok(rclass)
     }
