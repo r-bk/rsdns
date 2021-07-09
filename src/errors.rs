@@ -56,12 +56,12 @@ pub enum ProtocolError {
 pub enum AnswerError {
     #[error("message type {0} is incompatible in this context")]
     BadMessageType(MessageType),
+    #[error("bad response code: {0}")]
+    BadResponseCode(ResponseCode),
     #[error("response message is truncated")]
     Truncated,
     #[error("message contains no records that answer the query")]
     NoAnswer,
-    #[error("bad response code: {0}")]
-    BadResponseCode(ResponseCode),
 }
 
 /// Errors returned by [rsdns](crate).
