@@ -1,6 +1,7 @@
 use crate::{
-    constants::{QType, RType},
-    Error,
+    bytes::{Cursor, Reader},
+    constants::RType,
+    Error, ProtocolResult,
 };
 use std::{
     cmp::Ordering,
@@ -8,12 +9,10 @@ use std::{
     fmt::{self, Display, Formatter},
 };
 
-/// Parsed record type.
+/// Record type value.
 ///
-/// This struct represents an RType parsed from a DNS message.
-/// It may include a value still not supported by the [RType] enumeration.
-///
-/// Convenience methods are provided to handle both supported and not supported values.
+/// This struct represents a record type value.
+/// It may be a value still not supported by the [RType] enumeration.
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordType {
     pub(crate) value: u16,
@@ -33,6 +32,23 @@ impl RecordType {
             Ok(rt) => rt.to_str(),
             _ => "UNRECOGNIZED_RTYPE",
         }
+    }
+
+    /// Checks if this is a data-type.
+    ///
+    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)
+    #[inline]
+    pub fn is_data_type(self) -> bool {
+        (0x0001 <= self.value && self.value <= 0x007F)
+            || (0x0100 <= self.value && self.value <= 0xEFFF)
+    }
+
+    /// Checks if this is a question or meta-type.
+    ///
+    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)
+    #[inline]
+    pub fn is_meta_type(self) -> bool {
+        0x0080 <= self.value && self.value <= 0x00FF
     }
 }
 
@@ -134,30 +150,9 @@ impl PartialOrd<RecordType> for RType {
     }
 }
 
-impl PartialEq<QType> for RecordType {
+impl Reader<RecordType> for Cursor<'_> {
     #[inline]
-    fn eq(&self, other: &QType) -> bool {
-        self.value == *other as u16
-    }
-}
-
-impl PartialEq<RecordType> for QType {
-    #[inline]
-    fn eq(&self, other: &RecordType) -> bool {
-        *self as u16 == other.value
-    }
-}
-
-impl PartialOrd<QType> for RecordType {
-    #[inline]
-    fn partial_cmp(&self, other: &QType) -> Option<Ordering> {
-        self.value.partial_cmp(&(*other as u16))
-    }
-}
-
-impl PartialOrd<RecordType> for QType {
-    #[inline]
-    fn partial_cmp(&self, other: &RecordType) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&other.value)
+    fn read(&mut self) -> ProtocolResult<RecordType> {
+        Ok(RecordType::from(self.u16_be()?))
     }
 }

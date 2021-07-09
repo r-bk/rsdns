@@ -1,6 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::{RClass, RType, RecordsSection},
+    errors::{Error, ProtocolError},
     message::{reader::SectionTracker, Header, RecordType},
     records::{data::RecordData, ResourceRecord},
     Result,
@@ -159,6 +160,9 @@ impl<'a> Records<'a> {
                     RType::Mx => rrr!(self, Mx, domain_name_pos, rclass, ttl, rdlen),
                     RType::Txt => rrr!(self, Txt, domain_name_pos, rclass, ttl, rdlen),
                     RType::Aaaa => rrr!(self, Aaaa, domain_name_pos, rclass, ttl, rdlen),
+                    RType::Axfr | RType::Mailb | RType::Maila | RType::Any => {
+                        return Err(Error::ProtocolError(ProtocolError::UnexpectedRType(rtype)));
+                    }
                 };
 
                 self.section_tracker.section_read(section)?;

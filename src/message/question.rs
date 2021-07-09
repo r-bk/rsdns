@@ -1,6 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::{QClass, QType},
+    constants::QClass,
+    message::RecordType,
     InlineName, Result,
 };
 use std::convert::TryFrom;
@@ -15,7 +16,7 @@ pub struct Question {
     /// Domain name to query.
     pub qname: InlineName,
     /// Question type.
-    pub qtype: QType,
+    pub qtype: RecordType,
     /// Question class.
     pub qclass: QClass,
 }
@@ -24,7 +25,7 @@ impl Question {
     pub(crate) fn read(cursor: &mut Cursor) -> Result<Question> {
         Ok(Question {
             qname: cursor.read()?,
-            qtype: QType::try_from(cursor.u16_be()?)?,
+            qtype: cursor.read()?,
             qclass: QClass::try_from(cursor.u16_be()?)?,
         })
     }

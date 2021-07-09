@@ -1,18 +1,11 @@
-use crate::{
-    constants::QType,
-    errors::{Error, ProtocolError, Result},
-};
+use crate::errors::{Error, ProtocolError, Result};
+use crate::message::RecordType;
 use std::{
-    cmp::Ordering,
-    convert::TryFrom,
     fmt::{self, Display, Formatter},
     str::FromStr,
 };
 
-/// Record type.
-///
-/// This enumeration includes data types only.
-/// For data and query types see [QType].
+/// Record types.
 ///
 /// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
 /// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
@@ -22,9 +15,9 @@ pub enum RType {
     A = 1,
     /// an authoritative name server
     Ns = 2,
-    /// a mail destination (obsolete - use MX)
+    /// a mail destination (obsolete - use [`RType::Mx`])
     Md = 3,
-    /// a mail forwarder (obsolete - use MX)
+    /// a mail forwarder (obsolete - use [`RType::Mx`])
     Mf = 4,
     /// the canonical name of an alias
     Cname = 5,
@@ -52,12 +45,20 @@ pub enum RType {
     Txt = 16,
     /// a host address (IPv6)
     Aaaa = 28,
+    /// a request for a transfer of an entire zone
+    Axfr = 252,
+    /// a request for mailbox-related records (MB, MG or MR)
+    Mailb = 253,
+    /// a request for mail agent RRs (Obsolete - see [`RType::Mx`])
+    Maila = 254,
+    /// a request for all records
+    Any = 255,
 }
 
 impl RType {
     /// Array of all discriminants in this enum.
     #[cfg(test)]
-    pub const VALUES: [RType; 17] = [
+    pub const VALUES: [RType; 21] = [
         RType::A,
         RType::Ns,
         RType::Md,
@@ -75,9 +76,14 @@ impl RType {
         RType::Mx,
         RType::Txt,
         RType::Aaaa,
+        RType::Axfr,
+        RType::Mailb,
+        RType::Maila,
+        RType::Any,
     ];
 
     /// Converts `RType` to a static string.
+    #[inline]
     pub fn to_str(self) -> &'static str {
         match self {
             RType::A => "A",
@@ -97,6 +103,10 @@ impl RType {
             RType::Mx => "MX",
             RType::Txt => "TXT",
             RType::Aaaa => "AAAA",
+            RType::Axfr => "AXFR",
+            RType::Mailb => "MAILB",
+            RType::Maila => "MAILA",
+            RType::Any => "ANY",
         }
     }
 
@@ -119,14 +129,34 @@ impl RType {
             15 => RType::Mx,
             16 => RType::Txt,
             28 => RType::Aaaa,
+            252 => RType::Axfr,
+            253 => RType::Mailb,
+            254 => RType::Maila,
+            255 => RType::Any,
             _ => {
-                return Err(Error::ProtocolError(ProtocolError::UnrecognizedRecordType(
+                return Err(Error::from(ProtocolError::UnrecognizedRecordType(
                     value.into(),
-                )))
+                )));
             }
         };
 
         Ok(me)
+    }
+
+    /// Checks if this is a data-type.
+    ///
+    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)    
+    #[inline]
+    pub fn is_data_type(self) -> bool {
+        RecordType::from(self).is_data_type()
+    }
+
+    /// Checks if this is a question or meta-type.
+    ///
+    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)
+    #[inline]
+    pub fn is_meta_type(self) -> bool {
+        RecordType::from(self).is_meta_type()
     }
 }
 
@@ -152,6 +182,10 @@ impl FromStr for RType {
             "MX" => RType::Mx,
             "TXT" => RType::Txt,
             "AAAA" => RType::Aaaa,
+            "AXFR" => RType::Axfr,
+            "MAILB" => RType::Mailb,
+            "MAILA" => RType::Maila,
+            "ANY" => RType::Any,
             _ => return Err(Error::BadInput("unrecognized RType str")),
         };
 
@@ -159,32 +193,9 @@ impl FromStr for RType {
     }
 }
 
-impl TryFrom<QType> for RType {
-    type Error = Error;
-
-    #[inline]
-    fn try_from(value: QType) -> Result<Self> {
-        Self::try_from_u16(value as u16)
-    }
-}
-
 impl Display for RType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.to_str())
-    }
-}
-
-impl PartialEq<QType> for RType {
-    #[inline]
-    fn eq(&self, other: &QType) -> bool {
-        (*self as u16) == (*other as u16)
-    }
-}
-
-impl PartialOrd<QType> for RType {
-    #[inline]
-    fn partial_cmp(&self, other: &QType) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&(*other as u16))
     }
 }
 
@@ -195,8 +206,8 @@ mod tests {
 
     #[test]
     fn test_try_from_u16() {
-        for rr_type in RType::VALUES {
-            assert_eq!(rr_type, RType::try_from_u16(rr_type as u16).unwrap());
+        for qtype in RType::VALUES {
+            assert_eq!(qtype, RType::try_from_u16(qtype as u16).unwrap());
         }
 
         assert!(matches!(
@@ -211,8 +222,8 @@ mod tests {
     fn test_values() {
         let mut count = 0;
 
-        for rtype in RType::VALUES {
-            let found = match rtype {
+        for qtype in RType::VALUES {
+            let found = match qtype {
                 RType::A => true,
                 RType::Ns => true,
                 RType::Md => true,
@@ -230,6 +241,10 @@ mod tests {
                 RType::Mx => true,
                 RType::Txt => true,
                 RType::Aaaa => true,
+                RType::Axfr => true,
+                RType::Mailb => true,
+                RType::Maila => true,
+                RType::Any => true,
             };
 
             if found {

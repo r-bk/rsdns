@@ -6,16 +6,16 @@ pub enum ProtocolStrategy {
     /// Use UDP by default. Fallback to TCP on truncated responses.
     ///
     /// The default strategy is to use UDP for all queries except for
-    /// [`QType::Any`](crate::constants::QType::Any).
+    /// [`RType::Any`](crate::constants::RType::Any).
     /// If a UDP response is truncated, TCP is used to issue another query and receive a full
     /// response.
     ///
     /// Queries that by definition are required to use only TCP are exempt from these rules.
     Default,
 
-    /// Use UDP for all queries including [`QType::Any`](crate::constants::QType::Any).
+    /// Use UDP for all queries including [`RType::Any`](crate::constants::RType::Any).
     ///
-    /// By default [`QType::Any`](crate::constants::QType::Any) queries use TCP only.
+    /// By default [`RType::Any`](crate::constants::RType::Any) queries use TCP only.
     /// This setting will force UDP to be used for these queries too.
     ///
     /// Queries that by definition are required to use only TCP are exempt from these rules.

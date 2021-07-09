@@ -1,6 +1,9 @@
 //! Error types.
 
-use crate::message::{MessageType, RecordType, ResponseCode};
+use crate::{
+    constants::RType,
+    message::{MessageType, RecordType, ResponseCode},
+};
 
 /// Variants of [Error::ProtocolError].
 #[allow(missing_docs)]
@@ -8,8 +11,8 @@ use crate::message::{MessageType, RecordType, ResponseCode};
 pub enum ProtocolError {
     #[error("unrecognized record type: {0}")]
     UnrecognizedRecordType(RecordType),
-    #[error("reserved query type: {0}")]
-    ReservedQType(u16),
+    #[error("RTYPE {0} is not expected")]
+    UnexpectedRType(RType),
     #[error("reserved resource record class: {0}")]
     ReservedRClass(u16),
     #[error("reserved query class: {0}")]
@@ -74,6 +77,8 @@ pub enum Error {
     ProtocolError(#[from] ProtocolError),
     #[error(transparent)]
     AnswerError(AnswerError),
+    #[error("RType {0} is not supported")]
+    UnsupportedRType(RType),
     #[error("operation timed-out")]
     Timeout,
     #[error("bad input: {0}")]

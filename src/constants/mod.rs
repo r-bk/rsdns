@@ -6,8 +6,8 @@ pub use opcode::*;
 mod qclass;
 pub use qclass::*;
 
-mod qtype;
-pub use qtype::*;
+mod rtype;
+pub use rtype::*;
 
 mod rclass;
 pub use rclass::*;
@@ -17,9 +17,6 @@ pub use rcode::*;
 
 mod records_section;
 pub use records_section::*;
-
-mod rtype;
-pub use rtype::*;
 
 // ----------------------------------------------------------------------------
 

@@ -10,9 +10,7 @@ use std::convert::TryFrom;
 /// A query answer.
 ///
 /// [Answer] is the struct returned from the resolver's `query` method. It contains an answer to
-/// data-type queries. Meta-queries like [QType::Any] do not return an [Answer].
-///
-/// [QType::Any]: crate::constants::QType::Any
+/// data-type queries. Meta-queries like [RType::Any] do not return an [Answer].
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Answer {
     pub(crate) cnames: Vec<Name>,

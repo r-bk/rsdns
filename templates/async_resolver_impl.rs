@@ -1,5 +1,5 @@
 use crate::{
-    constants::{QType, QClass, RType, RClass},
+    constants::{QClass, RType, RClass},
     errors::{Error, Result, ProtocolError},
     resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
     message::{reader::MessageReader, Answer, Flags, QueryWriter},
@@ -55,7 +55,7 @@ impl ResolverImpl {
         &self.config
     }
 
-    pub async fn query_raw(&mut self, qname: &str, qtype: QType, qclass: QClass, buf: &mut [u8]) -> Result<usize> {
+    pub async fn query_raw(&mut self, qname: &str, qtype: RType, qclass: QClass, buf: &mut [u8]) -> Result<usize> {
         let mut ctx = ResolverCtx{
             qname,
             qtype,
@@ -71,11 +71,15 @@ impl ResolverImpl {
     }
 
     pub async fn query(&mut self, qname: &str, rtype: RType, rclass: RClass) -> Result<Answer> {
+        if !rtype.is_data_type() {
+            return Err(Error::UnsupportedRType(rtype));
+        }
+
         let capacity = u16::MAX as usize;
         let mut vec: Vec<u8> = Vec::with_capacity(capacity);
         unsafe { vec.set_len(capacity) };
 
-        let response_len = self.query_raw(qname, rtype.into(), rclass.into(), &mut vec).await?;
+        let response_len = self.query_raw(qname, rtype, rclass.into(), &mut vec).await?;
         unsafe { vec.set_len(response_len) };
 
         Answer::from_msg(&vec)
@@ -84,7 +88,7 @@ impl ResolverImpl {
 
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
-    qtype: QType,
+    qtype: RType,
     qclass: QClass,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
@@ -218,7 +222,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
     #[inline]
     fn udp_first(&self) -> bool {
         match self.config.protocol_strategy_ {
-            ProtocolStrategy::Default => self.qtype != QType::Any,
+            ProtocolStrategy::Default => self.qtype != RType::Any,
             ProtocolStrategy::Udp | ProtocolStrategy::NoTcp => true,
             ProtocolStrategy::Tcp => false,
         }
