@@ -99,6 +99,35 @@ impl RType {
             RType::Aaaa => "AAAA",
         }
     }
+
+    pub(crate) fn try_from_u16(value: u16) -> Result<Self> {
+        let me = match value {
+            1 => RType::A,
+            2 => RType::Ns,
+            3 => RType::Md,
+            4 => RType::Mf,
+            5 => RType::Cname,
+            6 => RType::Soa,
+            7 => RType::Mb,
+            8 => RType::Mg,
+            9 => RType::Mr,
+            10 => RType::Null,
+            11 => RType::Wks,
+            12 => RType::Ptr,
+            13 => RType::Hinfo,
+            14 => RType::Minfo,
+            15 => RType::Mx,
+            16 => RType::Txt,
+            28 => RType::Aaaa,
+            _ => {
+                return Err(Error::ProtocolError(ProtocolError::UnrecognizedRecordType(
+                    value.into(),
+                )))
+            }
+        };
+
+        Ok(me)
+    }
 }
 
 impl FromStr for RType {
@@ -130,41 +159,12 @@ impl FromStr for RType {
     }
 }
 
-impl TryFrom<u16> for RType {
-    type Error = Error;
-
-    fn try_from(value: u16) -> Result<Self> {
-        let me = match value {
-            1 => RType::A,
-            2 => RType::Ns,
-            3 => RType::Md,
-            4 => RType::Mf,
-            5 => RType::Cname,
-            6 => RType::Soa,
-            7 => RType::Mb,
-            8 => RType::Mg,
-            9 => RType::Mr,
-            10 => RType::Null,
-            11 => RType::Wks,
-            12 => RType::Ptr,
-            13 => RType::Hinfo,
-            14 => RType::Minfo,
-            15 => RType::Mx,
-            16 => RType::Txt,
-            28 => RType::Aaaa,
-            _ => return Err(Error::from(ProtocolError::ReservedRType(value))),
-        };
-
-        Ok(me)
-    }
-}
-
 impl TryFrom<QType> for RType {
     type Error = Error;
 
     #[inline]
     fn try_from(value: QType) -> Result<Self> {
-        Self::try_from(value as u16)
+        Self::try_from_u16(value as u16)
     }
 }
 
@@ -191,16 +191,19 @@ impl PartialOrd<QType> for RType {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::message::RecordType;
 
     #[test]
-    fn test_try_from() {
+    fn test_try_from_u16() {
         for rr_type in RType::VALUES {
-            assert_eq!(rr_type, RType::try_from(rr_type as u16).unwrap());
+            assert_eq!(rr_type, RType::try_from_u16(rr_type as u16).unwrap());
         }
 
         assert!(matches!(
-            RType::try_from(0),
-            Err(Error::ProtocolError(ProtocolError::ReservedRType(0)))
+            RType::try_from_u16(0),
+            Err(Error::ProtocolError(ProtocolError::UnrecognizedRecordType(
+                RecordType { value: 0 }
+            )))
         ));
     }
 

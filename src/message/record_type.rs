@@ -29,7 +29,7 @@ impl RecordType {
     /// For numeric representation of an unsupported value see the
     /// underlying implementation of the [Display] trait.
     pub fn to_str(self) -> &'static str {
-        match RType::try_from(self.value) {
+        match RType::try_from(self) {
             Ok(rt) => rt.to_str(),
             _ => "UNRECOGNIZED_RTYPE",
         }
@@ -55,13 +55,22 @@ impl TryFrom<RecordType> for RType {
 
     #[inline]
     fn try_from(rt: RecordType) -> Result<Self, Self::Error> {
-        RType::try_from(rt.value)
+        RType::try_from_u16(rt.value)
+    }
+}
+
+impl TryFrom<&RecordType> for RType {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(rtype: &RecordType) -> Result<Self, Self::Error> {
+        Self::try_from_u16(rtype.value)
     }
 }
 
 impl Display for RecordType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match RType::try_from(self.value) {
+        match RType::try_from(self) {
             Ok(rt) => write!(f, "{}", rt.to_str())?,
             _ => write!(f, "RTYPE({})", self.value)?,
         }

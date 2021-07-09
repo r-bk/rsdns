@@ -1,13 +1,13 @@
 //! Error types.
 
-use crate::message::{MessageType, ResponseCode};
+use crate::message::{MessageType, RecordType, ResponseCode};
 
 /// Variants of [Error::ProtocolError].
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum ProtocolError {
-    #[error("reserved resource record type: {0}")]
-    ReservedRType(u16),
+    #[error("unrecognized record type: {0}")]
+    UnrecognizedRecordType(RecordType),
     #[error("reserved query type: {0}")]
     ReservedQType(u16),
     #[error("reserved resource record class: {0}")]

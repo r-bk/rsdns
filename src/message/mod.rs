@@ -27,3 +27,6 @@ pub mod reader;
 
 mod response_code;
 pub use response_code::*;
+
+mod record_type;
+pub use record_type::*;
