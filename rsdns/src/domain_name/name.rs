@@ -1,5 +1,7 @@
 use crate::{
-    constants::DOMAIN_NAME_MAX_LENGTH, Error, InlineName, ProtocolError, ProtocolResult, Result,
+    constants::DOMAIN_NAME_MAX_LENGTH,
+    errors::{Error, ProtocolError, ProtocolResult, Result},
+    InlineName,
 };
 use std::{
     cmp::Ordering,

@@ -1,4 +1,7 @@
-use crate::{constants::RClass, Error, ProtocolError};
+use crate::{
+    constants::RClass,
+    errors::{Error, ProtocolError},
+};
 use std::{
     cmp::Ordering,
     convert::TryFrom,

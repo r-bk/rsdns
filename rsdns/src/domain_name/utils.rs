@@ -1,6 +1,6 @@
 use crate::{
     constants::{DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH},
-    ProtocolError, ProtocolResult,
+    errors::{ProtocolError, ProtocolResult},
 };
 
 pub fn check_label_bytes(label: &[u8]) -> ProtocolResult<()> {

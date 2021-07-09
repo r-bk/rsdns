@@ -1,6 +1,8 @@
+//! Error types.
+
 use crate::{constants::CNAME_CHAIN_MAX_LENGTH, message::ResponseCode};
 
-/// Protocol errors.
+/// Variants of [Error::ProtocolError].
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum ProtocolError {
@@ -48,7 +50,7 @@ pub enum ProtocolError {
     NoQuestion,
 }
 
-/// Answer errors.
+/// Variants of [Error::AnswerError].
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum AnswerError {

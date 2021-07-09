@@ -1,4 +1,4 @@
-use crate::{ProtocolError, ProtocolResult};
+use crate::{errors::ProtocolError, ProtocolResult};
 
 #[derive(Debug)]
 pub struct WCursor<'a> {

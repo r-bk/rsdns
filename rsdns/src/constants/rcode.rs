@@ -1,4 +1,4 @@
-use crate::{Error, ProtocolError};
+use crate::errors::{Error, ProtocolError};
 use std::{
     convert::TryFrom,
     fmt::{self, Display, Formatter},

@@ -1,11 +1,11 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
+    errors::{Error, ProtocolError, Result},
     message::{
         reader::{Questions, Records},
         Header, Question,
     },
-    Error, ProtocolError, Result,
 };
 
 /// A DNS message reader.

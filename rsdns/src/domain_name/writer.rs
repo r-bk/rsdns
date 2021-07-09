@@ -1,4 +1,8 @@
-use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, ProtocolError, ProtocolResult};
+use crate::{
+    bytes::WCursor,
+    constants::DOMAIN_NAME_MAX_LENGTH,
+    errors::{ProtocolError, ProtocolResult},
+};
 
 impl WCursor<'_> {
     #[inline]

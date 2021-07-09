@@ -1,8 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader, WCursor, Writer},
     constants::HEADER_LENGTH,
+    errors::{ProtocolError, ProtocolResult},
     message::Flags,
-    ProtocolError, ProtocolResult,
 };
 
 /// Message header.

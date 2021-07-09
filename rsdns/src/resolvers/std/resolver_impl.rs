@@ -1,8 +1,8 @@
 use crate::{
     constants::{QClass, QType, RClass, RType},
+    errors::{Error, ProtocolError, Result},
     message::{reader::MessageReader, Answer, Flags, QueryWriter},
     resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
-    Error, ProtocolError, Result,
 };
 use std::{
     io::{ErrorKind, Read, Write},

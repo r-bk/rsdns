@@ -1,4 +1,7 @@
-use crate::{constants::QType, Error, ProtocolError, Result};
+use crate::{
+    constants::QType,
+    errors::{Error, ProtocolError, Result},
+};
 use std::{
     cmp::Ordering,
     convert::TryFrom,

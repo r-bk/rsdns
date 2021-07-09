@@ -1,6 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
-    InlineName, Name, NameContract, ProtocolError, ProtocolResult,
+    errors::{ProtocolError, ProtocolResult},
+    InlineName, Name, NameContract,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;

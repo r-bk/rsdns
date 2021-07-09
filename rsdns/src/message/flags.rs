@@ -176,7 +176,7 @@ impl std::convert::From<Flags> for u16 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Error, ProtocolError};
+    use crate::errors::{Error, ProtocolError};
     use std::convert::TryFrom;
 
     type FlagGet = fn(Flags) -> bool;

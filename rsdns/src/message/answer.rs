@@ -1,8 +1,9 @@
 use crate::{
     constants::{RClass, RCode, RType, RecordsSection, CNAME_CHAIN_MAX_LENGTH},
+    errors::{AnswerError, Error, Result},
     message::{reader::MessageReader, MessageType},
     records::{data::RecordData, RecordSet, ResourceRecord},
-    AnswerError, Error, Name, Result,
+    Name,
 };
 use std::convert::TryFrom;
 
