@@ -58,8 +58,8 @@ pub enum AnswerError {
     BadMessageType(MessageType),
     #[error("bad response code: {0}")]
     BadResponseCode(ResponseCode),
-    #[error("response message is truncated")]
-    Truncated,
+    #[error("message is truncated")]
+    MessageTruncated,
     #[error("message contains no records that answer the query")]
     NoAnswer,
 }

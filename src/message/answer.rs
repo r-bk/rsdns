@@ -58,7 +58,7 @@ impl Answer {
         }
 
         if flags.truncated() {
-            return Err(Error::AnswerError(AnswerError::Truncated));
+            return Err(Error::AnswerError(AnswerError::MessageTruncated));
         }
 
         let question = mr.question()?;
