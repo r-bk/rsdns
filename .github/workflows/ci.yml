@@ -57,13 +57,6 @@ jobs:
           args: -p rsdns --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
-        name: build ch4
-        if: ${{ matrix.feature != 'all' }}
-        with:
-          command: build
-          args: -p ch4 --no-default-features --features ${{ matrix.feature }}
-
-      - uses: actions-rs/cargo@v1
         name: build all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
@@ -71,27 +64,11 @@ jobs:
           args: -p rsdns --all-features
 
       - uses: actions-rs/cargo@v1
-        name: show ch4 info
-        if: ${{ matrix.feature != 'all' }}
-        env:
-          RUST_BACKTRACE: "full"
-        with:
-          command: run
-          args: -- --info
-
-      - uses: actions-rs/cargo@v1
         name: test rsdns
         if: ${{ matrix.feature != 'all' }}
         with:
           command: test
           args: -p rsdns --no-default-features --features ${{ matrix.feature }}
-
-      - uses: actions-rs/cargo@v1
-        name: test ch4
-        if: ${{ matrix.feature != 'all' }}
-        with:
-          command: test
-          args: -p ch4 --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
         name: test all rsdns
@@ -106,13 +83,6 @@ jobs:
         with:
           command: clippy
           args: -p rsdns --no-default-features --features ${{ matrix.feature }} -- -D warnings
-
-      - uses: actions-rs/cargo@v1
-        name: lint ch4
-        if: ${{ matrix.feature != 'all' }}
-        with:
-          command: clippy
-          args: -p ch4 --no-default-features --features ${{ matrix.feature }} -- -D warnings
 
       - uses: actions-rs/cargo@v1
         name: lint all rsdns
