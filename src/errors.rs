@@ -1,9 +1,6 @@
 //! Error types.
 
-use crate::{
-    constants::CNAME_CHAIN_MAX_LENGTH,
-    message::{MessageType, ResponseCode},
-};
+use crate::message::{MessageType, ResponseCode};
 
 /// Variants of [Error::ProtocolError].
 #[allow(missing_docs)]
@@ -63,8 +60,6 @@ pub enum AnswerError {
     Truncated,
     #[error("message contains no records that answer the query")]
     NoAnswer,
-    #[error("CNAME chain exceeds allowed limit: {}", CNAME_CHAIN_MAX_LENGTH)]
-    CnameChainTooLong,
     #[error("bad response code: {0}")]
     BadResponseCode(ResponseCode),
 }

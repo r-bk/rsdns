@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, RCode, RType, RecordsSection, CNAME_CHAIN_MAX_LENGTH},
+    constants::{RClass, RCode, RType, RecordsSection},
     errors::{AnswerError, Error, Result},
     message::{reader::MessageReader, MessageType},
     records::{data::RecordData, RecordSet, ResourceRecord},
@@ -74,9 +74,6 @@ impl Answer {
                 Some(rrset) => break rrset,
                 None => {
                     if let Some(cname_rec) = Self::extract_cname(&mut records, &name, rclass) {
-                        if cnames.len() >= CNAME_CHAIN_MAX_LENGTH {
-                            return Err(Error::AnswerError(AnswerError::CnameChainTooLong));
-                        }
                         match cname_rec.rdata {
                             RecordData::Cname(s) => {
                                 cnames.push(s.cname.clone());
