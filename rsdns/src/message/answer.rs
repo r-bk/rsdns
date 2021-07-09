@@ -83,7 +83,7 @@ impl Answer {
                             _ => {
                                 // should not get here
                                 return Err(Error::InternalError(
-                                    "unexpected RecordData discriminant: Cname expected".into(),
+                                    "unexpected RecordData discriminant: Cname expected",
                                 ));
                             }
                         }

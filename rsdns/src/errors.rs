@@ -90,7 +90,7 @@ pub enum Error {
     #[error("bad string")]
     BadStr,
     #[error("internal error: {0}")]
-    InternalError(String),
+    InternalError(&'static str),
 }
 
 /// Result returned by [rsdns](crate).
