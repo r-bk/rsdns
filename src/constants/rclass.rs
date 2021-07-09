@@ -1,21 +1,14 @@
 use crate::{
-    constants::QClass,
     errors::{Error, ProtocolError, Result},
+    message::RecordClass,
 };
-use std::{
-    cmp::Ordering,
-    convert::TryFrom,
-    fmt::{self, Display, Formatter},
-    str::FromStr,
-};
+use std::fmt::{self, Display, Formatter};
 
-/// Record class.
+/// Record classes.
 ///
-/// This enumeration includes data classes only.
-/// For enumeration of data and query classes see [QClass].
-///
-/// [RFC 1035 ~4.1.2](https://tools.ietf.org/html/rfc1035)
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+/// - [RFC 1035 section 3.2.4](https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4)
+/// - [RFC 1035 section 3.2.5](https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.5)
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RClass {
     /// the internet
     In = 1,
@@ -25,75 +18,57 @@ pub enum RClass {
     Ch = 3,
     /// Hesiod
     Hs = 4,
+    /// any class
+    Any = 255,
 }
 
 impl RClass {
     /// Array of all discriminants in this enum.
     #[cfg(test)]
-    pub const VALUES: [RClass; 4] = [RClass::In, RClass::Cs, RClass::Ch, RClass::Hs];
+    pub const VALUES: [RClass; 5] = [RClass::In, RClass::Cs, RClass::Ch, RClass::Hs, RClass::Any];
 
-    /// Converts `RClass` to a static string.
+    /// Converts this `RClass` to a static string.
     pub fn to_str(self) -> &'static str {
         match self {
             RClass::In => "IN",
             RClass::Cs => "CS",
             RClass::Ch => "CH",
             RClass::Hs => "HS",
+            RClass::Any => "ANY",
         }
     }
-}
 
-impl FromStr for RClass {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self> {
-        let rclass = match s {
-            "IN" => RClass::In,
-            "CS" => RClass::Cs,
-            "CH" => RClass::Ch,
-            "HS" => RClass::Hs,
-            _ => return Err(Error::BadInput("unrecognized RClass str")),
-        };
-        Ok(rclass)
+    /// Checks if this is a data-class.
+    ///
+    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    #[inline]
+    pub fn is_data_class(self) -> bool {
+        RecordClass::from(self).is_data_class()
     }
-}
 
-impl TryFrom<u16> for RClass {
-    type Error = Error;
+    /// Checks if this a question or meta-class.
+    ///
+    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    #[inline]
+    pub fn is_meta_class(self) -> bool {
+        RecordClass::from(self).is_meta_class()
+    }
 
-    fn try_from(value: u16) -> Result<Self> {
+    pub(crate) fn try_from_u16(value: u16) -> Result<Self> {
         let me = match value {
             1 => RClass::In,
             2 => RClass::Cs,
             3 => RClass::Ch,
             4 => RClass::Hs,
-            _ => return Err(Error::from(ProtocolError::ReservedRClass(value))),
+            255 => RClass::Any,
+            _ => {
+                return Err(Error::ProtocolError(
+                    ProtocolError::UnrecognizedRecordClass(value.into()),
+                ))
+            }
         };
 
         Ok(me)
-    }
-}
-
-impl TryFrom<QClass> for RClass {
-    type Error = Error;
-
-    #[inline]
-    fn try_from(value: QClass) -> Result<Self> {
-        Self::try_from(value as u16)
-    }
-}
-
-impl PartialEq<QClass> for RClass {
-    #[inline]
-    fn eq(&self, other: &QClass) -> bool {
-        (*self as u16) == (*other as u16)
-    }
-}
-
-impl PartialOrd<QClass> for RClass {
-    #[inline]
-    fn partial_cmp(&self, other: &QClass) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&(*other as u16))
     }
 }
 
@@ -106,36 +81,33 @@ impl Display for RClass {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::message::RecordClass;
 
     #[test]
-    fn test_try_from() {
-        for rr_class in RClass::VALUES {
-            assert_eq!(rr_class, RClass::try_from(rr_class as u16).unwrap());
+    fn test_try_from_u16() {
+        for qclass in RClass::VALUES {
+            assert_eq!(qclass, RClass::try_from_u16(qclass as u16).unwrap());
         }
 
         assert!(matches!(
-            RClass::try_from(0),
-            Err(Error::ProtocolError(ProtocolError::ReservedRClass(0)))
+            RClass::try_from_u16(0),
+            Err(Error::ProtocolError(
+                ProtocolError::UnrecognizedRecordClass(RecordClass { value: 0 })
+            ))
         ));
-    }
-
-    #[test]
-    fn test_eq_qclass() {
-        for rclass in RClass::VALUES {
-            assert_eq!(rclass, QClass::try_from(rclass as u16).unwrap());
-        }
     }
 
     #[test]
     fn test_values() {
         let mut count = 0;
 
-        for rclass in RClass::VALUES {
-            let found = match rclass {
+        for qclass in RClass::VALUES {
+            let found = match qclass {
                 RClass::In => true,
                 RClass::Cs => true,
                 RClass::Ch => true,
                 RClass::Hs => true,
+                RClass::Any => true,
             };
 
             if found {

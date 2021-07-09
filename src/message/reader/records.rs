@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::{RClass, RType, RecordsSection},
     errors::{Error, ProtocolError},
-    message::{reader::SectionTracker, Header, RecordType},
+    message::{reader::SectionTracker, Header, RecordClass, RecordType},
     records::{data::RecordData, ResourceRecord},
     Result,
 };
@@ -118,7 +118,7 @@ impl<'a> Records<'a> {
                 self.cursor.skip_domain_name()?;
 
                 let rtype: RecordType = self.cursor.u16_be()?.into();
-                let rclass = self.cursor.u16_be()?;
+                let rclass: RecordClass = self.cursor.u16_be()?.into();
                 let ttl = self.cursor.u32_be()?;
                 let rdlen = self.cursor.u16_be()? as usize;
 

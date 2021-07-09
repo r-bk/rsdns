@@ -1,5 +1,5 @@
 use crate::{
-  constants::{QClass, RType, RClass},
+  constants::{RType, RClass},
   message::Answer,
   resolvers::{
       {{ crate_module_name }}::ResolverImpl,
@@ -38,7 +38,7 @@ impl Resolver {
     /// The response message is read into `buf` and its length is returned in the result.
     /// This method doesn't allocate.
     #[inline(always)]
-    pub {% if async == "true" %}async {% endif -%} fn query_raw(&mut self, qname: &str, qtype: RType, qclass: QClass, buf: &mut [u8]) -> Result<usize> {
+    pub {% if async == "true" %}async {% endif -%} fn query_raw(&mut self, qname: &str, qtype: RType, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
         self.internal.query_raw(qname, qtype, qclass, buf){% if async == "true" %}.await{% endif %}
     }
 
@@ -47,7 +47,7 @@ impl Resolver {
     /// As opposed to [Resolver::query_raw], this method parses the response message and
     /// resolves CNAME chaining if needed.
     ///
-    /// Only data record types are allowed.
+    /// Only data record types and classes are allowed.
     /// For meta-queries (e.g. [RType::Any]) use [Resolver::query_raw].
     ///
     /// This method allocates.

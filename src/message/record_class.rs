@@ -1,6 +1,7 @@
 use crate::{
-    constants::{QClass, RClass},
-    Error,
+    bytes::{Cursor, Reader},
+    constants::RClass,
+    Error, ProtocolResult,
 };
 use std::{
     cmp::Ordering,
@@ -8,19 +9,17 @@ use std::{
     fmt::{self, Display, Formatter},
 };
 
-/// Parsed record class.
+/// Record class value.
 ///
-/// This struct represents an RClass parsed from a DNS message.
+/// This struct represents a record class value.
 /// It may include a value still not supported by the [RClass] enumeration.
-///
-/// Convenience methods are provided to handle both supported and not supported values.
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordClass {
     pub(crate) value: u16,
 }
 
 impl RecordClass {
-    /// Converts the RClass to a static string slice.
+    /// Converts the RecordClass to a static string slice.
     ///
     /// This is equivalent to calling `to_str` on the corresponding [RClass] value.
     /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RCLASS"` is
@@ -29,10 +28,26 @@ impl RecordClass {
     /// For numeric representation of an unsupported value see the
     /// underlying implementation of the [Display] trait.
     pub fn to_str(self) -> &'static str {
-        match RClass::try_from(self.value) {
+        match RClass::try_from_u16(self.value) {
             Ok(rt) => rt.to_str(),
             _ => "UNRECOGNIZED_RCLASS",
         }
+    }
+
+    /// Checks if this is a data-class value.
+    ///
+    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    #[inline]
+    pub fn is_data_class(self) -> bool {
+        0x0001 <= self.value && self.value <= 0x007F
+    }
+
+    /// Checks if this a meta-class value.
+    ///
+    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    #[inline]
+    pub fn is_meta_class(self) -> bool {
+        0x0080 <= self.value && self.value <= 0x00FF
     }
 }
 
@@ -55,13 +70,22 @@ impl TryFrom<RecordClass> for RClass {
 
     #[inline]
     fn try_from(rc: RecordClass) -> Result<Self, Self::Error> {
-        RClass::try_from(rc.value)
+        RClass::try_from_u16(rc.value)
+    }
+}
+
+impl TryFrom<&RecordClass> for RClass {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(rc: &RecordClass) -> Result<Self, Self::Error> {
+        RClass::try_from_u16(rc.value)
     }
 }
 
 impl Display for RecordClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match RClass::try_from(self.value) {
+        match RClass::try_from_u16(self.value) {
             Ok(rc) => write!(f, "{}", rc.to_str())?,
             _ => write!(f, "RCLASS({})", self.value)?,
         }
@@ -125,30 +149,9 @@ impl PartialOrd<RecordClass> for RClass {
     }
 }
 
-impl PartialEq<QClass> for RecordClass {
+impl Reader<RecordClass> for Cursor<'_> {
     #[inline]
-    fn eq(&self, other: &QClass) -> bool {
-        self.value == *other as u16
-    }
-}
-
-impl PartialEq<RecordClass> for QClass {
-    #[inline]
-    fn eq(&self, other: &RecordClass) -> bool {
-        *self as u16 == other.value
-    }
-}
-
-impl PartialOrd<QClass> for RecordClass {
-    #[inline]
-    fn partial_cmp(&self, other: &QClass) -> Option<Ordering> {
-        self.value.partial_cmp(&(*other as u16))
-    }
-}
-
-impl PartialOrd<RecordClass> for QClass {
-    #[inline]
-    fn partial_cmp(&self, other: &RecordClass) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&other.value)
+    fn read(&mut self) -> ProtocolResult<RecordClass> {
+        Ok(RecordClass::from(self.u16_be()?))
     }
 }

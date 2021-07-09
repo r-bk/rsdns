@@ -1,6 +1,6 @@
 use crate::{
     bytes::{WCursor, Writer},
-    constants::{QClass, RType},
+    constants::{RClass, RType},
     message::{Flags, Header},
     Result,
 };
@@ -26,7 +26,7 @@ impl<'a> QueryWriter<'a> {
         self.id
     }
 
-    pub fn write(&mut self, qname: &str, qtype: RType, qclass: QClass) -> Result<usize> {
+    pub fn write(&mut self, qname: &str, qtype: RType, qclass: RClass) -> Result<usize> {
         let header = Header {
             id: self.id,
             flags: *Flags::new().set_recursion_desired(self.recursion_desired),
@@ -50,7 +50,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        message::RecordType,
+        message::{RecordClass, RecordType},
         InlineName,
     };
     use std::convert::TryFrom;
@@ -61,7 +61,7 @@ mod tests {
         let mut qw = QueryWriter::new(&mut query[..], true);
 
         let size = qw
-            .write("host.example.com", RType::Cname, QClass::In)
+            .write("host.example.com", RType::Cname, RClass::In)
             .unwrap();
         assert_eq!(size, 34 + 2);
 
@@ -74,7 +74,7 @@ mod tests {
         let header: Header = c.read().unwrap();
         let dn: InlineName = c.read().unwrap();
         let qt = RType::try_from(RecordType::from(c.u16_be().unwrap())).unwrap();
-        let qc = QClass::try_from(c.u16_be().unwrap()).unwrap();
+        let qc = RClass::try_from(RecordClass::from(c.u16_be().unwrap())).unwrap();
 
         assert_eq!(size, 34);
         assert!(header.flags.recursion_desired());
@@ -82,6 +82,6 @@ mod tests {
         assert_eq!(header.qd_count, 1);
         assert_eq!(dn.as_str(), "host.example.com.");
         assert_eq!(qt, RType::Cname);
-        assert_eq!(qc, QClass::In);
+        assert_eq!(qc, RClass::In);
     }
 }

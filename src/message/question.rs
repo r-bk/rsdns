@@ -1,10 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::QClass,
-    message::RecordType,
+    message::{RecordClass, RecordType},
     InlineName, Result,
 };
-use std::convert::TryFrom;
 
 /// Query question.
 ///
@@ -18,7 +16,7 @@ pub struct Question {
     /// Question type.
     pub qtype: RecordType,
     /// Question class.
-    pub qclass: QClass,
+    pub qclass: RecordClass,
 }
 
 impl Question {
@@ -26,7 +24,7 @@ impl Question {
         Ok(Question {
             qname: cursor.read()?,
             qtype: cursor.read()?,
-            qclass: QClass::try_from(cursor.u16_be()?)?,
+            qclass: cursor.read()?,
         })
     }
 }

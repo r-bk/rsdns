@@ -3,14 +3,11 @@
 mod opcode;
 pub use opcode::*;
 
-mod qclass;
-pub use qclass::*;
+mod rclass;
+pub use rclass::*;
 
 mod rtype;
 pub use rtype::*;
-
-mod rclass;
-pub use rclass::*;
 
 mod rcode;
 pub use rcode::*;

@@ -1,5 +1,5 @@
 use crate::{
-    constants::{QClass, RType, RClass},
+    constants::{RType, RClass},
     errors::{Error, Result, ProtocolError},
     resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
     message::{reader::MessageReader, Answer, Flags, QueryWriter},
@@ -55,7 +55,7 @@ impl ResolverImpl {
         &self.config
     }
 
-    pub async fn query_raw(&mut self, qname: &str, qtype: RType, qclass: QClass, buf: &mut [u8]) -> Result<usize> {
+    pub async fn query_raw(&mut self, qname: &str, qtype: RType, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
         let mut ctx = ResolverCtx{
             qname,
             qtype,
@@ -74,12 +74,15 @@ impl ResolverImpl {
         if !rtype.is_data_type() {
             return Err(Error::UnsupportedRType(rtype));
         }
+        if !rclass.is_data_class() {
+            return Err(Error::UnsupportedRClass(rclass));
+        }
 
         let capacity = u16::MAX as usize;
         let mut vec: Vec<u8> = Vec::with_capacity(capacity);
         unsafe { vec.set_len(capacity) };
 
-        let response_len = self.query_raw(qname, rtype, rclass.into(), &mut vec).await?;
+        let response_len = self.query_raw(qname, rtype, rclass, &mut vec).await?;
         unsafe { vec.set_len(response_len) };
 
         Answer::from_msg(&vec)
@@ -89,7 +92,7 @@ impl ResolverImpl {
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
     qtype: RType,
-    qclass: QClass,
+    qclass: RClass,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
     msg_id: u16,

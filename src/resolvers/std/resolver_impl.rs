@@ -1,5 +1,5 @@
 use crate::{
-    constants::{QClass, RClass, RType},
+    constants::{RClass, RType},
     errors::{Error, ProtocolError, Result},
     message::{reader::MessageReader, Answer, Flags, QueryWriter},
     resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
@@ -16,7 +16,7 @@ type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
     qtype: RType,
-    qclass: QClass,
+    qclass: RClass,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
     msg_id: u16,
@@ -48,7 +48,7 @@ impl ResolverImpl {
         &self,
         qname: &str,
         qtype: RType,
-        qclass: QClass,
+        qclass: RClass,
         buf: &mut [u8],
     ) -> Result<usize> {
         let now = Instant::now();
@@ -72,11 +72,14 @@ impl ResolverImpl {
         if !rtype.is_data_type() {
             return Err(Error::UnsupportedRType(rtype));
         }
+        if !rclass.is_data_class() {
+            return Err(Error::UnsupportedRClass(rclass));
+        }
         let capacity = u16::MAX as usize;
         let mut vec: Vec<u8> = Vec::with_capacity(capacity);
         unsafe { vec.set_len(capacity) };
 
-        let response_len = self.query_raw(qname, rtype, rclass.into(), &mut vec)?;
+        let response_len = self.query_raw(qname, rtype, rclass, &mut vec)?;
         unsafe { vec.set_len(response_len) };
 
         Answer::from_msg(&vec)
