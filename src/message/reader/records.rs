@@ -3,7 +3,7 @@ use crate::{
     constants::{RClass, RType, RecordsSection},
     message::{reader::SectionTracker, Header},
     records::{data::RecordData, ResourceRecord},
-    Error, Result,
+    Result,
 };
 use std::convert::TryFrom;
 
@@ -95,20 +95,20 @@ impl<'a> Records<'a> {
     fn read(&mut self) -> Option<Result<(RecordsSection, ResourceRecord)>> {
         if !self.err {
             let res = self.read_impl();
-            if res.is_ok() {
-                Some(res)
-            } else if let Err(Error::IterationStop) = res {
-                None
-            } else {
-                self.err = true;
-                Some(res)
+            match res {
+                Ok(Some(t)) => Some(Ok(t)),
+                Ok(None) => None,
+                Err(e) => {
+                    self.err = true;
+                    Some(Err(e))
+                }
             }
         } else {
             None
         }
     }
 
-    fn read_impl(&mut self) -> Result<(RecordsSection, ResourceRecord)> {
+    fn read_impl(&mut self) -> Result<Option<(RecordsSection, ResourceRecord)>> {
         loop {
             let section = self.section_tracker.next_section();
 
@@ -162,9 +162,9 @@ impl<'a> Records<'a> {
                 };
 
                 self.section_tracker.section_read(section)?;
-                break Ok((section, rec));
+                break Ok(Some((section, rec)));
             } else {
-                break Err(Error::IterationStop);
+                break Ok(None);
             }
         }
     }

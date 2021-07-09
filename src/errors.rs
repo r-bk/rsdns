@@ -85,8 +85,6 @@ pub enum Error {
     )]
     #[error("device name is too long or contains forbidden characters - '/' or whitespace")]
     BadBindDevice,
-    #[error("iterator exhausted")]
-    IterationStop,
     #[error("bad string")]
     BadStr,
     #[error("internal error: {0}")]
