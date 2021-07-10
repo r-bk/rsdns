@@ -31,7 +31,6 @@ pub(crate) struct ResolverImpl {
     socket: UdpSocket,
 }
 
-#[allow(unused_variables)]
 impl ResolverImpl {
     pub fn new(config: ResolverConfig) -> Result<Self> {
         let socket = UdpSocket::bind(config.bind_addr_)?;
