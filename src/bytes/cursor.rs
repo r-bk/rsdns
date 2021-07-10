@@ -55,7 +55,10 @@ impl<'a> Cursor<'a> {
                 self.buf = self.orig.take().unwrap();
                 Ok(())
             } else {
-                Err(ProtocolError::CursorWindowError(self.buf.len(), self.pos))
+                Err(ProtocolError::CursorWindowError {
+                    window_end: self.buf.len(),
+                    pos: self.pos,
+                })
             }
         } else {
             Err(ProtocolError::CursorNotInWindow)

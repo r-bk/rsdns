@@ -43,8 +43,8 @@ pub enum ProtocolError {
     CursorAlreadyInWindow,
     #[error("cursor not in window mode")]
     CursorNotInWindow,
-    #[error("cursor window error: expected {0}, actual {1}")]
-    CursorWindowError(usize, usize),
+    #[error("cursor window error: window_end {window_end}, pos {pos}")]
+    CursorWindowError { window_end: usize, pos: usize },
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
     #[error("malformed message: no question")]
