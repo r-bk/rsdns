@@ -16,18 +16,30 @@ pub fn check_label_bytes(label: &[u8]) -> ProtocolResult<()> {
 
     for b in label.iter().cloned() {
         if !(b.is_ascii_alphanumeric() || b == b'-') {
-            return Err(ProtocolError::DomainNameLabelInvalidChar(b));
+            return Err(ProtocolError::DomainNameLabelInvalidChar(
+                "domain name label invalid character",
+                b,
+            ));
         }
     }
 
     // the slice is not empty (checked at the top of the function)
     // so it is sound to access it unchecked at the first and last bytes
     unsafe {
-        if !label.get_unchecked(0).is_ascii_alphabetic() {
-            return Err(ProtocolError::DomainNameLabelMalformed);
+        let fc = label.get_unchecked(0);
+        if !fc.is_ascii_alphabetic() {
+            return Err(ProtocolError::DomainNameLabelInvalidChar(
+                "domain name label first character is not alphabetic",
+                *fc,
+            ));
         }
-        if !label.get_unchecked(len - 1).is_ascii_alphanumeric() {
-            return Err(ProtocolError::DomainNameLabelMalformed);
+
+        let lc = label.get_unchecked(len - 1);
+        if !lc.is_ascii_alphanumeric() {
+            return Err(ProtocolError::DomainNameLabelInvalidChar(
+                "domain name label last character is not alphanumeric",
+                *lc,
+            ));
         }
     }
 
@@ -101,14 +113,48 @@ mod tests {
         let res = check_label_bytes(b"");
         assert!(matches!(res, Err(ProtocolError::DomainNameLabelIsEmpty)));
 
-        let malformed: &[&[u8]] = &[b"1abel", b"-abel", b"label-"];
+        let malformed: &[(&[u8], u8)] = &[(b"1abel", b'1'), (b"-abel", b'-')]; //, b"label-"];
 
-        for m in malformed {
+        for (m, c) in malformed {
             let res = check_label_bytes(m);
-            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label first character is not alphabetic",
+                    v
+                )) if v == *c
+            ));
 
             let res = check_label(std::str::from_utf8(m).unwrap());
-            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label first character is not alphabetic",
+                    v
+                )) if v == *c
+            ));
+        }
+
+        let malformed: &[(&[u8], u8)] = &[(b"label-", b'-')];
+
+        for (m, c) in malformed {
+            let res = check_label_bytes(m);
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label last character is not alphanumeric",
+                    v
+                )) if v == *c
+            ));
+
+            let res = check_label(std::str::from_utf8(m).unwrap());
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label last character is not alphanumeric",
+                    v
+                )) if v == *c
+            ));
         }
 
         let invalid_char: &[(&[u8], u8)] = &[(b"la.el", b'.'), (b"\tabel", b'\t')];
@@ -116,13 +162,13 @@ mod tests {
             let res = check_label_bytes(ic);
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
+                Err(ProtocolError::DomainNameLabelInvalidChar("domain name label invalid character", v)) if v == *c
             ));
 
             let res = check_label(std::str::from_utf8(ic).unwrap());
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
+                Err(ProtocolError::DomainNameLabelInvalidChar("domain name label invalid character", v)) if v == *c
             ));
         }
 
@@ -174,20 +220,54 @@ mod tests {
             assert!(matches!(res, Err(ProtocolError::DomainNameLabelIsEmpty)));
         }
 
-        let malformed: &[&[u8]] = &[
-            b"3om",
-            b"co-",
-            b"1xample.com",
-            b"example-.com",
-            b"-xample.com",
+        let malformed: &[(&[u8], u8)] = &[
+            (b"3om", b'3'),
+            // b"co-",
+            (b"1xample.com", b'1'),
+            // b"example-.com",
+            (b"-xample.com", b'-'),
         ];
 
-        for m in malformed {
+        for (m, c) in malformed {
             let res = check_name_bytes(m);
-            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label first character is not alphabetic",
+                    v
+                )) if v == *c
+            ));
 
             let res = check_name(std::str::from_utf8(m).unwrap());
-            assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label first character is not alphabetic",
+                    v
+                )) if v == *c
+            ));
+        }
+
+        let malformed: &[(&[u8], u8)] = &[(b"co-", b'-'), (b"example-.com", b'-')];
+
+        for (m, c) in malformed {
+            let res = check_name_bytes(m);
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label last character is not alphanumeric",
+                    v
+                )) if v == *c
+            ));
+
+            let res = check_name(std::str::from_utf8(m).unwrap());
+            assert!(matches!(
+                res,
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label last character is not alphanumeric",
+                    v
+                )) if v == *c
+            ));
         }
 
         let invalid_char: &[(&[u8], u8)] = &[(b"examp|e.com.", b'|')];
@@ -196,13 +276,13 @@ mod tests {
             let res = check_name_bytes(ic);
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
+                Err(ProtocolError::DomainNameLabelInvalidChar("domain name label invalid character", v)) if v == *c
             ));
 
             let res = check_name(std::str::from_utf8(ic).unwrap());
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
+                Err(ProtocolError::DomainNameLabelInvalidChar("domain name label invalid character", v)) if v == *c
             ));
         }
 

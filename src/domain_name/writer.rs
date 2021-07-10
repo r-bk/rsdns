@@ -160,14 +160,37 @@ mod tests {
             ));
         }
 
-        let samples: Vec<&str> = vec!["3om", "co-", "1xample.com", "example-.com", "-xample.com"];
+        let samples: Vec<(&str, u8)> = vec![
+            ("3om", b'3'),
+            /*"co-"*/
+            ("1xample.com", b'1'),
+            /*"example-.com"*/
+            ("-xample.com", b'-'),
+        ];
 
-        for s in samples {
+        for (s, c) in samples {
             let mut arr = [0xFFu8; 32];
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(s),
-                Err(ProtocolError::DomainNameLabelMalformed)
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label first character is not alphabetic",
+                    v
+                )) if v == c
+            ));
+        }
+
+        let samples: Vec<(&str, u8)> = vec![("co-", b'-'), ("example-.com", b'-')];
+
+        for (s, c) in samples {
+            let mut arr = [0xFFu8; 32];
+            let mut wcursor = WCursor::new(&mut arr[..]);
+            assert!(matches!(
+                wcursor.write_domain_name(s),
+                Err(ProtocolError::DomainNameLabelInvalidChar(
+                    "domain name label last character is not alphanumeric",
+                    v
+                )) if v == c
             ));
         }
     }
