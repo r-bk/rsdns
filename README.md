@@ -9,7 +9,7 @@
 
 *rsdns* comes with a small command-line tool [ch4](https://github.com/r-bk/ch4).
 *ch4* uses *rsdns* to query the Domain Name System,
-and shows the results in a simple format.
+and shows the results in a zone-file format.
 It can be used as a simple substitute to [dig](https://en.wikipedia.org/wiki/Dig_(command)),
 especially on platforms where *dig* is not natively supported.
 
