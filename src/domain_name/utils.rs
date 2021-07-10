@@ -113,7 +113,7 @@ mod tests {
         let res = check_label_bytes(b"");
         assert!(matches!(res, Err(ProtocolError::DomainNameLabelIsEmpty)));
 
-        let malformed: &[(&[u8], u8)] = &[(b"1abel", b'1'), (b"-abel", b'-')]; //, b"label-"];
+        let malformed: &[(&[u8], u8)] = &[(b"1abel", b'1'), (b"-abel", b'-')];
 
         for (m, c) in malformed {
             let res = check_label_bytes(m);

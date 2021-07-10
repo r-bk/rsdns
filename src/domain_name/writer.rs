@@ -160,13 +160,8 @@ mod tests {
             ));
         }
 
-        let samples: Vec<(&str, u8)> = vec![
-            ("3om", b'3'),
-            /*"co-"*/
-            ("1xample.com", b'1'),
-            /*"example-.com"*/
-            ("-xample.com", b'-'),
-        ];
+        let samples: Vec<(&str, u8)> =
+            vec![("3om", b'3'), ("1xample.com", b'1'), ("-xample.com", b'-')];
 
         for (s, c) in samples {
             let mut arr = [0xFFu8; 32];
