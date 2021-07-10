@@ -1,14 +1,14 @@
 use crate::{
     bytes::{Cursor, Reader},
+    constants::DOMAIN_NAME_MAX_POINTERS,
     errors::{ProtocolError, ProtocolResult},
     InlineName, Name, NameContract,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
 const LENGTH_MASK: u8 = 0b0011_1111;
-const MAX_POINTERS: usize = 32;
 
-type OffsetsArray = arrayvec::ArrayVec<u16, MAX_POINTERS>;
+type OffsetsArray = arrayvec::ArrayVec<u16, DOMAIN_NAME_MAX_POINTERS>;
 
 pub struct DomainNameReader<'a> {
     cursor: Cursor<'a>,
@@ -251,7 +251,7 @@ mod tests {
         let mut packet: Vec<u8> = b"\x07example\x03com\x00".iter().cloned().collect();
         let start = packet.len();
 
-        for i in 0..MAX_POINTERS {
+        for i in 0..DOMAIN_NAME_MAX_POINTERS {
             let offset = if i == 0 { 0 } else { start + 2 * (i - 1) };
 
             packet.push(0xC0);
@@ -267,7 +267,7 @@ mod tests {
 
         {
             packet.push(0xC0);
-            packet.push((start + 2 * (MAX_POINTERS - 1)) as u8);
+            packet.push((start + 2 * (DOMAIN_NAME_MAX_POINTERS - 1)) as u8);
 
             assert!(matches!(
                 DomainNameReader::read(&mut Cursor::with_pos(packet.as_ref(), packet.len() - 2)),
