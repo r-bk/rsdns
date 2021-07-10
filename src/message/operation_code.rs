@@ -62,7 +62,7 @@ impl TryFrom<OperationCode> for OpCode {
 
     #[inline]
     fn try_from(value: OperationCode) -> Result<Self, Self::Error> {
-        OpCode::try_from(value.value)
+        OpCode::try_from_u8(value.value)
     }
 }
 

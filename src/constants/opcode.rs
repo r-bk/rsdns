@@ -1,8 +1,5 @@
-use crate::errors::{Error, ProtocolError};
-use std::{
-    convert::TryFrom,
-    fmt::{self, Display, Formatter},
-};
+use crate::errors::{Error, ProtocolError, Result};
+use std::fmt::{self, Display, Formatter};
 
 /// Query opcode.
 ///
@@ -30,19 +27,18 @@ impl OpCode {
             OpCode::Status => "STATUS",
         }
     }
-}
 
-impl TryFrom<u8> for OpCode {
-    type Error = Error;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    pub(crate) fn try_from_u8(value: u8) -> Result<Self> {
         let me = match value {
             0 => OpCode::Query,
             1 => OpCode::IQuery,
             2 => OpCode::Status,
-            _ => return Err(Error::from(ProtocolError::ReservedOpCode(value))),
+            _ => {
+                return Err(Error::ProtocolError(
+                    ProtocolError::UnrecognizedOperationCode(value.into()),
+                ))
+            }
         };
-
         Ok(me)
     }
 }
@@ -56,16 +52,19 @@ impl Display for OpCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::message::OperationCode;
 
     #[test]
-    fn test_try_from() {
+    fn test_try_from_u8() {
         for opcode in OpCode::VALUES {
-            assert_eq!(opcode, OpCode::try_from(opcode as u8).unwrap());
+            assert_eq!(opcode, OpCode::try_from_u8(opcode as u8).unwrap());
         }
 
         assert!(matches!(
-            OpCode::try_from(128),
-            Err(Error::ProtocolError(ProtocolError::ReservedOpCode(128)))
+            OpCode::try_from_u8(128),
+            Err(Error::ProtocolError(
+                ProtocolError::UnrecognizedOperationCode(OperationCode { value: 128 })
+            ))
         ));
     }
 

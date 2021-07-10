@@ -2,7 +2,7 @@
 
 use crate::{
     constants::{RClass, RType},
-    message::{MessageType, RecordClass, RecordType, ResponseCode},
+    message::{MessageType, OperationCode, RecordClass, RecordType, ResponseCode},
 };
 
 /// Variants of [Error::ProtocolError].
@@ -15,8 +15,8 @@ pub enum ProtocolError {
     UnexpectedRType(RType),
     #[error("reserved resource record class: {0}")]
     UnrecognizedRecordClass(RecordClass),
-    #[error("reserved query opcode: {0}")]
-    ReservedOpCode(u8),
+    #[error("unrecognized operation code: {0}")]
+    UnrecognizedOperationCode(OperationCode),
     #[error("reserved response code: {0}")]
     ReservedRCode(u16),
     #[error("domain name label invalid character")]
