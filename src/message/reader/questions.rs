@@ -61,7 +61,7 @@ impl<'a> Questions<'a> {
         } else {
             self.err = true;
         }
-        Some(res.map_err(|pe| Error::from(pe)))
+        Some(res.map_err(Error::from))
     }
 }
 
