@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     message::{RecordClass, RecordType},
-    InlineName, Result,
+    InlineName, ProtocolResult,
 };
 
 /// Query question.
@@ -19,12 +19,12 @@ pub struct Question {
     pub qclass: RecordClass,
 }
 
-impl Question {
-    pub(crate) fn read(cursor: &mut Cursor) -> Result<Question> {
+impl Reader<Question> for Cursor<'_> {
+    fn read(&mut self) -> ProtocolResult<Question> {
         Ok(Question {
-            qname: cursor.read()?,
-            qtype: cursor.read()?,
-            qclass: cursor.read()?,
+            qname: self.read()?,
+            qtype: self.read()?,
+            qclass: self.read()?,
         })
     }
 }

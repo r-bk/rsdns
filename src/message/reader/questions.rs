@@ -1,4 +1,8 @@
-use crate::{bytes::Cursor, message::Question, Result};
+use crate::{
+    bytes::{Cursor, Reader},
+    message::Question,
+    Error, ProtocolResult, Result,
+};
 
 /// An iterator over the questions section of a message.
 ///
@@ -49,13 +53,13 @@ impl<'a> Questions<'a> {
             return None;
         }
 
-        let res = Question::read(&mut self.cursor);
+        let res: ProtocolResult<Question> = self.cursor.read();
         if res.is_ok() {
             self.qd_read += 1;
         } else {
             self.err = true;
         }
-        Some(res)
+        Some(res.map_err(|pe| Error::from(pe)))
     }
 }
 
