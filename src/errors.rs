@@ -59,8 +59,8 @@ pub enum ProtocolError {
     CursorWindowError { window_end: usize, pos: usize },
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
-    #[error("malformed message: no question")]
-    NoQuestion,
+    #[error("malformed message: question is missing")]
+    MessageWithoutQuestion,
 }
 
 /// Variants of [Error::AnswerError].

@@ -107,7 +107,7 @@ impl<'a> MessageReader<'a> {
         if let Some(res) = questions.next() {
             return res;
         }
-        Err(Error::ProtocolError(ProtocolError::NoQuestion))
+        Err(Error::ProtocolError(ProtocolError::MessageWithoutQuestion))
     }
 
     /// Returns an iterator over the questions section of the message.
