@@ -19,7 +19,7 @@ pub enum ProtocolError {
     UnrecognizedOperationCode(OperationCode),
     #[error("reserved response code: {0}")]
     UnrecognizedResponseCode(ResponseCode),
-    #[error("{0}: {1:#02x}")]
+    #[error("{0}: {1:#02X}")]
     DomainNameLabelInvalidChar(&'static str, u8),
     #[error(
         "domain name label length exceeds allowed limit {}: {0}",
