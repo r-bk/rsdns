@@ -11,7 +11,6 @@ pub struct QueryWriter<'a> {
     recursion_desired: bool,
 }
 
-#[allow(dead_code)]
 impl<'a> QueryWriter<'a> {
     pub fn new(buf: &'a mut [u8], recursion_desired: bool) -> Self {
         QueryWriter {
