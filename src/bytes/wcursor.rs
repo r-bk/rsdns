@@ -6,7 +6,6 @@ pub struct WCursor<'a> {
     pos: usize,
 }
 
-#[allow(dead_code)]
 impl<'a> WCursor<'a> {
     #[inline]
     pub fn new(buf: &'a mut [u8]) -> Self {
@@ -41,11 +40,6 @@ impl<'a> WCursor<'a> {
     }
 
     #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    #[inline]
     pub fn slice(&mut self, size: usize) -> ProtocolResult<&mut [u8]> {
         if self.len() >= size {
             Ok(unsafe { self.buf.get_unchecked_mut(self.pos..self.pos + size) })
@@ -75,14 +69,6 @@ impl<'a> WCursor<'a> {
     pub unsafe fn u8_unchecked(&mut self, val: u8) {
         *self.buf.get_unchecked_mut(self.pos) = val;
         self.pos += 1;
-    }
-
-    #[inline]
-    pub fn bytes(&mut self, buf: &[u8]) -> ProtocolResult<()> {
-        let slice = self.slice(buf.len())?;
-        slice.copy_from_slice(buf);
-        self.pos += buf.len();
-        Ok(())
     }
 
     #[inline]
