@@ -133,7 +133,10 @@ impl<'a> DomainNameReader<'a> {
     fn remember_offset(&mut self, offset: u16) -> ProtocolResult<()> {
         for o in &self.seen_offsets {
             if *o == offset {
-                return Err(ProtocolError::DomainNamePointerLoop);
+                return Err(ProtocolError::DomainNamePointerLoop {
+                    src: self.cursor.pos() - 2, // the offset of the label's first byte
+                    dst: offset as usize,
+                });
             }
         }
         if self.seen_offsets.is_full() {
@@ -229,7 +232,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
-            Err(ProtocolError::DomainNamePointerLoop)
+            Err(ProtocolError::DomainNamePointerLoop { src, dst }) if src == 19 && dst == 5
         ));
     }
 
