@@ -1,7 +1,7 @@
 use crate::errors::{Error, ProtocolError, Result};
 use std::fmt::{self, Display, Formatter};
 
-/// Query opcode.
+/// Query opcodes.
 ///
 /// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
