@@ -16,7 +16,7 @@ pub fn check_label_bytes(label: &[u8]) -> ProtocolResult<()> {
 
     for b in label.iter().cloned() {
         if !(b.is_ascii_alphanumeric() || b == b'-') {
-            return Err(ProtocolError::DomainNameLabelInvalidChar);
+            return Err(ProtocolError::DomainNameLabelInvalidChar(b));
         }
     }
 
@@ -108,18 +108,18 @@ mod tests {
             assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
         }
 
-        let invalid_char: &[&[u8]] = &[b"la.el", b"\tabel"];
-        for ic in invalid_char {
+        let invalid_char: &[(&[u8], u8)] = &[(b"la.el", b'.'), (b"\tabel", b'\t')];
+        for (ic, c) in invalid_char {
             let res = check_label_bytes(ic);
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar)
+                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
             ));
 
             let res = check_label(std::str::from_utf8(ic).unwrap());
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar)
+                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
             ));
         }
 
@@ -177,19 +177,19 @@ mod tests {
             assert!(matches!(res, Err(ProtocolError::DomainNameLabelMalformed)));
         }
 
-        let invalid_char: &[&[u8]] = &[b"examp|e.com."];
+        let invalid_char: &[(&[u8], u8)] = &[(b"examp|e.com.", b'|')];
 
-        for ic in invalid_char {
+        for (ic, c) in invalid_char {
             let res = check_name_bytes(ic);
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar)
+                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
             ));
 
             let res = check_name(std::str::from_utf8(ic).unwrap());
             assert!(matches!(
                 res,
-                Err(ProtocolError::DomainNameLabelInvalidChar)
+                Err(ProtocolError::DomainNameLabelInvalidChar(v)) if v == *c
             ));
         }
 
