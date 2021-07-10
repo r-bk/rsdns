@@ -28,6 +28,8 @@ pub enum ProtocolError {
         DOMAIN_NAME_LABEL_MAX_LENGTH
     )]
     DomainNameLabelTooLong(usize),
+    #[error("domain name label is empty")]
+    DomainNameLabelIsEmpty,
     #[error("domain name length exceeds allowed limit")]
     DomainNameTooLong,
     #[error("domain name pointer loop detected")]

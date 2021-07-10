@@ -25,7 +25,7 @@ impl WCursor<'_> {
 
     pub fn write_domain_name_bytes(&mut self, name: &[u8]) -> ProtocolResult<usize> {
         if name.is_empty() {
-            return Err(ProtocolError::DomainNameLabelMalformed);
+            return Err(ProtocolError::DomainNameLabelIsEmpty);
         }
 
         let start = self.pos();
@@ -143,18 +143,24 @@ mod tests {
 
     #[test]
     fn test_write_malformed_label() {
-        let samples: Vec<&str> = vec![
+        let empty: Vec<&str> = vec![
             "",
             "..",
-            "3om",
-            "co-",
             "example.com..",
             "example..com",
             "sub..example.com",
-            "1xample.com",
-            "example-.com",
-            "-xample.com",
         ];
+
+        for e in empty {
+            let mut arr = [0xFFu8; 32];
+            let mut wcursor = WCursor::new(&mut arr[..]);
+            assert!(matches!(
+                wcursor.write_domain_name(e),
+                Err(ProtocolError::DomainNameLabelIsEmpty)
+            ));
+        }
+
+        let samples: Vec<&str> = vec!["3om", "co-", "1xample.com", "example-.com", "-xample.com"];
 
         for s in samples {
             let mut arr = [0xFFu8; 32];

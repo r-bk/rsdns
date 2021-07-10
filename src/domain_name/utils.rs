@@ -5,7 +5,7 @@ use crate::{
 
 pub fn check_label_bytes(label: &[u8]) -> ProtocolResult<()> {
     if label.is_empty() {
-        return Err(ProtocolError::DomainNameLabelMalformed);
+        return Err(ProtocolError::DomainNameLabelIsEmpty);
     }
 
     let len = label.len();
@@ -41,7 +41,7 @@ pub fn check_label(label: &str) -> ProtocolResult<()> {
 
 pub fn check_name_bytes(name: &[u8]) -> ProtocolResult<()> {
     if name.is_empty() {
-        return Err(ProtocolError::DomainNameLabelMalformed);
+        return Err(ProtocolError::DomainNameLabelIsEmpty);
     }
 
     // root domain name
@@ -98,7 +98,10 @@ mod tests {
 
     #[test]
     fn test_check_label() {
-        let malformed: &[&[u8]] = &[b"", b"1abel", b"-abel", b"label-"];
+        let res = check_label_bytes(b"");
+        assert!(matches!(res, Err(ProtocolError::DomainNameLabelIsEmpty)));
+
+        let malformed: &[&[u8]] = &[b"1abel", b"-abel", b"label-"];
 
         for m in malformed {
             let res = check_label_bytes(m);
@@ -156,14 +159,24 @@ mod tests {
             assert!(check_name(std::str::from_utf8(g).unwrap()).is_ok());
         }
 
-        let malformed: &[&[u8]] = &[
+        let empty: &[&[u8]] = &[
             b"",
             b"..",
-            b"3om",
-            b"co-",
             b"example.com..",
             b"example..com",
             b"sub..example.com",
+        ];
+        for e in empty {
+            let res = check_name_bytes(e);
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelIsEmpty)));
+
+            let res = check_name(std::str::from_utf8(e).unwrap());
+            assert!(matches!(res, Err(ProtocolError::DomainNameLabelIsEmpty)));
+        }
+
+        let malformed: &[&[u8]] = &[
+            b"3om",
+            b"co-",
             b"1xample.com",
             b"example-.com",
             b"-xample.com",
