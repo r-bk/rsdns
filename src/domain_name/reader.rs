@@ -71,7 +71,7 @@ impl<'a> DomainNameReader<'a> {
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(ProtocolError::DomainNameBadLabelType);
+                return Err(ProtocolError::DomainNameBadLabelType(length));
             }
         }
 
@@ -102,7 +102,7 @@ impl<'a> DomainNameReader<'a> {
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(ProtocolError::DomainNameBadLabelType);
+                return Err(ProtocolError::DomainNameBadLabelType(length));
             }
         }
 
@@ -242,7 +242,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
-            Err(ProtocolError::DomainNameBadLabelType)
+            Err(ProtocolError::DomainNameBadLabelType(l)) if l == 0xA0
         ));
     }
 

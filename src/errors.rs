@@ -37,8 +37,8 @@ pub enum ProtocolError {
     DomainNamePointerLoop { src: usize, dst: usize },
     #[error("domain name pointer count exceeds allowed limit")]
     DomainNameTooMuchPointers,
-    #[error("domain name label type is invalid")]
-    DomainNameBadLabelType,
+    #[error("domain name label type is invalid: label = {0:#02X}")]
+    DomainNameBadLabelType(u8),
     #[error("domain name label pointer is invalid")]
     DomainNameBadPointer,
     #[error("buffer end reached unexpectedly")]
