@@ -6,7 +6,9 @@ use crate::{
 
 /// An iterator over the questions section of a message.
 ///
-/// Returns:
+/// Reading questions doesn't involve memory allocation.
+///
+/// # Returns
 ///
 /// - `Some(Ok(`[`Question`]`))` - if a question was read successfully
 /// - `Some(Err(_))` - on error
@@ -23,8 +25,8 @@ use crate::{
 /// # fn print_questions(buf: &[u8]) -> Result<()> {
 /// let mut message_reader = MessageReader::new(buf)?;
 ///
-/// for question in message_reader.questions() {
-///     let question = question?;
+/// for result in message_reader.questions() {
+///     let question = result?;
 ///     println!("{} {} {}", question.qname, question.qtype, question.qclass);
 /// }
 /// #
