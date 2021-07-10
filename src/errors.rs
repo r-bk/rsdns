@@ -1,7 +1,7 @@
 //! Error types.
 
 use crate::{
-    constants::{RClass, RType},
+    constants::{RClass, RType, DOMAIN_NAME_LABEL_MAX_LENGTH},
     message::{MessageType, OperationCode, RecordClass, RecordType, ResponseCode},
 };
 
@@ -23,7 +23,10 @@ pub enum ProtocolError {
     DomainNameLabelInvalidChar,
     #[error("domain name label is malformed")]
     DomainNameLabelMalformed,
-    #[error("domain name label length exceeds allowed limit 63: {0}")]
+    #[error(
+        "domain name label length exceeds allowed limit {}: {0}",
+        DOMAIN_NAME_LABEL_MAX_LENGTH
+    )]
     DomainNameLabelTooLong(usize),
     #[error("domain name length exceeds allowed limit")]
     DomainNameTooLong,
