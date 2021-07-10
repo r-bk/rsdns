@@ -1,7 +1,7 @@
 //! Error types.
 
 use crate::{
-    constants::{RClass, RType, DOMAIN_NAME_LABEL_MAX_LENGTH},
+    constants::{RClass, RType, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH},
     message::{MessageType, OperationCode, RecordClass, RecordType, ResponseCode},
 };
 
@@ -28,8 +28,11 @@ pub enum ProtocolError {
     DomainNameLabelTooLong(usize),
     #[error("domain name label is empty")]
     DomainNameLabelIsEmpty,
-    #[error("domain name length exceeds allowed limit")]
-    DomainNameTooLong,
+    #[error(
+        "domain name length exceeds allowed limit {}: {0}",
+        DOMAIN_NAME_MAX_LENGTH
+    )]
+    DomainNameTooLong(usize),
     #[error("domain name pointer loop detected")]
     DomainNamePointerLoop,
     #[error("domain name pointer count exceeds allowed limit")]

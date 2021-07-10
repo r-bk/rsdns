@@ -57,7 +57,7 @@ impl WCursor<'_> {
 
         let length = self.pos() - start;
         if length > DOMAIN_NAME_MAX_LENGTH {
-            return Err(ProtocolError::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong(length));
         }
 
         Ok(length)
@@ -111,7 +111,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(&long_label),
-                Err(ProtocolError::DomainNameTooLong)
+                Err(ProtocolError::DomainNameTooLong(s)) if s == long_label.len() + 2
             ));
         }
 
@@ -119,7 +119,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(&long_label[..long_label.len() - 1]),
-                Err(ProtocolError::DomainNameTooLong)
+                Err(ProtocolError::DomainNameTooLong(s)) if s == long_label.len() + 1
             ));
         }
 

@@ -226,8 +226,9 @@ impl Name {
         // which means it is sound to convert it unchecked as a valid label is ASCII
         let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
 
-        if self.name.len() + label_as_str.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
-            return Err(ProtocolError::DomainNameTooLong);
+        let new_len = self.name.len() + label_as_str.len() + 1;
+        if new_len > DOMAIN_NAME_MAX_LENGTH {
+            return Err(ProtocolError::DomainNameTooLong(new_len));
         }
 
         self.name.push_str(label_as_str);
@@ -239,8 +240,9 @@ impl Name {
     pub(crate) fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
         super::check_label(label)?;
 
-        if self.name.len() + label.len() + 1 > DOMAIN_NAME_MAX_LENGTH {
-            return Err(ProtocolError::DomainNameTooLong);
+        let new_len = self.name.len() + label.len() + 1;
+        if new_len > DOMAIN_NAME_MAX_LENGTH {
+            return Err(ProtocolError::DomainNameTooLong(new_len));
         }
 
         self.name.push_str(label);
@@ -548,12 +550,16 @@ mod tests {
             dn.append_label("small").unwrap();
 
             let res = dn.append_label(&l_63);
-            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
+            assert!(
+                matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
+            );
         }
 
         // test total size == 255
         let res = dn.clone().append_label(&l_63);
-        assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
+        assert!(
+            matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
+        );
 
         dn.append_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);

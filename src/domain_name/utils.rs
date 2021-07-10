@@ -86,14 +86,10 @@ pub fn check_name_bytes(name: &[u8]) -> ProtocolResult<()> {
 
     let last_byte = unsafe { *name.get_unchecked(len - 1) };
 
-    let effective_max_length = if last_byte == b'.' {
-        DOMAIN_NAME_MAX_LENGTH - 1
-    } else {
-        DOMAIN_NAME_MAX_LENGTH - 2
-    };
+    let full_length = if last_byte == b'.' { len + 1 } else { len + 2 };
 
-    if len > effective_max_length {
-        return Err(ProtocolError::DomainNameTooLong);
+    if full_length > DOMAIN_NAME_MAX_LENGTH {
+        return Err(ProtocolError::DomainNameTooLong(full_length));
     }
 
     Ok(())
@@ -299,10 +295,10 @@ mod tests {
         let too_long = &[dn_254.as_str()];
         for tl in too_long {
             let res = check_name(tl);
-            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == tl.len() + 2));
 
             let res = check_name_bytes(tl.as_bytes());
-            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
+            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == tl.len() + 2));
         }
     }
 }

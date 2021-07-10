@@ -222,11 +222,13 @@ impl InlineName {
         let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
 
         if self.arr.try_push_str(label_as_str).is_err() {
-            return Err(ProtocolError::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong(
+                self.arr.len() + label_as_str.len() + 1,
+            ));
         }
 
         if self.arr.try_push('.').is_err() {
-            return Err(ProtocolError::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong(self.arr.len() + 1));
         }
 
         Ok(())
@@ -236,11 +238,13 @@ impl InlineName {
         super::check_label(label)?;
 
         if self.arr.try_push_str(label).is_err() {
-            return Err(ProtocolError::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong(
+                self.arr.len() + label.len() + 1,
+            ));
         }
 
         if self.arr.try_push('.').is_err() {
-            return Err(ProtocolError::DomainNameTooLong);
+            return Err(ProtocolError::DomainNameTooLong(self.arr.len() + 1));
         }
 
         Ok(())
@@ -550,12 +554,16 @@ mod tests {
             dn.append_label("small").unwrap();
 
             let res = dn.append_label(&l_63);
-            assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
+            assert!(
+                matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
+            );
         }
 
         // test total size == 255
         let res = dn.clone().append_label(&l_63);
-        assert!(matches!(res, Err(ProtocolError::DomainNameTooLong)));
+        assert!(
+            matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
+        );
 
         dn.append_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);
