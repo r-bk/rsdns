@@ -277,7 +277,7 @@ mod tests {
                 let f = Flags { bits: i as u16 };
                 matches!(
                     RCode::try_from(f.response_code()),
-                    Err(Error::ProtocolError(ProtocolError::ReservedRCode(v))) if v == i
+                    Err(Error::ProtocolError(ProtocolError::UnrecognizedResponseCode(v))) if v == i
                 );
             }
         }

@@ -26,7 +26,7 @@ impl ResponseCode {
     /// For numeric representation of an unsupported value see the
     /// underlying implementation of the [Display] trait.
     pub fn to_str(self) -> &'static str {
-        match RCode::try_from(self.value) {
+        match RCode::try_from_u16(self.value) {
             Ok(rc) => rc.to_str(),
             _ => "UNRECOGNIZED_RCODE",
         }
@@ -52,13 +52,13 @@ impl TryFrom<ResponseCode> for RCode {
 
     #[inline]
     fn try_from(rc: ResponseCode) -> Result<Self, Self::Error> {
-        RCode::try_from(rc.value)
+        RCode::try_from_u16(rc.value)
     }
 }
 
 impl Display for ResponseCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match RCode::try_from(self.value) {
+        match RCode::try_from_u16(self.value) {
             Ok(c) => write!(f, "{}", c.to_str())?,
             _ => write!(f, "RCODE({})", self.value)?,
         }

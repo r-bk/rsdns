@@ -1,8 +1,5 @@
-use crate::errors::{Error, ProtocolError};
-use std::{
-    convert::TryFrom,
-    fmt::{self, Display, Formatter},
-};
+use crate::errors::{Error, ProtocolError, Result};
+use std::fmt::{self, Display, Formatter};
 
 /// Response code.
 ///
@@ -47,12 +44,8 @@ impl RCode {
             RCode::Refused => "REFUSED",
         }
     }
-}
 
-impl TryFrom<u16> for RCode {
-    type Error = Error;
-
-    fn try_from(value: u16) -> Result<Self, Self::Error> {
+    pub(crate) fn try_from_u16(value: u16) -> Result<Self> {
         let me = match value {
             0 => RCode::NoError,
             1 => RCode::FormErr,
@@ -60,7 +53,11 @@ impl TryFrom<u16> for RCode {
             3 => RCode::NxDomain,
             4 => RCode::NotImp,
             5 => RCode::Refused,
-            _ => return Err(Error::from(ProtocolError::ReservedRCode(value))),
+            _ => {
+                return Err(Error::ProtocolError(
+                    ProtocolError::UnrecognizedResponseCode(value.into()),
+                ))
+            }
         };
 
         Ok(me)
@@ -76,16 +73,19 @@ impl Display for RCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::message::ResponseCode;
 
     #[test]
-    fn test_try_from() {
+    fn test_try_from_u16() {
         for r_code in RCode::VALUES {
-            assert_eq!(r_code, RCode::try_from(r_code as u16).unwrap());
+            assert_eq!(r_code, RCode::try_from_u16(r_code as u16).unwrap());
         }
 
         assert!(matches!(
-            RCode::try_from(128),
-            Err(Error::ProtocolError(ProtocolError::ReservedRCode(128)))
+            RCode::try_from_u16(128),
+            Err(Error::ProtocolError(
+                ProtocolError::UnrecognizedResponseCode(ResponseCode { value: 128 })
+            ))
         ));
     }
 

@@ -18,7 +18,7 @@ pub enum ProtocolError {
     #[error("unrecognized operation code: {0}")]
     UnrecognizedOperationCode(OperationCode),
     #[error("reserved response code: {0}")]
-    ReservedRCode(u16),
+    UnrecognizedResponseCode(ResponseCode),
     #[error("domain name label invalid character")]
     DomainNameLabelInvalidChar,
     #[error("domain name label is malformed")]
