@@ -74,7 +74,6 @@ use crate::{
 /// }
 ///
 /// ```
-#[allow(dead_code)]
 pub struct MessageReader<'a> {
     buf: &'a [u8],
     header: Header,
