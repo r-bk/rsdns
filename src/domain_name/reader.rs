@@ -66,7 +66,10 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(ProtocolError::DomainNameBadPointer);
+                    return Err(ProtocolError::DomainNameBadPointer {
+                        pointer: offset as usize,
+                        max_offset: self.max_pos,
+                    });
                 }
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
@@ -97,7 +100,10 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(ProtocolError::DomainNameBadPointer);
+                    return Err(ProtocolError::DomainNameBadPointer {
+                        pointer: offset as usize,
+                        max_offset: self.max_pos,
+                    });
                 }
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
@@ -222,7 +228,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 5)),
-            Err(ProtocolError::DomainNameBadPointer)
+            Err(ProtocolError::DomainNameBadPointer { pointer: p, max_offset: o }) if p == 0x13 && o == 15
         ));
     }
 

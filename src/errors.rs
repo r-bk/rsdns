@@ -45,8 +45,8 @@ pub enum ProtocolError {
     DomainNameTooMuchPointers,
     #[error("domain name label type is invalid: label = {0:#02X}")]
     DomainNameBadLabelType(u8),
-    #[error("domain name label pointer is invalid")]
-    DomainNameBadPointer,
+    #[error("domain name label pointer {pointer} exceeds buffer max offset {max_offset}")]
+    DomainNameBadPointer { pointer: usize, max_offset: usize },
     #[error("buffer end reached unexpectedly")]
     EndOfBuffer,
     #[error("buffer window end reached unexpectedly")]
