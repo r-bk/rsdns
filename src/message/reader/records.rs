@@ -17,9 +17,9 @@ use std::convert::TryFrom;
 /// Unknown resource record types are silently skipped.
 ///
 /// Memory is allocated only for those records which contain dynamically allocated fields in the
-/// record data.
+/// record data. In particular, reading A and AAAA records does not involve memory allocation.
 ///
-/// Returns:
+/// # Returns
 ///
 /// - `Some(Ok((`[`RecordsSection`]`, `[`ResourceRecord`]`)))` - if a record was read successfully
 /// - `Some(Err(_))` - on error
