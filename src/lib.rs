@@ -15,10 +15,11 @@
 //! # Notable Features
 //!
 //! * Minimal API
-//! * Three independent asynchronous resolvers for different async engines:
-//!   `tokio`, `async-std` and `smol`
-//! * An independent blocking resolver implemented on top of `std::net`
-//! * Zero memory allocations when parsing records with no variable size fields (e.g. `A`, `AAAA`)
+//! * Three independent asynchronous resolvers for different async runtimes:
+//!   [`tokio`], [`async-std`] and [`smol`]
+//! * An independent blocking resolver implemented on top of [`std::net`]
+//! * Zero memory allocations when parsing records with no variable size fields
+//!   (e.g. [`A`], [`AAAA`])
 //! * Sockets can be bound to network interfaces by name (requires `SO_BINDTODEVICE` support
 //!   from the underlying OS)
 //! * Minimal set of dependencies
@@ -28,6 +29,12 @@
 //! [rsdns]: crate
 //! [RFC 1034]: https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1
 //! [DNS Stub Resolver]: https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resolvers
+//! [`tokio`]: https://docs.rs/tokio
+//! [`async-std`]: https://docs.rs/async-std
+//! [`smol`]: https://docs.rs/smol
+//! [`std::net`]: https://doc.rust-lang.org/std/net/index.html
+//! [`A`]: crate::records::data::A
+//! [`AAAA`]: crate::records::data::Aaaa
 
 //! # Library Structure
 //!
@@ -41,7 +48,7 @@
 //! The *resolvers* part is comprised of four independent implementations
 //! of the resolver API. Usually an application will use only one of those. None of the resolvers
 //! is enabled by default. You need to enable a resolver via one of the `net-*` crate features.
-//! See the [resolvers] module for more information.
+//! See the [`resolvers`] module for more information.
 
 //! # `std::net::ToSocketAddrs`
 //!

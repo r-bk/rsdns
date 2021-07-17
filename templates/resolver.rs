@@ -9,7 +9,7 @@ use crate::{
 };
 
 {% if async == "true" -%}
-/// Asynchronous resolver for the [`{{ crate_name }}`](https://crates.io/crates/{{ crate_name }}) executor.
+/// Asynchronous resolver for the [`{{ crate_name }}`](https://docs.rs/{{ crate_name }}) executor.
 {% else -%}
 /// Synchronous (blocking) resolver.
 {% endif -%}
