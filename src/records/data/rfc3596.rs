@@ -7,7 +7,7 @@ use std::net::Ipv6Addr;
 
 /// A host address (IPv6).
 ///
-/// [`RFC 3596 ~2.2`](https://tools.ietf.org/html/rfc3596#section-2.2)
+/// [RFC 3596 section 2.2](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.2)
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Ord, PartialOrd)]
 pub struct Aaaa {
     /// Internet address (IPv6).

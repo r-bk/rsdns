@@ -1,7 +1,7 @@
 # rsdns - DNS Client Library
 
 **rsnds** is a **R**u**s**t lib crate implementing a **DNS** **S**tub **R**esolver
-([RFC 1034](https://tools.ietf.org/html/rfc1034#section-5.3.1)).
+([RFC 1034](https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1)).
 
 *rsdns* strives to be simple and fast. To be simple *rsdns* keeps a minimal API.
 To be fast *rsdns* avoids memory allocations, and aims to allow DNS message parsing with
@@ -37,9 +37,9 @@ especially on platforms where *dig* is not originally supported.
 *rsdns* focuses on querying the Domain Name System and strives to support all
 essential data-type records.
 
-* [RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035) - the foundation of DNS
+* [RFC 1035](https://www.rfc-editor.org/rfc/rfc1035.html) - the foundation of DNS
   protocol: `A`, `NS`, `TXT`, `CNAME`, `SOA`, `MX`, `PTR`, `ANY` etc.
-* [RFC 3596](https://datatracker.ietf.org/doc/html/rfc3596) - `AAAA`
+* [RFC 3596](https://www.rfc-editor.org/rfc/rfc3596.html) - `AAAA`
 
 
 ## Roadmap
@@ -47,7 +47,7 @@ essential data-type records.
 The following is a short list of features planned for the near future.
 
 * Zero memory allocation for all essential data-types records
-* EDNS0 [RFC 6891](https://datatracker.ietf.org/doc/html/rfc6891) - support
+* EDNS0 [RFC 6891](https://www.rfc-editor.org/rfc/rfc6891.html) - support
   UDP messages longer than 512 bytes
 
 

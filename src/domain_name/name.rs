@@ -25,8 +25,7 @@ use std::{
 /// [Name] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.
 ///
-/// Domain name max length, as defined in
-/// [RFC 1035](https://tools.ietf.org/html/rfc1035#section-3.1), is 255 bytes.
+/// Domain name max length, as defined in [RFC 1035], is 255 bytes.
 /// This includes all label length bytes, and the terminating zero length byte. Hence the effective
 /// max length of a domain name without the root zone is 253 bytes.
 ///
@@ -35,10 +34,11 @@ use std::{
 ///
 /// Specifications:
 ///
-/// - [RFC 1035 ~2.3.1](https://tools.ietf.org/html/rfc1035#section-2.3.1)
-/// - [RFC 1035 ~2.3.4](https://tools.ietf.org/html/rfc1035#section-2.3.4)
-/// - [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
+/// - [RFC 1035 section 2.3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.1)
+/// - [RFC 1035 section 2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)
+/// - [RFC 1035 section 3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1)
 ///
+/// [RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1
 /// [InlineName]: crate::InlineName
 /// [ResourceRecord]: crate::records::ResourceRecord
 /// [Soa]: crate::records::data::Soa

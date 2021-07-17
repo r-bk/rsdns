@@ -3,7 +3,7 @@ use std::fmt::{self, Display, Formatter};
 
 /// Response codes.
 ///
-/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
+/// [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RCode {
     /// No error condition

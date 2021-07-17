@@ -9,7 +9,7 @@ use crate::{
 /// RecordSet (or RRset) is a set of resource records with the same name, class and type,
 /// but with different data.
 ///
-/// Defined in [RFC 7719 section 4](https://datatracker.ietf.org/doc/html/rfc7719#section-4).
+/// Defined in [RFC 7719 section 4](https://www.rfc-editor.org/rfc/rfc7719.html#section-4).
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct RecordSet {
     /// The name all records in this set belong to.

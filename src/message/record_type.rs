@@ -36,7 +36,7 @@ impl RecordType {
 
     /// Checks if this is a data-type.
     ///
-    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)
+    /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
     #[inline]
     pub fn is_data_type(self) -> bool {
         (0x0001 <= self.value && self.value <= 0x007F)
@@ -45,7 +45,7 @@ impl RecordType {
 
     /// Checks if this is a question or meta-type.
     ///
-    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)
+    /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
     #[inline]
     pub fn is_meta_type(self) -> bool {
         0x0080 <= self.value && self.value <= 0x00FF

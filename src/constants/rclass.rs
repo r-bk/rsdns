@@ -6,8 +6,8 @@ use std::fmt::{self, Display, Formatter};
 
 /// Record classes.
 ///
-/// - [RFC 1035 section 3.2.4](https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.4)
-/// - [RFC 1035 section 3.2.5](https://datatracker.ietf.org/doc/html/rfc1035#section-3.2.5)
+/// - [RFC 1035 section 3.2.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.4)
+/// - [RFC 1035 section 3.2.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.5)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RClass {
     /// the internet
@@ -40,7 +40,7 @@ impl RClass {
 
     /// Checks if this is a data-class.
     ///
-    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
     #[inline]
     pub fn is_data_class(self) -> bool {
         RecordClass::from(self).is_data_class()
@@ -48,7 +48,7 @@ impl RClass {
 
     /// Checks if this a question or meta-class.
     ///
-    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
     #[inline]
     pub fn is_meta_class(self) -> bool {
         RecordClass::from(self).is_meta_class()

@@ -9,7 +9,7 @@ use std::net::Ipv4Addr;
 
 /// A host address (IPv4).
 ///
-/// [`RFC 1035 ~3.4.1`](https://tools.ietf.org/html/rfc1035#section-3.4.1)
+/// [RFC 1035 section 3.4.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.4.1)
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Ord, PartialOrd)]
 pub struct A {
     /// Internet address (IPv4).
@@ -34,7 +34,7 @@ impl RrDataReader<A> for Cursor<'_> {
 rr_dn_data!(
     /// The canonical name for an alias.
     ///
-    /// [`RFC 1035 ~3.3.1`](https://tools.ietf.org/html/rfc1035#section-3.3.1)
+    /// [RFC 1035 section 3.3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.1)
     Cname,
     /// A domain name which specifies the canonical or primary name for the owner.
     /// The RR owner name is an alias.
@@ -46,9 +46,9 @@ rr_dn_data!(
 /// Host information.
 ///
 /// Standard values for CPU and OS can be found in
-/// [`RFC 1010`](https://tools.ietf.org/html/rfc1010).
+/// [RFC 1010](https://www.rfc-editor.org/rfc/rfc1010.html).
 ///
-/// [`RFC 1035 ~3.3.2`](https://tools.ietf.org/html/rfc1035#section-3.3.2)
+/// [RFC 1035 section 3.3.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.2)
 #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Hinfo {
     /// A character-string which specifies the CPU type.
@@ -76,7 +76,7 @@ impl RrDataReader<Hinfo> for Cursor<'_> {
 
 /// A well known service description.
 ///
-/// [`RFC 1035 ~3.4.2`](https://tools.ietf.org/html/rfc1035#section-3.4.2)
+/// [RFC 1035 section 3.4.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.4.2)
 #[derive(Clone, Eq, PartialEq, Hash, Debug, Ord, PartialOrd)]
 pub struct Wks {
     /// Host address.
@@ -92,7 +92,7 @@ pub struct Wks {
     /// protocol of interest, that bit is assumed zero.
     ///
     /// The appropriate values and mnemonics for ports and protocols are specified in
-    /// [`RFC 1010`](https://tools.ietf.org/html/rfc1010).
+    /// [RFC 1010](https://www.rfc-editor.org/rfc/rfc1010.html).
     pub bitmap: Vec<u8>,
 }
 
@@ -116,7 +116,7 @@ impl RrDataReader<Wks> for Cursor<'_> {
 rr_dn_data!(
     /// A mailbox domain name.
     ///
-    /// [`RFC 1035 ~3.3.3`](https://tools.ietf.org/html/rfc1035#section-3.3.3)
+    /// [RFC 1035 section 3.3.3](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.3)
     Mb,
     /// A domain name which specifies a host which has the specified mailbox.
     madname
@@ -129,7 +129,7 @@ rr_dn_data!(
     ///
     /// Obsolete.
     ///
-    /// [`RFC 1035 ~3.3.4`](https://tools.ietf.org/html/rfc1035#section-3.3.4)
+    /// [RFC 1035 section 3.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.4)
     Md,
     /// A domain name which specifies a host which has a mail agent for the domain which should
     /// be able to deliver mail for the domain.
@@ -143,7 +143,7 @@ rr_dn_data!(
     ///
     /// Obsolete.
     ///
-    /// [`RFC 1035 ~3.3.5`](https://tools.ietf.org/html/rfc1035#section-3.3.5)
+    /// [RFC 1035 section 3.3.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.5)
     Mf,
     /// A domain name which specifies a host which has a mail agent for the domain which will
     /// accept mail for forwarding to the domain.
@@ -155,7 +155,7 @@ rr_dn_data!(
 rr_dn_data!(
     /// A mail group member.
     ///
-    /// [`RFC 1035 ~3.3.6`](https://tools.ietf.org/html/rfc1035#section-3.3.6)
+    /// [RFC 1035 section 3.3.6](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.6)
     Mg,
     /// A domain name which specifies a mailbox which is a member of the mail group specified
     /// by the domain name.
@@ -166,7 +166,7 @@ rr_dn_data!(
 
 /// Mailbox or mail list information.
 ///
-/// [`RFC 1035 ~3.3.7`](https://tools.ietf.org/html/rfc1035#section-3.3.7)
+/// [RFC 1035 section 3.3.7](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.7)
 #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Minfo {
     /// A domain name which specifies a mailbox which is responsible for the mailing list
@@ -199,7 +199,7 @@ impl RrDataReader<Minfo> for Cursor<'_> {
 rr_dn_data!(
     /// A mail rename domain name.
     ///
-    /// [`RFC 1035 ~3.3.8`](https://tools.ietf.org/html/rfc1035#section-3.3.8)
+    /// [RFC 1035 section 3.3.8](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.8)
     Mr,
     /// A domain name which specifies a mailbox which is the proper rename of the specified mailbox.
     newname
@@ -209,7 +209,7 @@ rr_dn_data!(
 
 /// Mail exchange.
 ///
-/// [`RFC 1035 ~3.3.9`](https://tools.ietf.org/html/rfc1035#section-3.3.9)
+/// [RFC 1035 section 3.3.9](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.9)
 #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Mx {
     /// Specifies the preference given to this RR among others at the same owner.
@@ -237,7 +237,7 @@ impl RrDataReader<Mx> for Cursor<'_> {
 
 /// The Null record.
 ///
-/// [`RFC 1035 ~3.3.10`](https://tools.ietf.org/html/rfc1035#section-3.3.10)
+/// [RFC 1035 section 3.3.10](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.10)
 #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Null {
     /// Anything at all may be in the RDATA field.
@@ -262,7 +262,7 @@ impl RrDataReader<Null> for Cursor<'_> {
 rr_dn_data!(
     /// An authoritative name server.
     ///
-    /// [`RFC 1035 ~3.3.11`](https://tools.ietf.org/html/rfc1035#section-3.3.11)
+    /// [RFC 1035 section 3.3.11](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.11)
     Ns,
     /// A domain name  which specifies a host which should be authoritative for the
     /// specified class and domain.
@@ -274,7 +274,7 @@ rr_dn_data!(
 rr_dn_data!(
     /// A domain name pointer.
     ///
-    /// [`RFC 1035 ~3.3.12`](https://tools.ietf.org/html/rfc1035#section-3.3.12)
+    /// [RFC 1035 section 3.3.12](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.12)
     Ptr,
     /// A domain name which points to some location in the domain name space.
     ptrdname
@@ -284,7 +284,7 @@ rr_dn_data!(
 
 /// Marks the start of a zone of authority.
 ///
-/// [`RFC 1035 ~3.3.13`](https://tools.ietf.org/html/rfc1035#section-3.3.13)
+/// [RFC 1035 section 3.3.13](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.13)
 #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Soa {
     /// The domain name of the name server that was the original or primary source of
@@ -329,7 +329,7 @@ impl RrDataReader<Soa> for Cursor<'_> {
 
 /// Text strings.
 ///
-/// [`RFC 1035 ~3.3.14`](https://tools.ietf.org/html/rfc1035#section-3.3.14)
+/// [RFC 1035 section 3.3.14](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.14)
 #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
 pub struct Txt {
     /// TXT RRs are used to hold descriptive text. The semantics of the text

@@ -7,7 +7,7 @@ use crate::{
 
 /// Message header.
 ///
-/// [RFC 1035 ~4.1.1](https://tools.ietf.org/html/rfc1035)
+/// [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Clone, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Header {
     /// An identifier assigned by the program that generates any kind of query.

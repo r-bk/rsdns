@@ -19,16 +19,14 @@ type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 /// This struct implements the domain name using an array of bytes with capacity large enough to
 /// accommodate the longest domain name allowed by the DNS protocol.
 ///
-/// It is used in cases when dynamic memory allocation is undesirable. In particular, [rsdns](crate)
+/// It is used in cases when dynamic memory allocation is undesirable. In particular, [rsdns]
 /// uses it in resource record header. As a consequence parsing of resource records with no
-/// variable size fields (e.g. [A](crate::records::data::A), [AAAA](crate::records::data::Aaaa))
-/// involves no memory allocation at all.
+/// variable size fields (e.g. [A], [AAAA]) involves no memory allocation at all.
 ///
 /// [InlineName] stores the name in the canonical form `example.com.`.
 /// The trailing period denotes the root DNS zone.
 ///
-/// Domain name max length, as defined in
-/// [RFC 1035](https://tools.ietf.org/html/rfc1035#section-3.1), is 255 bytes.
+/// Domain name max length, as defined in [RFC 1035], is 255 bytes.
 /// This includes all label length bytes, and the terminating zero length byte. Hence the effective
 /// max length of a domain name without the root zone is 253 bytes.
 ///
@@ -37,9 +35,14 @@ type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 ///
 /// Specifications:
 ///
-/// - [RFC 1035 ~2.3.1](https://tools.ietf.org/html/rfc1035#section-2.3.1)
-/// - [RFC 1035 ~2.3.4](https://tools.ietf.org/html/rfc1035#section-2.3.4)
-/// - [RFC 1035 ~3.1](https://tools.ietf.org/html/rfc1035#section-3.1)
+/// - [RFC 1035 section 2.3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.1)
+/// - [RFC 1035 section 2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)
+/// - [RFC 1035 section 3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1)
+///
+/// [RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1
+/// [rsdns]: crate
+/// [A]: crate::records::data::A
+/// [AAAA]: crate::records::data::Aaaa
 #[derive(Debug, Default, Clone)]
 pub struct InlineName {
     arr: ArrayType,

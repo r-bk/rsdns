@@ -7,8 +7,8 @@ use std::{
 
 /// Record types.
 ///
-/// - [RFC 1035 ~3.2.2](https://tools.ietf.org/html/rfc1035)
-/// - [RFC 3596 ~2.1](https://tools.ietf.org/html/rfc3596#section-2.1) `(AAAA)`
+/// - [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
+/// - [RFC 3596 section 2.1](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.1) `(AAAA)`
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum RType {
     /// a host address (IPv4)
@@ -145,7 +145,7 @@ impl RType {
 
     /// Checks if this is a data-type.
     ///
-    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)    
+    /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
     #[inline]
     pub fn is_data_type(self) -> bool {
         RecordType::from(self).is_data_type()
@@ -153,7 +153,7 @@ impl RType {
 
     /// Checks if this is a question or meta-type.
     ///
-    /// [RFC 6895 section 3.1](https://datatracker.ietf.org/doc/html/rfc6895#section-3.1)
+    /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
     #[inline]
     pub fn is_meta_type(self) -> bool {
         RecordType::from(self).is_meta_type()

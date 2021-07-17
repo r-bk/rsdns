@@ -36,7 +36,7 @@ impl RecordClass {
 
     /// Checks if this is a data-class value.
     ///
-    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
     #[inline]
     pub fn is_data_class(self) -> bool {
         0x0001 <= self.value && self.value <= 0x007F
@@ -44,7 +44,7 @@ impl RecordClass {
 
     /// Checks if this a meta-class value.
     ///
-    /// [RFC 6895 section 3.2](https://datatracker.ietf.org/doc/html/rfc6895#section-3.2)
+    /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
     #[inline]
     pub fn is_meta_class(self) -> bool {
         0x0080 <= self.value && self.value <= 0x00FF
