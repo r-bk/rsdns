@@ -1,8 +1,8 @@
-#![warn(missing_docs)]
-#![cfg_attr(docsrs, feature(doc_cfg))]
-
 //! [rsdns](crate) is a DNS Client library providing functionality of a Stub Resolver defined in
 //! [RFC 1034](https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1).
+
+#![warn(missing_docs)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[macro_use]
 pub(crate) mod macros;
