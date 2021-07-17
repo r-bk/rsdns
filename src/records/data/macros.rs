@@ -1,8 +1,16 @@
 macro_rules! rr_data {
     ($RR:ident) => {
         impl $RR {
-            /// The RR type.
+            /// The record type as associated constant.
             pub const RTYPE: RType = RType::$RR;
+
+            /// Returns the record type.
+            ///
+            /// This is a convenience method to obtain the instance record type.
+            #[inline]
+            pub const fn rtype(&self) -> RType {
+                Self::RTYPE
+            }
         }
     };
 }
