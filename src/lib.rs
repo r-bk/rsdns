@@ -14,13 +14,9 @@ pub mod errors;
 pub mod message;
 pub mod records;
 
-#[cfg(any(
-    feature = "net-async-std",
-    feature = "net-smol",
-    feature = "net-std",
-    feature = "net-tokio"
-))]
-pub mod resolvers;
+cfg_any_resolver! {
+    pub mod resolvers;
+}
 
 pub(crate) use errors::ProtocolResult;
 
