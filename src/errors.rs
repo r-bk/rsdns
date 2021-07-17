@@ -78,23 +78,37 @@ pub enum AnswerError {
 }
 
 /// Errors returned by [rsdns](crate).
-#[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    /// IoError as returned from the underlying IO engine
     #[error("io error")]
     IoError(#[from] std::io::Error),
+
+    /// DNS message parsing/encoding error
     #[error(transparent)]
     ProtocolError(#[from] ProtocolError),
+
+    /// Answer processing error
     #[error(transparent)]
     AnswerError(AnswerError),
+
+    /// Resolver API is supported for a subset of record types
     #[error("RType {0} is not supported")]
     UnsupportedRType(RType),
+
+    /// Resolver API is supported for a subset of record classes
     #[error("RClass {0} is not supported")]
     UnsupportedRClass(RClass),
+
+    /// Generic timeout error
     #[error("operation timed-out")]
     Timeout,
+
+    /// Generic bad input error
     #[error("bad input: {0}")]
     BadInput(&'static str),
+
+    /// *rsdns* tries to avoid panics. InternalError is used instead.
     #[error("internal error: {0}")]
     InternalError(&'static str),
 }
