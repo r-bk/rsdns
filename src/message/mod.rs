@@ -17,8 +17,12 @@ pub use message_type::*;
 mod operation_code;
 pub use operation_code::*;
 
-mod query_writer;
-pub(crate) use query_writer::*;
+cfg_any_resolver! {
+    mod query_writer;
+
+    #[cfg_attr(test, allow(unused_imports))]
+    pub(crate) use query_writer::*;
+}
 
 mod question;
 pub use question::*;

@@ -1,5 +1,5 @@
 use crate::{
-    bytes::{Cursor, Reader, WCursor, Writer},
+    bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
     errors::{ProtocolError, ProtocolResult},
     message::Flags,
@@ -26,20 +26,22 @@ pub struct Header {
     pub ar_count: u16,
 }
 
-impl Writer<Header> for WCursor<'_> {
-    fn write(&mut self, h: &Header) -> ProtocolResult<usize> {
-        if self.len() >= HEADER_LENGTH {
-            unsafe {
-                self.u16_be_unchecked(h.id);
-                self.u16_be_unchecked(h.flags.into());
-                self.u16_be_unchecked(h.qd_count);
-                self.u16_be_unchecked(h.an_count);
-                self.u16_be_unchecked(h.ns_count);
-                self.u16_be_unchecked(h.ar_count);
+cfg_any_resolver! {
+    impl crate::bytes::Writer<Header> for crate::bytes::WCursor<'_> {
+        fn write(&mut self, h: &Header) -> ProtocolResult<usize> {
+            if self.len() >= HEADER_LENGTH {
+                unsafe {
+                    self.u16_be_unchecked(h.id);
+                    self.u16_be_unchecked(h.flags.into());
+                    self.u16_be_unchecked(h.qd_count);
+                    self.u16_be_unchecked(h.an_count);
+                    self.u16_be_unchecked(h.ns_count);
+                    self.u16_be_unchecked(h.ar_count);
+                }
+                Ok(HEADER_LENGTH)
+            } else {
+                Err(ProtocolError::EndOfBuffer)
             }
-            Ok(HEADER_LENGTH)
-        } else {
-            Err(ProtocolError::EndOfBuffer)
         }
     }
 }
@@ -66,7 +68,10 @@ impl Reader<Header> for Cursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::constants::{OpCode, RCode};
+    use crate::{
+        bytes::{WCursor, Writer},
+        constants::{OpCode, RCode},
+    };
     use rand::seq::IteratorRandom;
 
     #[test]

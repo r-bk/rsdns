@@ -8,15 +8,17 @@ macro_rules! get_bit {
     };
 }
 
-macro_rules! set_bit {
-    ($e:expr, $l:literal, $v:ident) => {
-        let mask = 1 << $l;
-        if $v {
-            $e |= mask;
-        } else {
-            $e &= !mask;
-        }
-    };
+cfg_any_resolver! {
+    macro_rules! set_bit {
+        ($e:expr, $l:literal, $v:ident) => {
+            let mask = 1 << $l;
+            if $v {
+                $e |= mask;
+            } else {
+                $e &= !mask;
+            }
+        };
+    }
 }
 
 /// Message flags.
@@ -103,10 +105,12 @@ impl Flags {
         get_bit!(self.bits, 8)
     }
 
-    /// Sets the recursion desired flag.
-    pub(crate) fn set_recursion_desired(&mut self, value: bool) -> &mut Self {
-        set_bit!(self.bits, 8, value);
-        self
+    cfg_any_resolver! {
+        /// Sets the recursion desired flag.
+        pub(crate) fn set_recursion_desired(&mut self, value: bool) -> &mut Self {
+            set_bit!(self.bits, 8, value);
+            self
+        }
     }
 
     /// Returns the recursion available flag.

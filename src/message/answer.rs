@@ -38,7 +38,8 @@ impl Answer {
         &self.rrset
     }
 
-    pub(crate) fn from_msg(msg: &[u8]) -> Result<Self> {
+    /// Parses an Answer from a message.
+    pub fn from_msg(msg: &[u8]) -> Result<Self> {
         let mr = MessageReader::new(msg)?;
 
         let flags = mr.header().flags;
