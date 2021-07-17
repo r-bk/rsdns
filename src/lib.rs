@@ -32,7 +32,7 @@
 //! [`tokio`]: https://docs.rs/tokio
 //! [`async-std`]: https://docs.rs/async-std
 //! [`smol`]: https://docs.rs/smol
-//! [`std::net`]: https://doc.rust-lang.org/std/net/index.html
+//! [`std::net`]: https://doc.rust-lang.org/std/net
 //! [`A`]: crate::records::data::A
 //! [`AAAA`]: crate::records::data::Aaaa
 
