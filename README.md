@@ -21,6 +21,7 @@ engines. Moreover, for completeness, *rsdns* has a synchronous (blocking) resolv
 * Zero memory allocations when parsing records with no variable size fields
 * Sockets can be bound to network interfaces by name (available on operating
   systems with `SO_BINDTODEVICE` support)
+* Minimal set of dependencies
 
 
 ## ch4
