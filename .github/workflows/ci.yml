@@ -30,6 +30,7 @@ jobs:
           - net-tokio
           - net-smol
           - all
+          - ''
         include:
           - runs_on: ubuntu-latest
             feature: net-tokio,socket2
@@ -51,7 +52,7 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         name: build rsdns
-        if: ${{ matrix.feature != 'all' }}
+        if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
         with:
           command: build
           args: --no-default-features --features ${{ matrix.feature }}
@@ -64,8 +65,15 @@ jobs:
           args: --all-features
 
       - uses: actions-rs/cargo@v1
+        name: build no-default-features rsdns
+        if: ${{ matrix.feature == '' }}
+        with:
+          command: build
+          args: --no-default-features
+
+      - uses: actions-rs/cargo@v1
         name: test rsdns
-        if: ${{ matrix.feature != 'all' }}
+        if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
         with:
           command: test
           args: --no-default-features --features ${{ matrix.feature }}
@@ -78,8 +86,15 @@ jobs:
           args: --all-features
 
       - uses: actions-rs/cargo@v1
+        name: test no-default-features rsdns
+        if: ${{ matrix.feature == '' }}
+        with:
+          command: test
+          args: --no-default-features
+
+      - uses: actions-rs/cargo@v1
         name: lint rsdns
-        if: ${{ matrix.feature != 'all' }}
+        if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
         with:
           command: clippy
           args: --no-default-features --features ${{ matrix.feature }} -- -D warnings
@@ -90,6 +105,13 @@ jobs:
         with:
           command: clippy
           args: --all-features -- -D warnings
+
+      - uses: actions-rs/cargo@v1
+        name: lint no-default-features rsdns
+        if: ${{ matrix.feature == '' }}
+        with:
+          command: clippy
+          args: --no-default-features -- -D warnings
 
   common-ci:
     runs-on: ubuntu-latest
