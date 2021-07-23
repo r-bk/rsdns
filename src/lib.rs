@@ -38,7 +38,7 @@
 
 //! # Library Structure
 //!
-//! *rsdns* is built from two major parts: *DNS message parsing utilities* and *resolvers*.
+//! *rsdns* is built from two major parts: *message parsing* and *resolvers*.
 //!
 //! The *message parsing* part is the core of *rsdns*. It is generic and is suitable for any type
 //! of resolver that you may choose. It may be used even without an *rsdns* resolver at all,
