@@ -9,6 +9,9 @@ pub use rfc1035::*;
 mod rfc3596;
 pub use rfc3596::*;
 
+mod rdata;
+pub use rdata::*;
+
 /// Enumerates supported resource records' data.
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum RecordData {
