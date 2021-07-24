@@ -1,7 +1,7 @@
 use crate::constants::RType;
 use std::{fmt::Debug, hash::Hash};
 
-mod private {
+pub(super) mod private {
     pub trait RDataBase {}
 }
 

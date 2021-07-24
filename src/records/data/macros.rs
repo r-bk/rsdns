@@ -12,6 +12,12 @@ macro_rules! rr_data {
                 Self::RTYPE
             }
         }
+
+        impl crate::records::data::private::RDataBase for $RR {}
+
+        impl crate::records::data::RData for $RR {
+            const RTYPE: RType = Self::RTYPE;
+        }
     };
 }
 
