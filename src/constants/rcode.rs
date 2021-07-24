@@ -1,4 +1,4 @@
-use crate::errors::{Error, ProtocolError, Result};
+use crate::{Error, Result};
 use std::fmt::{self, Display, Formatter};
 
 /// Response codes.
@@ -53,11 +53,7 @@ impl RCode {
             3 => RCode::NxDomain,
             4 => RCode::NotImp,
             5 => RCode::Refused,
-            _ => {
-                return Err(Error::ProtocolError(
-                    ProtocolError::UnrecognizedResponseCode(value.into()),
-                ))
-            }
+            _ => return Err(Error::UnrecognizedResponseCode(value.into())),
         };
 
         Ok(me)
@@ -83,9 +79,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from_u16(128),
-            Err(Error::ProtocolError(
-                ProtocolError::UnrecognizedResponseCode(ResponseCode { value: 128 })
-            ))
+            Err(Error::UnrecognizedResponseCode(ResponseCode { value: 128 }))
         ));
     }
 

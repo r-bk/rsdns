@@ -1,12 +1,8 @@
-use crate::{
-    bytes::WCursor,
-    constants::DOMAIN_NAME_MAX_LENGTH,
-    errors::{ProtocolError, ProtocolResult},
-};
+use crate::{bytes::WCursor, constants::DOMAIN_NAME_MAX_LENGTH, Error, Result};
 
 impl WCursor<'_> {
     #[inline]
-    fn write_label(&mut self, label: &[u8]) -> ProtocolResult<()> {
+    fn write_label(&mut self, label: &[u8]) -> Result<()> {
         super::check_label_bytes(label)?;
         if self.len() > label.len() {
             unsafe {
@@ -15,17 +11,17 @@ impl WCursor<'_> {
             }
             Ok(())
         } else {
-            Err(ProtocolError::BufferTooShort(self.pos() + label.len() + 1))
+            Err(Error::BufferTooShort(self.pos() + label.len() + 1))
         }
     }
 
-    pub fn write_domain_name(&mut self, name: &str) -> ProtocolResult<usize> {
+    pub fn write_domain_name(&mut self, name: &str) -> Result<usize> {
         self.write_domain_name_bytes(name.as_bytes())
     }
 
-    pub fn write_domain_name_bytes(&mut self, name: &[u8]) -> ProtocolResult<usize> {
+    pub fn write_domain_name_bytes(&mut self, name: &[u8]) -> Result<usize> {
         if name.is_empty() {
-            return Err(ProtocolError::DomainNameLabelIsEmpty);
+            return Err(Error::DomainNameLabelIsEmpty);
         }
 
         let start = self.pos();
@@ -57,7 +53,7 @@ impl WCursor<'_> {
 
         let length = self.pos() - start;
         if length > DOMAIN_NAME_MAX_LENGTH {
-            return Err(ProtocolError::DomainNameTooLong(length));
+            return Err(Error::DomainNameTooLong(length));
         }
 
         Ok(length)
@@ -111,7 +107,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(&long_label),
-                Err(ProtocolError::DomainNameTooLong(s)) if s == long_label.len() + 2
+                Err(Error::DomainNameTooLong(s)) if s == long_label.len() + 2
             ));
         }
 
@@ -119,7 +115,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(&long_label[..long_label.len() - 1]),
-                Err(ProtocolError::DomainNameTooLong(s)) if s == long_label.len() + 1
+                Err(Error::DomainNameTooLong(s)) if s == long_label.len() + 1
             ));
         }
 
@@ -156,7 +152,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(e),
-                Err(ProtocolError::DomainNameLabelIsEmpty)
+                Err(Error::DomainNameLabelIsEmpty)
             ));
         }
 
@@ -168,7 +164,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(s),
-                Err(ProtocolError::DomainNameLabelInvalidChar(
+                Err(Error::DomainNameLabelInvalidChar(
                     "domain name label first character is not alphabetic",
                     v
                 )) if v == c
@@ -182,7 +178,7 @@ mod tests {
             let mut wcursor = WCursor::new(&mut arr[..]);
             assert!(matches!(
                 wcursor.write_domain_name(s),
-                Err(ProtocolError::DomainNameLabelInvalidChar(
+                Err(Error::DomainNameLabelInvalidChar(
                     "domain name label last character is not alphanumeric",
                     v
                 )) if v == c

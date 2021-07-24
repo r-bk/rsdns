@@ -1,8 +1,4 @@
-use crate::{
-    constants::DOMAIN_NAME_MAX_LENGTH,
-    errors::{Error, ProtocolError, ProtocolResult, Result},
-    InlineName,
-};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, InlineName, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -219,7 +215,7 @@ impl Name {
         self.name.clear();
     }
 
-    pub(crate) fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
+    pub(crate) fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
         super::check_label_bytes(label)?;
 
         // at this point the label is proven to be valid,
@@ -228,7 +224,7 @@ impl Name {
 
         let new_len = self.name.len() + label_as_str.len() + 1;
         if new_len > DOMAIN_NAME_MAX_LENGTH {
-            return Err(ProtocolError::DomainNameTooLong(new_len));
+            return Err(Error::DomainNameTooLong(new_len));
         }
 
         self.name.push_str(label_as_str);
@@ -237,12 +233,12 @@ impl Name {
         Ok(())
     }
 
-    pub(crate) fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
+    pub(crate) fn append_label(&mut self, label: &str) -> Result<()> {
         super::check_label(label)?;
 
         let new_len = self.name.len() + label.len() + 1;
         if new_len > DOMAIN_NAME_MAX_LENGTH {
-            return Err(ProtocolError::DomainNameTooLong(new_len));
+            return Err(Error::DomainNameTooLong(new_len));
         }
 
         self.name.push_str(label);
@@ -413,12 +409,12 @@ impl super::NameContract for Name {
     }
 
     #[inline(always)]
-    fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
+    fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
         self.append_label_bytes(label)
     }
 
     #[inline(always)]
-    fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
+    fn append_label(&mut self, label: &str) -> Result<()> {
         self.append_label(label)
     }
 
@@ -551,15 +547,13 @@ mod tests {
 
             let res = dn.append_label(&l_63);
             assert!(
-                matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
+                matches!(res, Err(Error::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
             );
         }
 
         // test total size == 255
         let res = dn.clone().append_label(&l_63);
-        assert!(
-            matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
-        );
+        assert!(matches!(res, Err(Error::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1));
 
         dn.append_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);

@@ -1,8 +1,4 @@
-use crate::{
-    constants::DOMAIN_NAME_MAX_LENGTH,
-    errors::{Error, ProtocolError, ProtocolResult, Result},
-    Name,
-};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, Name, Result};
 use arrayvec::ArrayString;
 use std::{
     cmp::Ordering,
@@ -217,7 +213,7 @@ impl InlineName {
         self.arr.clear();
     }
 
-    pub(crate) fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
+    pub(crate) fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
         super::check_label_bytes(label)?;
 
         // at this point the label is proven to be valid,
@@ -225,29 +221,27 @@ impl InlineName {
         let label_as_str = unsafe { std::str::from_utf8_unchecked(label) };
 
         if self.arr.try_push_str(label_as_str).is_err() {
-            return Err(ProtocolError::DomainNameTooLong(
+            return Err(Error::DomainNameTooLong(
                 self.arr.len() + label_as_str.len() + 1,
             ));
         }
 
         if self.arr.try_push('.').is_err() {
-            return Err(ProtocolError::DomainNameTooLong(self.arr.len() + 1));
+            return Err(Error::DomainNameTooLong(self.arr.len() + 1));
         }
 
         Ok(())
     }
 
-    pub(crate) fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
+    pub(crate) fn append_label(&mut self, label: &str) -> Result<()> {
         super::check_label(label)?;
 
         if self.arr.try_push_str(label).is_err() {
-            return Err(ProtocolError::DomainNameTooLong(
-                self.arr.len() + label.len() + 1,
-            ));
+            return Err(Error::DomainNameTooLong(self.arr.len() + label.len() + 1));
         }
 
         if self.arr.try_push('.').is_err() {
-            return Err(ProtocolError::DomainNameTooLong(self.arr.len() + 1));
+            return Err(Error::DomainNameTooLong(self.arr.len() + 1));
         }
 
         Ok(())
@@ -420,12 +414,12 @@ impl super::NameContract for InlineName {
     }
 
     #[inline(always)]
-    fn append_label_bytes(&mut self, label: &[u8]) -> ProtocolResult<()> {
+    fn append_label_bytes(&mut self, label: &[u8]) -> Result<()> {
         self.append_label_bytes(label)
     }
 
     #[inline(always)]
-    fn append_label(&mut self, label: &str) -> ProtocolResult<()> {
+    fn append_label(&mut self, label: &str) -> Result<()> {
         self.append_label(label)
     }
 
@@ -558,15 +552,13 @@ mod tests {
 
             let res = dn.append_label(&l_63);
             assert!(
-                matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
+                matches!(res, Err(Error::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
             );
         }
 
         // test total size == 255
         let res = dn.clone().append_label(&l_63);
-        assert!(
-            matches!(res, Err(ProtocolError::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1)
-        );
+        assert!(matches!(res, Err(Error::DomainNameTooLong(s)) if s == dn.len() + l_63.len() + 1));
 
         dn.append_label(&l_62).unwrap();
         assert_eq!(dn.len(), 255);

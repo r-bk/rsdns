@@ -1,11 +1,11 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
-    errors::{Error, ProtocolError, Result},
     message::{
         reader::{Questions, Records},
         Header, Question,
     },
+    Error, Result,
 };
 
 /// A DNS message reader.
@@ -106,7 +106,7 @@ impl<'a> MessageReader<'a> {
         if let Some(res) = questions.next() {
             return res;
         }
-        Err(Error::ProtocolError(ProtocolError::MessageWithoutQuestion))
+        Err(Error::MessageWithoutQuestion)
     }
 
     /// Returns an iterator over the questions section of the message.

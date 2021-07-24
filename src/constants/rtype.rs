@@ -1,5 +1,4 @@
-use crate::errors::{Error, ProtocolError, Result};
-use crate::message::RecordType;
+use crate::{message::RecordType, Error, Result};
 use std::{
     fmt::{self, Display, Formatter},
     str::FromStr,
@@ -134,9 +133,7 @@ impl RType {
             254 => RType::Maila,
             255 => RType::Any,
             _ => {
-                return Err(Error::from(ProtocolError::UnrecognizedRecordType(
-                    value.into(),
-                )));
+                return Err(Error::UnrecognizedRecordType(value.into()));
             }
         };
 
@@ -212,9 +209,7 @@ mod tests {
 
         assert!(matches!(
             RType::try_from_u16(0),
-            Err(Error::ProtocolError(ProtocolError::UnrecognizedRecordType(
-                RecordType { value: 0 }
-            )))
+            Err(Error::UnrecognizedRecordType(RecordType { value: 0 }))
         ));
     }
 

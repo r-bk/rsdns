@@ -1,4 +1,4 @@
-use crate::errors::{Error, ProtocolError, Result};
+use crate::{Error, Result};
 use std::fmt::{self, Display, Formatter};
 
 /// Query opcodes.
@@ -33,11 +33,7 @@ impl OpCode {
             0 => OpCode::Query,
             1 => OpCode::IQuery,
             2 => OpCode::Status,
-            _ => {
-                return Err(Error::ProtocolError(
-                    ProtocolError::UnrecognizedOperationCode(value.into()),
-                ))
-            }
+            _ => return Err(Error::UnrecognizedOperationCode(value.into())),
         };
         Ok(me)
     }
@@ -62,9 +58,9 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from_u8(128),
-            Err(Error::ProtocolError(
-                ProtocolError::UnrecognizedOperationCode(OperationCode { value: 128 })
-            ))
+            Err(Error::UnrecognizedOperationCode(OperationCode {
+                value: 128
+            }))
         ));
     }
 

@@ -1,6 +1,6 @@
 use crate::{
     constants::{RClass, RType},
-    errors::{Error, ProtocolError, Result},
+    errors::{Error, Result},
     message::{reader::MessageReader, Answer, Flags, QueryWriter},
     records::data::RData,
     resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
@@ -120,7 +120,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
 
         let response_size = u16::from_be_bytes(response_size_buf) as usize;
         if response_size > self.buf.len() {
-            return Err(Error::from(ProtocolError::BufferTooShort(response_size)));
+            return Err(Error::BufferTooShort(response_size));
         }
 
         Self::set_timeout_tcp(&sock, self.lifetime_left()?)?;

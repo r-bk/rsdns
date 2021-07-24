@@ -41,7 +41,7 @@ macro_rules! rr_dn_data {
         rr_data!($RR);
 
         impl crate::bytes::RrDataReader<$RR> for crate::bytes::Cursor<'_> {
-            fn read_rr_data(&mut self, rd_len: usize) -> crate::ProtocolResult<$RR> {
+            fn read_rr_data(&mut self, rd_len: usize) -> crate::Result<$RR> {
                 use crate::bytes::Reader;
                 self.window(rd_len)?;
                 let rr = Ok($RR{$DN: self.read()?});

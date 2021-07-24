@@ -90,7 +90,5 @@ cfg_any_resolver! {
     pub mod resolvers;
 }
 
-pub(crate) use errors::ProtocolResult;
-
 #[doc(inline)]
 pub use errors::{Error, Result};

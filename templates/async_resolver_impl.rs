@@ -1,9 +1,9 @@
 use crate::{
     constants::{RType, RClass},
-    errors::{Error, Result, ProtocolError},
+    message::{reader::MessageReader, Answer, Flags, QueryWriter},
     records::data::RData,
     resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
-    message::{reader::MessageReader, Answer, Flags, QueryWriter},
+    Error, Result,
 };
 
 {% if crate_name == "tokio" %}
@@ -146,7 +146,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
         let response_size = u16::from_be_bytes(response_size_buf) as usize;
 
         if response_size > self.buf.len() {
-            return Err(Error::from(ProtocolError::BufferTooShort(response_size)));
+            return Err(Error::BufferTooShort(response_size));
         }
 
         sock.read_exact(&mut self.buf[..response_size]).await?;

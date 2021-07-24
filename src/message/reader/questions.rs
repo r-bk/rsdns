@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     message::Question,
-    Error, ProtocolResult, Result,
+    Error, Result,
 };
 
 /// An iterator over the questions section of a message.
@@ -55,7 +55,7 @@ impl<'a> Questions<'a> {
             return None;
         }
 
-        let res: ProtocolResult<Question> = self.cursor.read();
+        let res: Result<Question> = self.cursor.read();
         if res.is_ok() {
             self.qd_read += 1;
         } else {

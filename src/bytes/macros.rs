@@ -43,7 +43,7 @@ cfg_any_resolver! {
                 $self.pos += std::mem::size_of::<$t>();
                 Ok(())
             } else {
-                Err(ProtocolError::BufferTooShort(std::mem::size_of::<$t>()))
+                Err(Error::BufferTooShort(std::mem::size_of::<$t>()))
             }
         }};
     }

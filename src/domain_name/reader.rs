@@ -1,8 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
-    errors::{ProtocolError, ProtocolResult},
-    InlineName, Name, NameContract,
+    Error, InlineName, Name, NameContract, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
@@ -17,26 +16,26 @@ pub struct DomainNameReader<'a> {
 }
 
 impl<'a> DomainNameReader<'a> {
-    pub fn read(cursor: &mut Cursor<'a>) -> ProtocolResult<InlineName> {
+    pub fn read(cursor: &mut Cursor<'a>) -> Result<InlineName> {
         let mut dn = InlineName::new();
         Self::read_internal(cursor, &mut dn)?;
         Ok(dn)
     }
 
-    pub fn read_string(cursor: &mut Cursor<'a>) -> ProtocolResult<Name> {
+    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<Name> {
         let mut dn = Name::new();
         Self::read_internal(cursor, &mut dn)?;
         Ok(dn)
     }
 
-    fn read_internal<T: NameContract>(cursor: &mut Cursor<'a>, dn: &mut T) -> ProtocolResult<()> {
+    fn read_internal<T: NameContract>(cursor: &mut Cursor<'a>, dn: &mut T) -> Result<()> {
         let mut dnr = Self::new(cursor.clone());
         dnr.read_impl(dn)?;
         cursor.set_pos(dnr.max_pos);
         Ok(())
     }
 
-    pub fn skip(cursor: &mut Cursor<'a>) -> ProtocolResult<()> {
+    pub fn skip(cursor: &mut Cursor<'a>) -> Result<()> {
         let mut dnr = Self::new(cursor.clone());
         dnr.skip_impl()?;
         cursor.set_pos(dnr.max_pos);
@@ -51,7 +50,7 @@ impl<'a> DomainNameReader<'a> {
         }
     }
 
-    fn skip_impl(&mut self) -> ProtocolResult<()> {
+    fn skip_impl(&mut self) -> Result<()> {
         loop {
             let length = self.cursor.u8()?;
             if length == 0 {
@@ -66,7 +65,7 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(ProtocolError::DomainNameBadPointer {
+                    return Err(Error::DomainNameBadPointer {
                         pointer: offset as usize,
                         max_offset: self.max_pos,
                     });
@@ -74,7 +73,7 @@ impl<'a> DomainNameReader<'a> {
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(ProtocolError::DomainNameBadLabelType(length));
+                return Err(Error::DomainNameBadLabelType(length));
             }
         }
 
@@ -84,7 +83,7 @@ impl<'a> DomainNameReader<'a> {
         Ok(())
     }
 
-    fn read_impl<T: NameContract>(&mut self, dn: &mut T) -> ProtocolResult<()> {
+    fn read_impl<T: NameContract>(&mut self, dn: &mut T) -> Result<()> {
         loop {
             let length = self.cursor.u8()?;
             if length == 0 {
@@ -100,7 +99,7 @@ impl<'a> DomainNameReader<'a> {
                     self.max_pos = self.cursor.pos();
                 }
                 if offset as usize > self.max_pos {
-                    return Err(ProtocolError::DomainNameBadPointer {
+                    return Err(Error::DomainNameBadPointer {
                         pointer: offset as usize,
                         max_offset: self.max_pos,
                     });
@@ -108,7 +107,7 @@ impl<'a> DomainNameReader<'a> {
                 self.remember_offset(offset)?;
                 self.cursor.set_pos(offset as usize);
             } else {
-                return Err(ProtocolError::DomainNameBadLabelType(length));
+                return Err(Error::DomainNameBadLabelType(length));
             }
         }
 
@@ -136,17 +135,17 @@ impl<'a> DomainNameReader<'a> {
         (((o1 & LENGTH_MASK) as u16) << 8) | o2 as u16
     }
 
-    fn remember_offset(&mut self, offset: u16) -> ProtocolResult<()> {
+    fn remember_offset(&mut self, offset: u16) -> Result<()> {
         for o in &self.seen_offsets {
             if *o == offset {
-                return Err(ProtocolError::DomainNamePointerLoop {
+                return Err(Error::DomainNamePointerLoop {
                     src: self.cursor.pos() - 2, // the offset of the label's first byte
                     dst: offset as usize,
                 });
             }
         }
         if self.seen_offsets.is_full() {
-            return Err(ProtocolError::DomainNameTooMuchPointers);
+            return Err(Error::DomainNameTooMuchPointers);
         }
         unsafe { self.seen_offsets.push_unchecked(offset) };
         Ok(())
@@ -155,20 +154,20 @@ impl<'a> DomainNameReader<'a> {
 
 impl Reader<InlineName> for Cursor<'_> {
     #[inline]
-    fn read(&mut self) -> ProtocolResult<InlineName> {
+    fn read(&mut self) -> Result<InlineName> {
         DomainNameReader::read(self)
     }
 }
 
 impl Reader<Name> for Cursor<'_> {
     #[inline]
-    fn read(&mut self) -> ProtocolResult<Name> {
+    fn read(&mut self) -> Result<Name> {
         DomainNameReader::read_string(self)
     }
 }
 
 impl Cursor<'_> {
-    pub fn skip_domain_name(&mut self) -> ProtocolResult<usize> {
+    pub fn skip_domain_name(&mut self) -> Result<usize> {
         let start = self.pos();
         DomainNameReader::skip(self)?;
         Ok(self.pos() - start)
@@ -228,7 +227,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 5)),
-            Err(ProtocolError::DomainNameBadPointer { pointer: p, max_offset: o }) if p == 0x13 && o == 15
+            Err(Error::DomainNameBadPointer { pointer: p, max_offset: o }) if p == 0x13 && o == 15
         ));
     }
 
@@ -238,7 +237,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
-            Err(ProtocolError::DomainNamePointerLoop { src, dst }) if src == 19 && dst == 5
+            Err(Error::DomainNamePointerLoop { src, dst }) if src == 19 && dst == 5
         ));
     }
 
@@ -248,7 +247,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
-            Err(ProtocolError::DomainNameBadLabelType(l)) if l == 0xA0
+            Err(Error::DomainNameBadLabelType(l)) if l == 0xA0
         ));
     }
 
@@ -277,7 +276,7 @@ mod tests {
 
             assert!(matches!(
                 DomainNameReader::read(&mut Cursor::with_pos(packet.as_ref(), packet.len() - 2)),
-                Err(ProtocolError::DomainNameTooMuchPointers)
+                Err(Error::DomainNameTooMuchPointers)
             ));
         }
     }

@@ -1,23 +1,23 @@
-use crate::{bytes::Cursor, ProtocolResult};
+use crate::{bytes::Cursor, Result};
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 pub trait Reader<T> {
-    fn read(&mut self) -> ProtocolResult<T>;
+    fn read(&mut self) -> Result<T>;
 }
 
 pub trait RrDataReader<T> {
-    fn read_rr_data(&mut self, rd_len: usize) -> ProtocolResult<T>;
+    fn read_rr_data(&mut self, rd_len: usize) -> Result<T>;
 }
 
 impl Reader<Ipv4Addr> for Cursor<'_> {
-    fn read(&mut self) -> ProtocolResult<Ipv4Addr> {
+    fn read(&mut self) -> Result<Ipv4Addr> {
         let ip4 = self.u32_be()?;
         Ok(Ipv4Addr::from(ip4))
     }
 }
 
 impl Reader<Ipv6Addr> for Cursor<'_> {
-    fn read(&mut self) -> ProtocolResult<Ipv6Addr> {
+    fn read(&mut self) -> Result<Ipv6Addr> {
         let ip6 = self.u128_be()?;
         Ok(Ipv6Addr::from(ip6))
     }

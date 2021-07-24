@@ -1,7 +1,4 @@
-use crate::{
-    errors::{Error, ProtocolError, Result},
-    message::RecordClass,
-};
+use crate::{message::RecordClass, Error, Result};
 use std::fmt::{self, Display, Formatter};
 
 /// Record classes.
@@ -61,11 +58,7 @@ impl RClass {
             3 => RClass::Ch,
             4 => RClass::Hs,
             255 => RClass::Any,
-            _ => {
-                return Err(Error::ProtocolError(
-                    ProtocolError::UnrecognizedRecordClass(value.into()),
-                ))
-            }
+            _ => return Err(Error::UnrecognizedRecordClass(value.into())),
         };
 
         Ok(me)
@@ -91,9 +84,7 @@ mod tests {
 
         assert!(matches!(
             RClass::try_from_u16(0),
-            Err(Error::ProtocolError(
-                ProtocolError::UnrecognizedRecordClass(RecordClass { value: 0 })
-            ))
+            Err(Error::UnrecognizedRecordClass(RecordClass { value: 0 }))
         ));
     }
 

@@ -1,12 +1,11 @@
 use crate::{
     constants::{RClass, RCode, RType, RecordsSection},
-    errors::{AnswerError, Error, Result},
     message::{reader::MessageReader, MessageType},
     records::{
         data::{RData, RecordData},
         RecordSet, ResourceRecord,
     },
-    Name,
+    Error, Name, Result,
 };
 use std::convert::TryFrom;
 
@@ -48,19 +47,15 @@ impl<D: RData> Answer<D> {
         let flags = mr.header().flags;
 
         if flags.message_type() != MessageType::Response {
-            return Err(Error::AnswerError(AnswerError::BadMessageType(
-                flags.message_type(),
-            )));
+            return Err(Error::BadMessageType(flags.message_type()));
         }
 
         if flags.response_code() != RCode::NoError {
-            return Err(Error::AnswerError(AnswerError::BadResponseCode(
-                flags.response_code(),
-            )));
+            return Err(Error::BadResponseCode(flags.response_code()));
         }
 
         if flags.truncated() {
-            return Err(Error::AnswerError(AnswerError::MessageTruncated));
+            return Err(Error::MessageTruncated);
         }
 
         let question = mr.question()?;
@@ -68,7 +63,7 @@ impl<D: RData> Answer<D> {
 
         let rtype = RType::try_from(question.qtype)?;
         if rtype != D::RTYPE {
-            return Err(Error::AnswerError(AnswerError::NoAnswer));
+            return Err(Error::NoAnswer);
         }
 
         let rclass = RClass::try_from(question.qclass)?;
@@ -93,7 +88,7 @@ impl<D: RData> Answer<D> {
                             }
                         }
                     } else {
-                        return Err(Error::AnswerError(AnswerError::NoAnswer));
+                        return Err(Error::NoAnswer);
                     }
                 }
             }

@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::RClass,
-    Error, ProtocolResult,
+    Error, Result,
 };
 use std::{
     cmp::Ordering,
@@ -69,7 +69,7 @@ impl TryFrom<RecordClass> for RClass {
     type Error = Error;
 
     #[inline]
-    fn try_from(rc: RecordClass) -> Result<Self, Self::Error> {
+    fn try_from(rc: RecordClass) -> Result<Self> {
         RClass::try_from_u16(rc.value)
     }
 }
@@ -78,7 +78,7 @@ impl TryFrom<&RecordClass> for RClass {
     type Error = Error;
 
     #[inline]
-    fn try_from(rc: &RecordClass) -> Result<Self, Self::Error> {
+    fn try_from(rc: &RecordClass) -> Result<Self> {
         RClass::try_from_u16(rc.value)
     }
 }
@@ -151,7 +151,7 @@ impl PartialOrd<RecordClass> for RClass {
 
 impl Reader<RecordClass> for Cursor<'_> {
     #[inline]
-    fn read(&mut self) -> ProtocolResult<RecordClass> {
+    fn read(&mut self) -> Result<RecordClass> {
         Ok(RecordClass::from(self.u16_be()?))
     }
 }
