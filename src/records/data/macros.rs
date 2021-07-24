@@ -13,7 +13,15 @@ macro_rules! rr_data {
             }
         }
 
-        impl crate::records::data::private::RDataBase for $RR {}
+        impl crate::records::data::private::RDataBase for $RR {
+            #[inline]
+            fn from(rd: crate::records::data::RecordData) -> crate::Result<Self> {
+                match rd {
+                    crate::records::data::RecordData::$RR(d) => Ok(d),
+                    _ => Err(crate::Error::InternalError("record data conversion failed")),
+                }
+            }
+        }
 
         impl crate::records::data::RData for $RR {
             const RTYPE: RType = Self::RTYPE;
