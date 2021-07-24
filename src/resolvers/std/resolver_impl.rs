@@ -2,6 +2,7 @@ use crate::{
     constants::{RClass, RType},
     errors::{Error, ProtocolError, Result},
     message::{reader::MessageReader, Answer, Flags, QueryWriter},
+    records::data::RData,
     resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
 };
 use std::{
@@ -67,10 +68,7 @@ impl ResolverImpl {
         ctx.query_raw()
     }
 
-    pub fn query(&self, qname: &str, rtype: RType, rclass: RClass) -> Result<Answer> {
-        if !rtype.is_data_type() {
-            return Err(Error::UnsupportedRType(rtype));
-        }
+    pub fn query<D: RData>(&self, qname: &str, rclass: RClass) -> Result<Answer<D>> {
         if !rclass.is_data_class() {
             return Err(Error::UnsupportedRClass(rclass));
         }
@@ -78,7 +76,7 @@ impl ResolverImpl {
         let mut vec: Vec<u8> = Vec::with_capacity(capacity);
         unsafe { vec.set_len(capacity) };
 
-        let response_len = self.query_raw(qname, rtype, rclass, &mut vec)?;
+        let response_len = self.query_raw(qname, D::RTYPE, rclass, &mut vec)?;
         unsafe { vec.set_len(response_len) };
 
         Answer::from_msg(&vec)

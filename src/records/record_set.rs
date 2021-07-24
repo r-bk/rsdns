@@ -1,6 +1,6 @@
 use crate::{
     constants::{RClass, RType},
-    records::data::RecordData,
+    records::data::RData,
     Name,
 };
 
@@ -11,15 +11,12 @@ use crate::{
 ///
 /// Defined in [RFC 7719 section 4](https://www.rfc-editor.org/rfc/rfc7719.html#section-4).
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct RecordSet {
+pub struct RecordSet<D: RData> {
     /// The name all records in this set belong to.
     pub name: Name,
 
     /// The class of records in this set.
     pub rclass: RClass,
-
-    /// The type of records in this set.
-    pub rtype: RType,
 
     /// The TTL of records in this set.
     ///
@@ -27,5 +24,10 @@ pub struct RecordSet {
     pub ttl: u32,
 
     /// The various record data of this set.
-    pub rdata: Vec<RecordData>,
+    pub rdata: Vec<D>,
+}
+
+impl<D: RData> RecordSet<D> {
+    /// Record type as associated constant.
+    pub const RTYPE: RType = D::RTYPE;
 }

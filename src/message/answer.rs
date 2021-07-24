@@ -2,7 +2,10 @@ use crate::{
     constants::{RClass, RCode, RType, RecordsSection},
     errors::{AnswerError, Error, Result},
     message::{reader::MessageReader, MessageType},
-    records::{data::RecordData, RecordSet, ResourceRecord},
+    records::{
+        data::{RData, RecordData},
+        RecordSet, ResourceRecord,
+    },
     Name,
 };
 use std::convert::TryFrom;
@@ -12,12 +15,12 @@ use std::convert::TryFrom;
 /// [Answer] is the struct returned from the resolver's `query` method. It contains an answer to
 /// data-type queries. Meta-queries like [RType::Any] do not return an [Answer].
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Answer {
+pub struct Answer<D: RData> {
     pub(crate) cnames: Vec<Name>,
-    pub(crate) rrset: RecordSet,
+    pub(crate) rrset: RecordSet<D>,
 }
 
-impl Answer {
+impl<D: RData> Answer<D> {
     /// Returns the CNAME chain of the resulting RRset.
     ///
     /// A chain may appear in a response message if the corresponding query name has a CNAME record.
@@ -34,7 +37,7 @@ impl Answer {
     /// Usually the RRset will belong to the query name. However, in case the query name has a CNAME
     /// record, the RRset will belong to the last domain name in the CNAME chain.
     #[inline]
-    pub fn rrset(&self) -> &RecordSet {
+    pub fn rrset(&self) -> &RecordSet<D> {
         &self.rrset
     }
 
@@ -64,12 +67,16 @@ impl Answer {
         let mut records = Self::read_answer_records(&mr)?;
 
         let rtype = RType::try_from(question.qtype)?;
+        if rtype != D::RTYPE {
+            return Err(Error::AnswerError(AnswerError::NoAnswer));
+        }
+
         let rclass = RClass::try_from(question.qclass)?;
         let mut name = Name::from(&question.qname);
         let mut cnames = Vec::new();
 
         let mut rrset = loop {
-            match Self::extract_rrset(&mut records, &name, rtype, rclass) {
+            match Self::extract_rrset(&mut records, &name, rclass)? {
                 Some(rrset) => break rrset,
                 None => {
                     if let Some(cname_rec) = Self::extract_cname(&mut records, &name, rclass) {
@@ -99,32 +106,30 @@ impl Answer {
     fn extract_rrset(
         records: &mut Vec<Option<ResourceRecord>>,
         name: &Name,
-        rtype: RType,
         rclass: RClass,
-    ) -> Option<RecordSet> {
+    ) -> Result<Option<RecordSet<D>>> {
         let mut rrset = RecordSet {
             name: Name::default(),
             rclass,
-            rtype,
             ttl: u32::MAX,
-            rdata: Vec::default(),
+            rdata: Vec::<D>::default(),
         };
 
         #[allow(clippy::manual_flatten)]
         for o in records.iter_mut() {
             if let Some(r) = o {
-                if r.name == *name && r.rtype == rtype && r.rclass == rclass {
+                if r.name == *name && r.rtype == D::RTYPE && r.rclass == rclass {
                     rrset.ttl = rrset.ttl.min(r.ttl);
                     let rec = o.take().unwrap(); // o.is_some() == true, so no panic here
-                    rrset.rdata.push(rec.rdata);
+                    rrset.rdata.push(D::from(rec.rdata)?);
                 }
             }
         }
 
         if !rrset.rdata.is_empty() {
-            Some(rrset)
+            Ok(Some(rrset))
         } else {
-            None
+            Ok(None)
         }
     }
 

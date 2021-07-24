@@ -1,6 +1,7 @@
 use crate::{
   constants::{RType, RClass},
   message::Answer,
+  records::data::RData,
   resolvers::{
       {{ crate_module_name }}::ResolverImpl,
       config::ResolverConfig,
@@ -51,7 +52,7 @@ impl Resolver {
     /// For meta-queries (e.g. [RType::Any]) use [Resolver::query_raw].
     ///
     /// This method allocates.
-    pub {% if async == "true" %}async {% endif -%} fn query(&mut self, qname: &str, rtype: RType, rclass: RClass) -> Result<Answer> {
-        self.internal.query(qname, rtype, rclass){% if async == "true" %}.await{% endif %}
+    pub {% if async == "true" %}async {% endif -%} fn query<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<Answer<D>> {
+        self.internal.query(qname, rclass){% if async == "true" %}.await{% endif %}
     }
 }
