@@ -118,3 +118,19 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 /// Result returned by protocol-related functions.
 pub(crate) type ProtocolResult<T> = std::result::Result<T, ProtocolError>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn print_size() {
+        println!("size_of(Error) = {}", std::mem::size_of::<Error>());
+        println!(
+            "size_of(io::Error) = {}",
+            std::mem::size_of::<std::io::Error>()
+        );
+
+        assert_eq!(std::mem::size_of::<Error>(), 32);
+    }
+}
