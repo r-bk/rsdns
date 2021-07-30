@@ -82,7 +82,7 @@ pub(crate) mod bytes;
 pub mod constants;
 mod domain_name;
 pub use domain_name::*;
-pub mod errors;
+mod errors;
 pub mod message;
 pub mod records;
 
