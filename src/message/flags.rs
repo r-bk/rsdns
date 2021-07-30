@@ -30,11 +30,11 @@ pub struct Flags {
 }
 
 impl Flags {
-    /// Creates new (default) Flags.
+    /// Creates new (default) [`Flags`].
     ///
-    /// Default Flags have [MessageType::Query] and [OpCode::Query].
+    /// Default [`Flags`] have [`MessageType::Query`] and [`OpCode::Query`].
     ///
-    /// [OpCode::Query]: (crate::constants::OpCode::Query)
+    /// [`OpCode::Query`]: crate::constants::OpCode::Query
     pub fn new() -> Flags {
         Flags { bits: 0 }
     }

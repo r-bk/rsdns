@@ -5,26 +5,28 @@ use std::{
     fmt::{self, Display, Formatter},
 };
 
-/// Parsed query opcode.
+/// Operation code value.
 ///
-/// This struct represents an OpCode parsed from a DNS message.
-/// It may include a value still not supported by the [OpCode] enumeration.
+/// This struct represents an `OPCODE` value.
+/// It may include a value still not supported by the [`OpCode`] enumeration.
 ///
 /// Convenience methods are provided to handle both supported and not supported values.
+///
+/// [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Debug, Default, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct OperationCode {
     pub(crate) value: u8,
 }
 
 impl OperationCode {
-    /// Converts the OpCode to a static string slice.
+    /// Converts this [`OperationCode`] to a static string slice.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [OpCode] value.
+    /// This is equivalent to calling `to_str` on the corresponding [`OpCode`] value.
     /// If the value is not supported in the enum, the string `"UNRECOGNIZED_OPCODE"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the
-    /// underlying implementation of the [Display] trait.
+    /// For numeric representation of an unsupported value see the implementation of the
+    /// [`Display`] trait.
     #[inline]
     pub fn to_str(self) -> &'static str {
         match OpCode::try_from(self) {

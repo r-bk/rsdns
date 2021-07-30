@@ -12,21 +12,24 @@ use std::{
 /// Record class value.
 ///
 /// This struct represents a record class value.
-/// It may include a value still not supported by the [RClass] enumeration.
+/// It may include a value still not supported by the [`RClass`] enumeration.
+///
+/// - [RFC 1035 section 3.2.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.4)
+/// - [RFC 1035 section 3.2.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.5)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordClass {
     pub(crate) value: u16,
 }
 
 impl RecordClass {
-    /// Converts the RecordClass to a static string slice.
+    /// Converts this [`RecordClass`] to a static string slice.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [RClass] value.
+    /// This is equivalent to calling `to_str` on the corresponding [`RClass`] value.
     /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RCLASS"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the
-    /// underlying implementation of the [Display] trait.
+    /// For numeric representation of an unsupported value see the implementation of the
+    /// [`Display`] trait.
     pub fn to_str(self) -> &'static str {
         match RClass::try_from_u16(self.value) {
             Ok(rt) => rt.to_str(),

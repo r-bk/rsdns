@@ -11,8 +11,8 @@ use std::convert::TryFrom;
 
 /// A query answer.
 ///
-/// [Answer] is the struct returned from the resolver's `query` method. It contains an answer to
-/// data-type queries. Meta-queries like [RType::Any] do not return an [Answer].
+/// [`Answer`] is the struct returned from a resolver's `query` method. It contains an answer to
+/// data-type queries. Meta-queries like [`RType::Any`] do not return an [`Answer`].
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Answer<D: RData> {
     pub(crate) cnames: Vec<Name>,

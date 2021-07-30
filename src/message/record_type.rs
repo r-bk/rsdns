@@ -12,21 +12,23 @@ use std::{
 /// Record type value.
 ///
 /// This struct represents a record type value.
-/// It may be a value still not supported by the [RType] enumeration.
+/// It may be a value still not supported by the [`RType`] enumeration.
+///
+/// [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordType {
     pub(crate) value: u16,
 }
 
 impl RecordType {
-    /// Converts the RType to a static string slice.
+    /// Converts this [`RType`] to a static string slice.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [RType] value.
+    /// This is equivalent to calling `to_str` on the corresponding [`RType`] value.
     /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RTYPE"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the
-    /// underlying implementation of the [Display] trait.
+    /// For numeric representation of an unsupported value see the implementation of the
+    /// [`Display`] trait.
     pub fn to_str(self) -> &'static str {
         match RType::try_from(self) {
             Ok(rt) => rt.to_str(),

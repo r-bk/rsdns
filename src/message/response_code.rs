@@ -5,26 +5,28 @@ use std::{
     fmt::{self, Display, Formatter},
 };
 
-/// Parsed query response code.
+/// Response code value.
 ///
-/// This struct represents an RCode parsed from a DNS message.
-/// It may include a value still not supported by the [RCode] enumeration.
+/// This struct represents a `RCODE` value.
+/// It may contain a value still not supported by the [`RCode`] enumeration.
 ///
 /// Convenience methods are provided to handle both supported and not supported values.
+///
+/// [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct ResponseCode {
     pub(crate) value: u16,
 }
 
 impl ResponseCode {
-    /// Converts the RCode to a static string slice.
+    /// Converts this [`ResponseCode`] to a static string slice.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [RCode] value.
+    /// This is equivalent to calling `to_str` on the corresponding [`RCode`] value.
     /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RCODE"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the
-    /// underlying implementation of the [Display] trait.
+    /// For numeric representation of an unsupported value see the implementation of the
+    /// [`Display`] trait.
     pub fn to_str(self) -> &'static str {
         match RCode::try_from_u16(self.value) {
             Ok(rc) => rc.to_str(),

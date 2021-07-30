@@ -6,7 +6,7 @@ use crate::{
 
 /// A set of similar records.
 ///
-/// RecordSet (or RRset) is a set of resource records with the same name, class and type,
+/// [`RecordSet`] (or RRset) is a set of resource records with the same name, class and type,
 /// but with different data.
 ///
 /// Defined in [RFC 7719 section 4](https://www.rfc-editor.org/rfc/rfc7719.html#section-4).
