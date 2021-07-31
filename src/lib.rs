@@ -53,7 +53,8 @@
 //! # Examples
 //!
 //! The following function retrieves [`A`] records using *rsdns's* asynchronous [`tokio::Resolver`].
-//! It uses Google's Public DNS server `8.8.8.8` as *recursor*.
+//! Please note that a full application requires `tokio` runtime initialization, which is out of
+//! *rsdns* scope. See the [`tokio`] documentation for details.
 //!
 //! To retrieve a different type of record, or use a different asynchronous resolver, use the
 //! relevant types from [`records::data`] and [`resolvers`] modules respectively.
@@ -71,14 +72,23 @@
 //!
 //! # #[cfg(feature = "net-tokio")]
 //! async fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
+//!     // use Google's Public DNS recursor as nameserver
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
-//!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver)).await?;
+//!
+//!     // default resolver configuration; specify nameserver address only
+//!     let config = ResolverConfig::new(nameserver);
+//!
+//!     // create tokio Resolver
+//!     let mut resolver = Resolver::new(config).await?;
+//!
+//!     // issue an A query
 //!     let answer = resolver.query::<A>(qname, RClass::In).await?;
+//!
 //!     Ok(answer.into_rrset().rdata)
 //! }
 //! ```
 //!
-//! The same function using *rsdns's* synchronous [`std::Resolver`]:
+//! The same function using *rsdns's* synchronous [`std::Resolver`].
 //!
 //! [`std::Resolver`]: crate::resolvers::std::Resolver
 //!
