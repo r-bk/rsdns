@@ -40,6 +40,12 @@ impl<D: RData> Answer<D> {
         &self.rrset
     }
 
+    /// Converts this [`Answer`] to its [`RecordSet`].
+    #[inline]
+    pub fn into_rrset(self) -> RecordSet<D> {
+        self.rrset
+    }
+
     /// Parses an Answer from a message.
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
         let mr = MessageReader::new(msg)?;
