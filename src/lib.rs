@@ -50,16 +50,12 @@
 //! [`resolvers`]: crate::resolvers
 //!
 //! ```rust
-//! use rsdns::{
-//!     constants::RClass,
-//!     records::data::A,
-//!     resolvers::{
-//!         config::ResolverConfig,
-//!         tokio::Resolver,
-//!     }
-//! };
+//! use rsdns::{constants::RClass, records::data::A};
+//! # #[cfg(feature = "net-tokio")]
+//! use rsdns::resolvers::{tokio::Resolver, config::ResolverConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
 //!
+//! # #[cfg(feature = "net-tokio")]
 //! async fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
 //!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver)).await?;
@@ -73,16 +69,12 @@
 //! [`std::Resolver`]: crate::resolvers::std::Resolver
 //!
 //! ```rust
-//! use rsdns::{
-//!     constants::RClass,
-//!     records::data::A,
-//!     resolvers::{
-//!         config::ResolverConfig,
-//!         std::Resolver,
-//!     }
-//! };
+//! use rsdns::{constants::RClass, records::data::A};
+//! # #[cfg(feature = "net-std")]
+//! use rsdns::resolvers::{std::Resolver, config::ResolverConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
 //!
+//! # #[cfg(feature = "net-std")]
 //! fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
 //!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver))?;
