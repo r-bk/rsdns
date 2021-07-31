@@ -36,6 +36,61 @@
 //! [`A`]: crate::records::data::A
 //! [`AAAA`]: crate::records::data::Aaaa
 
+//! # Examples
+//!
+//! The following function retrieves [`A`] records using *rsdns's* asynchronous [`tokio::Resolver`].
+//! It uses Google's Public DNS server `8.8.8.8` as *recursor*.
+//!
+//! To retrieve a different type of record, or use a different asynchronous resolver, use the
+//! relevant types from [`records::data`] and [`resolvers`] modules respectively.
+//!
+//! [`A`]: crate::records::data::A
+//! [`tokio::Resolver`]: crate::resolvers::tokio::Resolver
+//! [`records::data`]: crate::records::data
+//! [`resolvers`]: crate::resolvers
+//!
+//! ```rust
+//! use rsdns::{
+//!     constants::RClass,
+//!     records::data::A,
+//!     resolvers::{
+//!         config::ResolverConfig,
+//!         tokio::Resolver,
+//!     }
+//! };
+//! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
+//!
+//! async fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
+//!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
+//!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver)).await?;
+//!     let answer = resolver.query::<A>(qname, RClass::In).await?;
+//!     Ok(answer.into_rrset().rdata)
+//! }
+//! ```
+//!
+//! The same function using *rsdns's* synchronous [`std::Resolver`]:
+//!
+//! [`std::Resolver`]: crate::resolvers::std::Resolver
+//!
+//! ```rust
+//! use rsdns::{
+//!     constants::RClass,
+//!     records::data::A,
+//!     resolvers::{
+//!         config::ResolverConfig,
+//!         std::Resolver,
+//!     }
+//! };
+//! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
+//!
+//! fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
+//!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
+//!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver))?;
+//!     let answer = resolver.query::<A>(qname, RClass::In)?;
+//!     Ok(answer.into_rrset().rdata)
+//! }
+//! ```
+
 //! # Library Structure
 //!
 //! *rsdns* is built from two major parts: *message parsing* and *resolvers*.
