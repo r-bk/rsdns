@@ -66,7 +66,8 @@
 //!   network interface, timeout etc.)
 //! * it is blocking - harder to use in an asynchronous context
 //!
-//! If any of the above is an issue in your application, you may find *rsdns* useful.
+//! If any of the above is an issue in your application, or if you need to communicate with a DNS
+//! server with maximum control, you may find *rsdns* useful.
 //! Otherwise, if all you need is a host address, and a blocking API call is not an issue,
 //! consider using [`ToSocketAddrs`] instead. It comes built-in with the Rust standard library,
 //! and is very simple to use.
