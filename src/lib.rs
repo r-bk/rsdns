@@ -107,8 +107,8 @@
 
 //! # `std::net::ToSocketAddrs`
 //!
-//! [`ToSocketAddrs`] is the Rust standard library interface for programmatically
-//! obtaining addresses of hostnames. This interface hides the low-level details of how addresses
+//! [`ToSocketAddrs`] is the Rust standard library interface for obtaining addresses of hostnames.
+//! This interface hides the low-level details of how addresses
 //! are obtained (usually it uses pre-configured facilities provided by the underlying operating
 //! system), and returns an iterator over the resulting set of addresses.
 //!
