@@ -1,8 +1,13 @@
 use crate::{
-    constants::{RClass, RType},
-    records::data::RData,
-    Name,
+    constants::{RClass, RCode, RType, RecordsSection},
+    message::{reader::MessageReader, MessageType},
+    records::{
+        data::{RData, RecordData},
+        ResourceRecord,
+    },
+    Error, Name, Result,
 };
+use std::convert::TryFrom;
 
 /// A set of similar records.
 ///
@@ -20,7 +25,7 @@ pub struct RecordSet<D: RData> {
 
     /// The TTL of records in this set.
     ///
-    /// In case a DNS message contains records with different TTL, this is the minimum among them.
+    /// In case an RRSet contains records with different TTL, this is the minimum among them.
     pub ttl: u32,
 
     /// The various record data of this set.
@@ -30,4 +35,126 @@ pub struct RecordSet<D: RData> {
 impl<D: RData> RecordSet<D> {
     /// Record type as associated constant.
     pub const RTYPE: RType = D::RTYPE;
+
+    /// Parses a RecordSet from a response message.
+    ///
+    /// The RecordSet is built for the domain name specified in the Question section of the response
+    /// message. However, the resulting RecordSet's `name` may differ from the question name due to
+    /// CNAME chain resolution.
+    ///
+    /// CNAME chain occurs in a DNS message if the question name has a CNAME record pointing to
+    /// its canonical name. The canonical name may have a CNAME record of its own, creating a chain
+    /// of CNAMEs. The data records belong to the last name in the chain, which is reflected in the
+    /// returned RecordSet's `name` attribute.
+    pub fn from_msg(msg: &[u8]) -> Result<Self> {
+        let mr = MessageReader::new(msg)?;
+
+        let flags = mr.header().flags;
+
+        if flags.message_type() != MessageType::Response {
+            return Err(Error::BadMessageType(flags.message_type()));
+        }
+
+        if flags.response_code() != RCode::NoError {
+            return Err(Error::BadResponseCode(flags.response_code()));
+        }
+
+        if flags.truncated() {
+            return Err(Error::MessageTruncated);
+        }
+
+        let question = mr.question()?;
+        let mut records = Self::read_answer_records(&mr)?;
+
+        let rclass = RClass::try_from(question.qclass)?;
+        let mut name = Name::from(&question.qname);
+        let mut cnames = Vec::new();
+
+        let mut rrset = loop {
+            match Self::extract_rrset(&mut records, &name, rclass)? {
+                Some(rrset) => break rrset,
+                None => {
+                    if let Some(cname_rec) = Self::extract_cname(&mut records, &name, rclass) {
+                        match cname_rec.rdata {
+                            RecordData::Cname(s) => {
+                                cnames.push(s.cname.clone());
+                                name = s.cname;
+                            }
+                            _ => {
+                                // should not get here
+                                return Err(Error::InternalError(
+                                    "unexpected RecordData discriminant: Cname expected",
+                                ));
+                            }
+                        }
+                    } else {
+                        return Err(Error::NoAnswer);
+                    }
+                }
+            }
+        };
+
+        rrset.name = name;
+        Ok(rrset)
+    }
+
+    fn extract_rrset(
+        records: &mut Vec<Option<ResourceRecord>>,
+        name: &Name,
+        rclass: RClass,
+    ) -> Result<Option<RecordSet<D>>> {
+        let mut rrset = RecordSet {
+            name: Name::default(),
+            rclass,
+            ttl: u32::MAX,
+            rdata: Vec::<D>::default(),
+        };
+
+        #[allow(clippy::manual_flatten)]
+        for o in records.iter_mut() {
+            if let Some(r) = o {
+                if r.name == *name && r.rtype == D::RTYPE && r.rclass == rclass {
+                    rrset.ttl = rrset.ttl.min(r.ttl);
+                    let rec = o.take().unwrap(); // o.is_some() == true, so no panic here
+                    rrset.rdata.push(D::from(rec.rdata)?);
+                }
+            }
+        }
+
+        if !rrset.rdata.is_empty() {
+            Ok(Some(rrset))
+        } else {
+            Ok(None)
+        }
+    }
+
+    fn extract_cname(
+        records: &mut Vec<Option<ResourceRecord>>,
+        name: &Name,
+        rclass: RClass,
+    ) -> Option<ResourceRecord> {
+        #[allow(clippy::manual_flatten)]
+        for o in records.iter_mut() {
+            if let Some(r) = o {
+                if r.name == name && r.rtype == RType::Cname && r.rclass == rclass {
+                    return o.take();
+                }
+            }
+        }
+        None
+    }
+
+    fn read_answer_records(mr: &MessageReader) -> Result<Vec<Option<ResourceRecord>>> {
+        let mut records = Vec::new();
+        for res in mr.records() {
+            let (section, record) = res?;
+            if section == RecordsSection::Answer {
+                records.push(Some(record));
+            } else {
+                // Answer is the first section. Skip the rest.
+                break;
+            }
+        }
+        Ok(records)
+    }
 }

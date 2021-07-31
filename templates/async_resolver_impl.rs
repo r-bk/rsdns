@@ -1,7 +1,7 @@
 use crate::{
     constants::{RType, RClass},
-    message::{reader::MessageReader, Answer, Flags, QueryWriter},
-    records::data::RData,
+    message::{reader::MessageReader, Flags, QueryWriter},
+    records::{data::RData, RecordSet},
     resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
     Error, Result,
 };
@@ -71,7 +71,7 @@ impl ResolverImpl {
         ctx.query_raw().await
     }
 
-    pub async fn query<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<Answer<D>> {
+    pub async fn query_rrset<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
         if !rclass.is_data_class() {
             return Err(Error::UnsupportedRClass(rclass));
         }
@@ -83,7 +83,7 @@ impl ResolverImpl {
         let response_len = self.query_raw(qname, D::RTYPE, rclass, &mut vec).await?;
         unsafe { vec.set_len(response_len) };
 
-        Answer::from_msg(&vec)
+        RecordSet::from_msg(&vec)
     }
 }
 

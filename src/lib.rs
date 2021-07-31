@@ -82,9 +82,9 @@
 //!     let mut resolver = Resolver::new(config).await?;
 //!
 //!     // issue an A query
-//!     let answer = resolver.query::<A>(qname, RClass::In).await?;
+//!     let rrset = resolver.query_rrset::<A>(qname, RClass::In).await?;
 //!
-//!     Ok(answer.into_rrset().rdata)
+//!     Ok(rrset.rdata)
 //! }
 //! ```
 //!
@@ -102,8 +102,8 @@
 //! fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
 //!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver))?;
-//!     let answer = resolver.query::<A>(qname, RClass::In)?;
-//!     Ok(answer.into_rrset().rdata)
+//!     let rrset = resolver.query_rrset::<A>(qname, RClass::In)?;
+//!     Ok(rrset.rdata)
 //! }
 //! ```
 
