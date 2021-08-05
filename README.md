@@ -4,13 +4,12 @@
 ([RFC 1034](https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1)).
 
 *rsdns* strives to be simple and fast. To be simple *rsdns* keeps a minimal API.
-To be fast *rsdns* avoids memory allocations, and aims to allow DNS message parsing with
-zero memory allocations at runtime.
+To be fast *rsdns* aims to allow DNS message parsing with zero memory allocations at runtime.
 
 There are DNS crates which implement asynchronous resolvers, but are built for a single
-async executor. This somewhat blocks usage of such resolver in an application built around
-another async engine. *rsdns* closes this gap and genuinely supports three different async
-engines. Moreover, for completeness, *rsdns* has a synchronous (blocking) resolver as well.
+async runtime. This somewhat blocks usage of such resolver in an application built around
+another runtime. *rsdns* closes this gap and genuinely supports three different async
+runtimes. Moreover, for completeness, *rsdns* has an independent synchronous resolver as well.
 
 
 ## Notable Features
