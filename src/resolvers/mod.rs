@@ -20,4 +20,5 @@ pub mod smol;
 /// Resolver implementation with [`std::net`](https://doc.rust-lang.org/std/net).
 pub mod std;
 
-pub mod config;
+mod config;
+pub use config::*;

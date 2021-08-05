@@ -69,7 +69,7 @@
 //! ```rust
 //! use rsdns::{constants::RClass, records::data::A};
 //! # #[cfg(feature = "net-tokio")]
-//! use rsdns::resolvers::{tokio::Resolver, config::ResolverConfig};
+//! use rsdns::resolvers::{tokio::Resolver, ResolverConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
 //!
 //! # #[cfg(feature = "net-tokio")]
@@ -97,7 +97,7 @@
 //! ```rust
 //! use rsdns::{constants::RClass, records::data::A};
 //! # #[cfg(feature = "net-std")]
-//! use rsdns::resolvers::{std::Resolver, config::ResolverConfig};
+//! use rsdns::resolvers::{std::Resolver, ResolverConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
 //!
 //! # #[cfg(feature = "net-std")]

@@ -1,5 +1,5 @@
 //! Defines configuration for resolvers.
-use crate::resolvers::config::{ProtocolStrategy, Recursion};
+use crate::resolvers::{ProtocolStrategy, Recursion};
 use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     time::Duration,
@@ -58,7 +58,7 @@ impl ResolverConfig {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::resolvers::config::ResolverConfig;
+    /// # use rsdns::resolvers::ResolverConfig;
     /// # use std::{net::SocketAddr, str::FromStr, time::Duration};
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
