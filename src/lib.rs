@@ -41,23 +41,25 @@
 //! *rsdns* is built from two major parts: *message parsing* and *resolvers*.
 //!
 //! The *message parsing* part is the core of *rsdns*. It is generic and is suitable for any type
-//! of resolver that you may choose. It may be used even without an *rsdns* resolver at all,
+//! of resolver that you may choose. It can be used even without an *rsdns* resolver at all,
 //! if you have DNS messages obtained by other means. This part is always present and cannot
 //! be disabled.
 //!
 //! The *resolvers* part is comprised of four independent implementations
 //! of the resolver API. Usually an application will use only one of those. None of the resolvers
-//! is enabled by default. You need to enable a resolver via one of the `net-*` crate features.
-//! See the [`resolvers`] module for more information.
+//! is enabled by default. Use one of the `net-*` crate features to enable a resolver suitable for
+//! your project. See the [`resolvers`] module for more information.
 
 //! # Examples
 //!
 //! The following function retrieves [`A`] records using *rsdns's* asynchronous [`tokio::Resolver`].
-//! Please note that a full application requires `tokio` runtime initialization, which is out of
-//! *rsdns* scope. See the [`tokio`] documentation for details.
-//!
 //! To retrieve a different type of record, or use a different asynchronous resolver, use the
 //! relevant types from [`records::data`] and [`resolvers`] modules respectively.
+//!
+//! This is a very simplified example of the available API. In a real application initialization
+//! of the Resolver object would be done once for many DNS queries.
+//! Also, please note that a full application requires `tokio` runtime initialization,
+//! which is out of *rsdns* scope. See the [`tokio`] documentation for details.
 //!
 //! [`A`]: crate::records::data::A
 //! [`tokio::Resolver`]: crate::resolvers::tokio::Resolver
