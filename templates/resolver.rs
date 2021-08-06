@@ -36,12 +36,12 @@ impl Resolver {
         self.internal.config()
     }
 
-    /// Issues a DNS query and reads the response into caller-owned buffer `buf`.
+    /// Issues a DNS query and writes the response into caller-owned buffer.
     ///
     /// This method gives the control over buffer management to the caller.
-    /// The response message is read into `buf` and its length is returned in the result.
+    /// The response message is written into `buf` and its length is returned in the result.
     ///
-    /// See [`MessageReader`] for ways to parse the received message.
+    /// The received response can be parsed using [`MessageReader`].
     ///
     /// This method doesn't allocate.
     ///
@@ -54,13 +54,16 @@ impl Resolver {
     /// Issues a DNS query and returns the resulting [`RecordSet`].
     ///
     /// Usually the resulting [`RecordSet`] will belong to the domain name specified in `qname`
-    /// parameter. However, if `qname` has a `CNAME` record, the RecordSet will belong to `qname`'s
-    /// canonical name. See [`RecordSet::from_msg`] for `CNAME` chain resolution description.
+    /// parameter. However, if `qname` has a [`CNAME`] record, the RecordSet will belong to
+    /// `qname`'s canonical name.
+    /// See [`RecordSet::from_msg`] for CNAME chain resolution description.
     ///
     /// This method allows data-type queries only.
-    /// For meta-queries (e.g. [`RType::Any`]) use [`Resolver::query_raw`].
+    /// For meta-queries (e.g. [`RType::Any`]) use [`query_raw`](Resolver::query_raw).
     ///
     /// This method allocates.
+    ///
+    /// [`CNAME`]: crate::records::data::Cname
     pub {% if async == "true" %}async {% endif -%} fn query_rrset<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
         self.internal.query_rrset(qname, rclass){% if async == "true" %}.await{% endif %}
     }
