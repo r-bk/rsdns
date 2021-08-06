@@ -23,15 +23,6 @@ runtimes. Moreover, for completeness, *rsdns* has an independent synchronous res
 * Minimal set of dependencies
 
 
-## ch4
-
-*rsdns* comes with a small command-line tool [ch4](https://github.com/r-bk/ch4).
-*ch4* uses *rsdns* to query the Domain Name System,
-and shows the results in a zone-file format.
-It can be used as a simple substitute for [dig](https://en.wikipedia.org/wiki/Dig_(command)),
-especially on platforms where *dig* is not originally supported.
-
-
 ## Supported RFCs
 
 *rsdns* focuses on querying the Domain Name System and strives to support all
