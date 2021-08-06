@@ -46,9 +46,8 @@
 //! be disabled.
 //!
 //! The *resolvers* part is comprised of four independent implementations
-//! of the resolver API. Usually an application will use only one of those. None of the resolvers
-//! is enabled by default. Use one of the `net-*` crate features to enable a resolver suitable for
-//! your project. See the [`resolvers`] module for more information.
+//! of the resolver API. Usually an application will use only one of those.
+//! See the [`resolvers`] module for more information.
 
 //! # Examples
 //!
