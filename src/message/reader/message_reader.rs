@@ -35,10 +35,8 @@ use crate::{
 ///     println!("Type: {}", header.flags.message_type());
 ///     println!("Questions: {} Answers: {}", header.qd_count, header.an_count);
 ///
-///     for (index, question) in mr.questions().enumerate() {
-///         let q = question?;
-///         println!("Question {}: {} {} {}", index, q.qname, q.qtype, q.qclass);
-///     }
+///     let q = mr.question()?;
+///     println!("Question: {} {} {}", q.qname, q.qtype, q.qclass);
 ///
 ///     for result in mr.records() {
 ///         let (section, record) = result?;
