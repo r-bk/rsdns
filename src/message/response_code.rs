@@ -7,26 +7,42 @@ use std::{
 
 /// Response code value.
 ///
-/// This struct represents a `RCODE` value.
-/// It may contain a value still not supported by the [`RCode`] enumeration.
+/// This struct represents an `RCODE`[^rfc] value.
+/// It may be a value still not supported by the [`RCode`] enumeration.
 ///
-/// Convenience methods are provided to handle both supported and not supported values.
+/// [`ResponseCode`] is interoperable with [`RCode`] and [`u16`].
 ///
-/// [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
+/// # Examples
+///
+/// ```rust
+/// # use rsdns::{constants::RCode, message::ResponseCode, Error};
+/// # use std::convert::TryFrom;
+/// assert_eq!(ResponseCode::from(RCode::NoError), RCode::NoError);
+/// assert_eq!(ResponseCode::from(RCode::NxDomain), 3);
+/// assert_eq!(RCode::try_from(ResponseCode::from(1)).unwrap(), RCode::FormErr);
+/// assert!(matches!(RCode::try_from(ResponseCode::from(u16::MAX)),
+///                  Err(Error::UnrecognizedResponseCode(rcode)) if rcode == u16::MAX));
+/// ```
+///
+/// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct ResponseCode {
     pub(crate) value: u16,
 }
 
 impl ResponseCode {
-    /// Converts this [`ResponseCode`] to a static string slice.
+    /// Converts `self` to a string.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [`RCode`] value.
-    /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RCODE"` is
+    /// If the value is not supported in the [`RCode`] enum, the string `"UNRECOGNIZED_RCODE"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the implementation of the
-    /// [`Display`] trait.
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use rsdns::{constants::RCode, message::ResponseCode};
+    /// assert_eq!(ResponseCode::from(RCode::NxDomain).to_str(), "NXDOMAIN");
+    /// assert_eq!(ResponseCode::from(u16::MAX).to_str(), "UNRECOGNIZED_RCODE");
+    /// ```
     pub fn to_str(self) -> &'static str {
         match RCode::try_from_u16(self.value) {
             Ok(rc) => rc.to_str(),

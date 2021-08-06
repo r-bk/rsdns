@@ -11,24 +11,41 @@ use std::{
 
 /// Record type value.
 ///
-/// This struct represents a record type value.
+/// This struct represents an `RTYPE`[^rfc] value.
 /// It may be a value still not supported by the [`RType`] enumeration.
 ///
-/// [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
+/// [`RecordType`] is interoperable with [`RType`] and [`u16`].
+///
+/// # Examples
+///
+/// ```rust
+/// # use rsdns::{constants::RType, message::RecordType, Error};
+/// # use std::convert::TryFrom;
+/// assert_eq!(RecordType::from(RType::Mx), RType::Mx);
+/// assert_eq!(RecordType::from(RType::Any), 255);
+/// assert_eq!(RType::try_from(RecordType::from(255)).unwrap(), RType::Any);
+/// assert!(matches!(RType::try_from(RecordType::from(u16::MAX)),
+///                  Err(Error::UnrecognizedRecordType(rtype)) if rtype == u16::MAX));
+/// ```
+///
+/// [^rfc]: [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordType {
     pub(crate) value: u16,
 }
 
 impl RecordType {
-    /// Converts this [`RType`] to a static string slice.
+    /// Converts `self` to a string.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [`RType`] value.
-    /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RTYPE"` is
+    /// If the value is not supported in the [`RType`] enum, the string `"UNRECOGNIZED_RTYPE"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the implementation of the
-    /// [`Display`] trait.
+    /// # Examples
+    /// ```rust
+    /// # use rsdns::{constants::RType, message::RecordType};
+    /// assert_eq!(RecordType::from(RType::Cname).to_str(), "CNAME");
+    /// assert_eq!(RecordType::from(u16::MAX).to_str(), "UNRECOGNIZED_RTYPE");
+    /// ```
     pub fn to_str(self) -> &'static str {
         match RType::try_from(self) {
             Ok(rt) => rt.to_str(),
@@ -36,18 +53,34 @@ impl RecordType {
         }
     }
 
-    /// Checks if this is a data-type.
+    /// Checks if this is a data-type value.
     ///
     /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use rsdns::{constants::RType, message::RecordType};
+    /// assert_eq!(RecordType::from(RType::A).is_data_type(), true);
+    /// assert_eq!(RecordType::from(RType::Any).is_data_type(), false);
+    /// assert_eq!(RecordType::from(u16::MAX).is_data_type(), false);
+    /// ```
     #[inline]
     pub fn is_data_type(self) -> bool {
         (0x0001 <= self.value && self.value <= 0x007F)
             || (0x0100 <= self.value && self.value <= 0xEFFF)
     }
 
-    /// Checks if this is a question or meta-type.
+    /// Checks if this is a question-type or meta-type value.
     ///
     /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use rsdns::{constants::RType, message::RecordType};
+    /// assert_eq!(RecordType::from(RType::Any).is_meta_type(), true);
+    /// assert_eq!(RecordType::from(RType::A).is_meta_type(), false);
+    /// assert_eq!(RecordType::from(u16::MAX).is_meta_type(), false);
+    /// ```
     #[inline]
     pub fn is_meta_type(self) -> bool {
         0x0080 <= self.value && self.value <= 0x00FF

@@ -7,26 +7,42 @@ use std::{
 
 /// Operation code value.
 ///
-/// This struct represents an `OPCODE` value.
-/// It may include a value still not supported by the [`OpCode`] enumeration.
+/// This struct represents an `OPCODE`[^rfc] value.
+/// It may be a value still not supported by the [`OpCode`] enumeration.
 ///
-/// Convenience methods are provided to handle both supported and not supported values.
+/// [`OperationCode`] is interoperable with [`OpCode`] and [`u8`].
 ///
-/// [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
+/// # Examples
+///
+/// ```rust
+/// # use rsdns::{constants::OpCode, message::OperationCode, Error};
+/// # use std::convert::TryFrom;
+/// assert_eq!(OperationCode::from(OpCode::Query), OpCode::Query);
+/// assert_eq!(OperationCode::from(OpCode::IQuery), 1);
+/// assert_eq!(OpCode::try_from(OperationCode::from(2)).unwrap(), OpCode::Status);
+/// assert!(matches!(OpCode::try_from(OperationCode::from(15)),
+///                  Err(Error::UnrecognizedOperationCode(opcode)) if opcode == 15));
+/// ```
+///
+/// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Debug, Default, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct OperationCode {
     pub(crate) value: u8,
 }
 
 impl OperationCode {
-    /// Converts this [`OperationCode`] to a static string slice.
+    /// Converts `self` to a string.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [`OpCode`] value.
-    /// If the value is not supported in the enum, the string `"UNRECOGNIZED_OPCODE"` is
+    /// If the value is not supported in the [`OpCode`] enum, the string `"UNRECOGNIZED_OPCODE"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the implementation of the
-    /// [`Display`] trait.
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use rsdns::{constants::OpCode, message::OperationCode};
+    /// assert_eq!(OperationCode::from(OpCode::IQuery).to_str(), "IQUERY");
+    /// assert_eq!(OperationCode::from(15).to_str(), "UNRECOGNIZED_OPCODE");
+    /// ```
     #[inline]
     pub fn to_str(self) -> &'static str {
         match OpCode::try_from(self) {

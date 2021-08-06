@@ -11,25 +11,43 @@ use std::{
 
 /// Record class value.
 ///
-/// This struct represents a record class value.
-/// It may include a value still not supported by the [`RClass`] enumeration.
+/// This struct represents an `RCLASS`[^rfc1][^rfc2] value.
+/// It may be a value still not supported by the [`RClass`] enumeration.
 ///
-/// - [RFC 1035 section 3.2.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.4)
-/// - [RFC 1035 section 3.2.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.5)
+/// [`RecordClass`] is interoperable with [`RClass`] and [`u16`].
+///
+/// # Examples
+///
+/// ```rust
+/// # use rsdns::{constants::RClass, message::RecordClass, Error};
+/// # use std::convert::TryFrom;
+/// assert_eq!(RecordClass::from(RClass::In), RClass::In);
+/// assert_eq!(RecordClass::from(RClass::Any), 255);
+/// assert_eq!(RClass::try_from(RecordClass::from(255)).unwrap(), RClass::Any);
+/// assert!(matches!(RClass::try_from(RecordClass::from(u16::MAX)),
+///                  Err(Error::UnrecognizedRecordClass(rclass)) if rclass == u16::MAX));
+/// ```
+///
+/// [^rfc1]: [RFC 1035 section 3.2.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.4)
+///
+/// [^rfc2]: [RFC 1035 section 3.2.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.5)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordClass {
     pub(crate) value: u16,
 }
 
 impl RecordClass {
-    /// Converts this [`RecordClass`] to a static string slice.
+    /// Converts `self` to a string.
     ///
-    /// This is equivalent to calling `to_str` on the corresponding [`RClass`] value.
-    /// If the value is not supported in the enum, the string `"UNRECOGNIZED_RCLASS"` is
+    /// If the value is not supported in the [`RClass`] enum, the string `"UNRECOGNIZED_RCLASS"` is
     /// returned.
     ///
-    /// For numeric representation of an unsupported value see the implementation of the
-    /// [`Display`] trait.
+    /// # Examples
+    /// ```rust
+    /// # use rsdns::{constants::RClass, message::RecordClass};
+    /// assert_eq!(RecordClass::from(RClass::In).to_str(), "IN");
+    /// assert_eq!(RecordClass::from(u16::MAX).to_str(), "UNRECOGNIZED_RCLASS");
+    /// ```
     pub fn to_str(self) -> &'static str {
         match RClass::try_from_u16(self.value) {
             Ok(rt) => rt.to_str(),
@@ -40,6 +58,14 @@ impl RecordClass {
     /// Checks if this is a data-class value.
     ///
     /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use rsdns::{constants::RClass, message::RecordClass};
+    /// assert_eq!(RecordClass::from(RClass::In).is_data_class(), true);
+    /// assert_eq!(RecordClass::from(RClass::Any).is_data_class(), false);
+    /// assert_eq!(RecordClass::from(u16::MAX).is_data_class(), false);
+    /// ```
     #[inline]
     pub fn is_data_class(self) -> bool {
         0x0001 <= self.value && self.value <= 0x007F
@@ -48,6 +74,14 @@ impl RecordClass {
     /// Checks if this a meta-class value.
     ///
     /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use rsdns::{constants::RClass, message::RecordClass};
+    /// assert_eq!(RecordClass::from(RClass::Any).is_meta_class(), true);
+    /// assert_eq!(RecordClass::from(RClass::In).is_meta_class(), false);
+    /// assert_eq!(RecordClass::from(u16::MAX).is_meta_class(), false);
+    /// ```
     #[inline]
     pub fn is_meta_class(self) -> bool {
         0x0080 <= self.value && self.value <= 0x00FF
