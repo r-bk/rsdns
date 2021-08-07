@@ -379,7 +379,7 @@ impl Hash for InlineName {
 
 impl Display for InlineName {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        f.pad(self.as_str())
     }
 }
 

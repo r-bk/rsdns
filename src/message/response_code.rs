@@ -77,8 +77,13 @@ impl TryFrom<ResponseCode> for RCode {
 impl Display for ResponseCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match RCode::try_from_u16(self.value) {
-            Ok(c) => write!(f, "{}", c.to_str())?,
-            _ => write!(f, "RCODE({})", self.value)?,
+            Ok(c) => f.pad(c.to_str())?,
+            _ => {
+                use std::fmt::Write;
+                let mut buf = arrayvec::ArrayString::<32>::new();
+                write!(&mut buf, "RCODE({})", self.value)?;
+                f.pad(buf.as_str())?;
+            }
         }
         Ok(())
     }

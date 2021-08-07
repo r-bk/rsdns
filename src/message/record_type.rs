@@ -122,8 +122,13 @@ impl TryFrom<&RecordType> for RType {
 impl Display for RecordType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match RType::try_from(self) {
-            Ok(rt) => write!(f, "{}", rt.to_str())?,
-            _ => write!(f, "RTYPE({})", self.value)?,
+            Ok(rt) => f.pad(rt.to_str())?,
+            _ => {
+                use std::fmt::Write;
+                let mut buf = arrayvec::ArrayString::<32>::new();
+                write!(&mut buf, "RTYPE({})", self.value)?;
+                f.pad(buf.as_str())?;
+            }
         }
         Ok(())
     }

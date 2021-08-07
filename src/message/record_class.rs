@@ -123,8 +123,13 @@ impl TryFrom<&RecordClass> for RClass {
 impl Display for RecordClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match RClass::try_from_u16(self.value) {
-            Ok(rc) => write!(f, "{}", rc.to_str())?,
-            _ => write!(f, "RCLASS({})", self.value)?,
+            Ok(rc) => f.pad(rc.to_str())?,
+            _ => {
+                use std::fmt::Write;
+                let mut buf = arrayvec::ArrayString::<32>::new();
+                write!(&mut buf, "RCLASS({})", self.value)?;
+                f.pad(buf.as_str())?;
+            }
         }
         Ok(())
     }

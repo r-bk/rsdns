@@ -361,7 +361,7 @@ impl Hash for Name {
 
 impl Display for Name {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        f.pad(self.as_str())
     }
 }
 

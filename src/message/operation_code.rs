@@ -87,8 +87,13 @@ impl TryFrom<OperationCode> for OpCode {
 impl Display for OperationCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match OpCode::try_from(*self) {
-            Ok(c) => write!(f, "{}", c.to_str())?,
-            _ => write!(f, "OPCODE({})", self.value)?,
+            Ok(c) => f.pad(c.to_str())?,
+            _ => {
+                use std::fmt::Write;
+                let mut buf = arrayvec::ArrayString::<32>::new();
+                write!(&mut buf, "OPCODE({})", self.value)?;
+                f.pad(buf.as_str())?;
+            }
         }
         Ok(())
     }

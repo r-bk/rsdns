@@ -53,6 +53,6 @@ impl From<MessageType> for bool {
 
 impl Display for MessageType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.as_str())
+        f.pad(self.as_str())
     }
 }

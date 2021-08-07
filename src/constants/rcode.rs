@@ -62,7 +62,7 @@ impl RCode {
 
 impl Display for RCode {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.to_str())
+        f.pad(self.to_str())
     }
 }
 
