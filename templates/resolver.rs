@@ -9,10 +9,14 @@ use crate::{
 };
 
 {% if async == "true" -%}
+{% set as = "async" %}
+{% set aw = ".await" %}
 /// Asynchronous resolver for the [`{{ crate_name }}`] async runtime.
 ///
 /// [`{{ crate_name }}`]: https://docs.rs/{{ crate_name }}
 {% else -%}
+{% set as = "" %}
+{% set aw = "" %}
 /// Synchronous resolver implemented on top of [`std::net`].
 ///
 /// [`std::net`]: https://doc.rust-lang.org/std/net
@@ -24,9 +28,9 @@ pub struct Resolver {
 impl Resolver {
     /// Creates a new instance of [`Resolver`] with specified configuration.
     #[inline(always)]
-    pub {% if async == "true" %}async {% endif -%} fn new(conf: ResolverConfig) -> Result<Self> {
+    pub {{ as }} fn new(conf: ResolverConfig) -> Result<Self> {
         Ok(Self {
-            internal: ResolverImpl::new(conf){% if async == "true" %}.await{% endif %}?,
+            internal: ResolverImpl::new(conf){{ aw }}?,
         })
     }
 
@@ -47,8 +51,8 @@ impl Resolver {
     ///
     /// [`MessageReader`]: crate::message::reader::MessageReader
     #[inline(always)]
-    pub {% if async == "true" %}async {% endif -%} fn query_raw(&mut self, qname: &str, qtype: RType, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
-        self.internal.query_raw(qname, qtype, qclass, buf){% if async == "true" %}.await{% endif %}
+    pub {{ as }} fn query_raw(&mut self, qname: &str, qtype: RType, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
+        self.internal.query_raw(qname, qtype, qclass, buf){{ aw }}
     }
 
     /// Issues a DNS query and returns the resulting [`RecordSet`].
@@ -64,7 +68,7 @@ impl Resolver {
     /// This method allocates.
     ///
     /// [`CNAME`]: crate::records::data::Cname
-    pub {% if async == "true" %}async {% endif -%} fn query_rrset<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
-        self.internal.query_rrset(qname, rclass){% if async == "true" %}.await{% endif %}
+    pub {{ as }} fn query_rrset<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
+        self.internal.query_rrset(qname, rclass){{ aw }}
     }
 }
