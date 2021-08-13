@@ -1,3 +1,8 @@
+# 0.3.0 (Aug 13, 2021)
+
+- support leading digits in domain name labels [RFC1101](https://www.rfc-editor.org/rfc/rfc1101.html)
+- add a link to **ch4** in README
+
 # 0.2.0 (Aug 12, 2021)
 
 - fix `Display` trait implementation. Padding, alignment and fill specifiers are
