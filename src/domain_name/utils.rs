@@ -27,9 +27,9 @@ pub fn check_label_bytes(label: &[u8]) -> Result<()> {
     // so it is sound to access it unchecked at the first and last bytes
     unsafe {
         let fc = label.get_unchecked(0);
-        if !fc.is_ascii_alphabetic() {
+        if !fc.is_ascii_alphanumeric() {
             return Err(Error::DomainNameLabelInvalidChar(
-                "domain name label first character is not alphabetic",
+                "domain name label first character is not alphanumeric",
                 *fc,
             ));
         }
@@ -109,14 +109,14 @@ mod tests {
         let res = check_label_bytes(b"");
         assert!(matches!(res, Err(Error::DomainNameLabelIsEmpty)));
 
-        let malformed: &[(&[u8], u8)] = &[(b"1abel", b'1'), (b"-abel", b'-')];
+        let malformed: &[(&[u8], u8)] = &[(b"-abel", b'-')];
 
         for (m, c) in malformed {
             let res = check_label_bytes(m);
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphabetic",
+                    "domain name label first character is not alphanumeric",
                     v
                 )) if v == *c
             ));
@@ -125,7 +125,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphabetic",
+                    "domain name label first character is not alphanumeric",
                     v
                 )) if v == *c
             ));
@@ -179,7 +179,7 @@ mod tests {
         }
 
         let l_63 = "a".repeat(63);
-        let good: &[&[u8]] = &[b"label", b"labe1", l_63.as_bytes()];
+        let good: &[&[u8]] = &[b"label", b"labe1", b"1abel", l_63.as_bytes()];
         for g in good {
             assert!(check_label_bytes(g).is_ok());
             assert!(check_label(std::str::from_utf8(g).unwrap()).is_ok());
@@ -191,8 +191,10 @@ mod tests {
         let good: &[&[u8]] = &[
             b".",
             b"com",
+            b"3om",
             b"example.com",
             b"exampl0.com.",
+            b"3xample2.com",
             b"exam-3le.com",
             b"su--b.exAmp1e.com",
         ];
@@ -216,20 +218,14 @@ mod tests {
             assert!(matches!(res, Err(Error::DomainNameLabelIsEmpty)));
         }
 
-        let malformed: &[(&[u8], u8)] = &[
-            (b"3om", b'3'),
-            // b"co-",
-            (b"1xample.com", b'1'),
-            // b"example-.com",
-            (b"-xample.com", b'-'),
-        ];
+        let malformed: &[(&[u8], u8)] = &[(b"-xample.com", b'-')];
 
         for (m, c) in malformed {
             let res = check_name_bytes(m);
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphabetic",
+                    "domain name label first character is not alphanumeric",
                     v
                 )) if v == *c
             ));
@@ -238,7 +234,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphabetic",
+                    "domain name label first character is not alphanumeric",
                     v
                 )) if v == *c
             ));

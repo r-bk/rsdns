@@ -156,8 +156,7 @@ mod tests {
             ));
         }
 
-        let samples: Vec<(&str, u8)> =
-            vec![("3om", b'3'), ("1xample.com", b'1'), ("-xample.com", b'-')];
+        let samples: Vec<(&str, u8)> = vec![("-xample.com", b'-')];
 
         for (s, c) in samples {
             let mut arr = [0xFFu8; 32];
@@ -165,7 +164,7 @@ mod tests {
             assert!(matches!(
                 wcursor.write_domain_name(s),
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphabetic",
+                    "domain name label first character is not alphanumeric",
                     v
                 )) if v == c
             ));

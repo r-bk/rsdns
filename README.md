@@ -40,6 +40,8 @@ essential data-type records.
 * [RFC 1035](https://www.rfc-editor.org/rfc/rfc1035.html) - the foundation of DNS
   protocol: `A`, `NS`, `TXT`, `CNAME`, `SOA`, `MX`, `PTR`, `ANY` etc.
 * [RFC 3596](https://www.rfc-editor.org/rfc/rfc3596.html) - `AAAA`
+* [RFC 1101](https://www.rfc-editor.org/rfc/rfc1101.html) - allow leading digits
+  in domain name labels
 
 
 ## Roadmap

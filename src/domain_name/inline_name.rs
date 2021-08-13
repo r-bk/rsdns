@@ -34,6 +34,7 @@ type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
 /// - [RFC 1035 section 2.3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.1)
 /// - [RFC 1035 section 2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)
 /// - [RFC 1035 section 3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1)
+/// - [RFC 1101 section 3.1](https://www.rfc-editor.org/rfc/rfc1101.html#section-3.1)
 ///
 /// [RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1
 /// [rsdns]: crate
@@ -475,10 +476,12 @@ mod tests {
 
         let success_cases = &[
             "com",
+            "3om",
             "example.com",
             "sub.example.com",
             ".",
             "example.com.",
+            "3xample.com",
             "EXAMPLE.com",
             "EXAMPLE.COM",
             "EXAMPLE.COM.",
@@ -500,11 +503,10 @@ mod tests {
         let failure_cases = &[
             "",
             "..",
-            "3om",
+            "3o-",
             "co-",
             "example..com",
             "sub..example.com",
-            "1xample.com",
             "example-.com",
             "-xample.com",
             "examp|e.com",
