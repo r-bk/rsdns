@@ -6,8 +6,8 @@ pub use opcode::*;
 mod rclass;
 pub use rclass::*;
 
-mod rtype;
-pub use rtype::*;
+mod r#type;
+pub use r#type::*;
 
 mod rcode;
 pub use rcode::*;
