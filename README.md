@@ -14,6 +14,13 @@ async runtime. This somewhat blocks usage of such resolver in an application bui
 another runtime. *rsdns* closes this gap and genuinely supports three different async
 runtimes. Moreover, for completeness, *rsdns* has an independent synchronous resolver as well.
 
+[![crates.io][crates-badge]][crates-url]
+[![docs.rs][docs-badge]][docs-url]
+
+[crates-badge]: https://img.shields.io/crates/v/rsdns.svg
+[crates-url]: https://crates.io/crates/rsdns
+[docs-badge]: https://docs.rs/rsdns/badge.svg
+[docs-url]: https://docs.rs/rsdns/latest/rsdns
 
 ## Notable Features
 
