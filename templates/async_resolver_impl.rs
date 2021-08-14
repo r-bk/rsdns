@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RType, RClass},
+    constants::{Type, RClass},
     message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
     resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
@@ -56,7 +56,7 @@ impl ResolverImpl {
         &self.config
     }
 
-    pub async fn query_raw(&mut self, qname: &str, qtype: RType, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
+    pub async fn query_raw(&mut self, qname: &str, qtype: Type, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
         let mut ctx = ResolverCtx{
             qname,
             qtype,
@@ -89,7 +89,7 @@ impl ResolverImpl {
 
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
-    qtype: RType,
+    qtype: Type,
     qclass: RClass,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
@@ -223,7 +223,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
     #[inline]
     fn udp_first(&self) -> bool {
         match self.config.protocol_strategy_ {
-            ProtocolStrategy::Default => self.qtype != RType::Any,
+            ProtocolStrategy::Default => self.qtype != Type::Any,
             ProtocolStrategy::Udp | ProtocolStrategy::NoTcp => true,
             ProtocolStrategy::Tcp => false,
         }

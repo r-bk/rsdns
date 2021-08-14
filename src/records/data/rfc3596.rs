@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::RType,
+    constants::Type,
     Result,
 };
 use std::net::Ipv6Addr;

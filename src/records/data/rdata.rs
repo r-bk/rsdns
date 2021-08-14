@@ -1,4 +1,4 @@
-use crate::constants::RType;
+use crate::constants::Type;
 use std::{fmt::Debug, hash::Hash};
 
 pub(super) mod private {
@@ -16,5 +16,5 @@ pub trait RData:
     private::RDataBase + Clone + Eq + PartialEq + Hash + Debug + Ord + PartialOrd
 {
     /// Record data type as associated constant.
-    const RTYPE: RType;
+    const RTYPE: Type;
 }

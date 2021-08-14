@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::{RClass, RType, RecordsSection},
+    constants::{RClass, RecordsSection, Type},
     message::{reader::SectionTracker, Header, RecordClass, RecordType},
     records::{data::RecordData, ResourceRecord},
     Error, Result,
@@ -76,7 +76,7 @@ macro_rules! rrr {
         ResourceRecord {
             name: $self.cursor.clone_with_pos($pos).read()?,
             rclass: $rclass,
-            rtype: RType::$rr,
+            rtype: Type::$rr,
             $ttl,
             rdata: RecordData::$rr($self.cursor.read_rr_data($rdlen)?),
         }
@@ -131,7 +131,7 @@ impl<'a> Records<'a> {
                     }
                 };
 
-                let rtype = match RType::try_from(rtype) {
+                let rtype = match Type::try_from(rtype) {
                     Ok(rt) => rt,
                     _ => {
                         /* unsupported RTYPE */
@@ -142,25 +142,25 @@ impl<'a> Records<'a> {
                 };
 
                 let rec = match rtype {
-                    RType::A => rrr!(self, A, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Ns => rrr!(self, Ns, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Md => rrr!(self, Md, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Mf => rrr!(self, Mf, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Cname => rrr!(self, Cname, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Soa => rrr!(self, Soa, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Mb => rrr!(self, Mb, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Mg => rrr!(self, Mg, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Mr => rrr!(self, Mr, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Null => rrr!(self, Null, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Wks => rrr!(self, Wks, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Ptr => rrr!(self, Ptr, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Hinfo => rrr!(self, Hinfo, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Minfo => rrr!(self, Minfo, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Mx => rrr!(self, Mx, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Txt => rrr!(self, Txt, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Aaaa => rrr!(self, Aaaa, domain_name_pos, rclass, ttl, rdlen),
-                    RType::Axfr | RType::Mailb | RType::Maila | RType::Any => {
-                        return Err(Error::UnexpectedRType(rtype));
+                    Type::A => rrr!(self, A, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Ns => rrr!(self, Ns, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Md => rrr!(self, Md, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Mf => rrr!(self, Mf, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Cname => rrr!(self, Cname, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Soa => rrr!(self, Soa, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Mb => rrr!(self, Mb, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Mg => rrr!(self, Mg, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Mr => rrr!(self, Mr, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Null => rrr!(self, Null, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Wks => rrr!(self, Wks, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Ptr => rrr!(self, Ptr, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Hinfo => rrr!(self, Hinfo, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Minfo => rrr!(self, Minfo, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Mx => rrr!(self, Mx, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Txt => rrr!(self, Txt, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Aaaa => rrr!(self, Aaaa, domain_name_pos, rclass, ttl, rdlen),
+                    Type::Axfr | Type::Mailb | Type::Maila | Type::Any => {
+                        return Err(Error::UnexpectedType(rtype));
                     }
                 };
 

@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, RType},
+    constants::{RClass, Type},
     errors::{Error, Result},
     message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
@@ -16,7 +16,7 @@ type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
-    qtype: RType,
+    qtype: Type,
     qclass: RClass,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
@@ -47,7 +47,7 @@ impl ResolverImpl {
     pub fn query_raw(
         &self,
         qname: &str,
-        qtype: RType,
+        qtype: Type,
         qclass: RClass,
         buf: &mut [u8],
     ) -> Result<usize> {
@@ -193,7 +193,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
     #[inline]
     fn udp_first(&self) -> bool {
         match self.config.protocol_strategy_ {
-            ProtocolStrategy::Default => self.qtype != RType::Any,
+            ProtocolStrategy::Default => self.qtype != Type::Any,
             ProtocolStrategy::Udp | ProtocolStrategy::NoTcp => true,
             ProtocolStrategy::Tcp => false,
         }

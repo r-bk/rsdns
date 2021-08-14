@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::RType,
+    constants::Type,
     Error, Result,
 };
 use std::{
@@ -12,26 +12,26 @@ use std::{
 /// Record type value.
 ///
 /// This struct represents an `RTYPE`[^rfc] value.
-/// It may be a value still not supported by the [`RType`] enumeration.
+/// It may be a value still not supported by the [`Type`] enumeration.
 ///
-/// [`RecordType`] is interoperable with [`RType`] and [`u16`].
+/// [`RecordType`] is interoperable with [`Type`] and [`u16`].
 ///
 /// [`RecordType`] follows [RFC 3597] to display unknown values.
 ///
 /// # Examples
 ///
 /// ```rust
-/// # use rsdns::{constants::RType, message::RecordType, Error};
+/// # use rsdns::{constants::Type, message::RecordType, Error};
 /// # use std::convert::TryFrom;
-/// // RecordType implements From<RType>
-/// assert_eq!(RecordType::from(RType::Mx), RType::Mx);
-/// assert_eq!(RecordType::from(RType::Any), 255);
+/// // RecordType implements From<Type>
+/// assert_eq!(RecordType::from(Type::Mx), Type::Mx);
+/// assert_eq!(RecordType::from(Type::Any), 255);
 ///
-/// // RType implements TryFrom<RecordType>
-/// assert_eq!(RType::try_from(RecordType::from(255)).unwrap(), RType::Any);
+/// // Type implements TryFrom<RecordType>
+/// assert_eq!(Type::try_from(RecordType::from(255)).unwrap(), Type::Any);
 ///
 /// // RecordType implements From<u16>
-/// assert!(matches!(RType::try_from(RecordType::from(u16::MAX)),
+/// assert!(matches!(Type::try_from(RecordType::from(u16::MAX)),
 ///                  Err(Error::UnknownRecordType(rtype)) if rtype == u16::MAX));
 ///
 /// // Display implementation follows rfc3597
@@ -49,19 +49,19 @@ pub struct RecordType {
 impl RecordType {
     /// Converts `self` to a string.
     ///
-    /// If the value is not supported in the [`RType`] enum, the string `"UNKNOWN_RTYPE"` is
+    /// If the value is not supported in the [`Type`] enum, the string `"UNKNOWN_TYPE"` is
     /// returned.
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::RType, message::RecordType};
-    /// assert_eq!(RecordType::from(RType::Cname).to_str(), "CNAME");
-    /// assert_eq!(RecordType::from(u16::MAX).to_str(), "UNKNOWN_RTYPE");
+    /// # use rsdns::{constants::Type, message::RecordType};
+    /// assert_eq!(RecordType::from(Type::Cname).to_str(), "CNAME");
+    /// assert_eq!(RecordType::from(u16::MAX).to_str(), "UNKNOWN_TYPE");
     /// ```
     pub fn to_str(self) -> &'static str {
-        match RType::try_from(self) {
+        match Type::try_from(self) {
             Ok(rt) => rt.to_str(),
-            _ => "UNKNOWN_RTYPE",
+            _ => "UNKNOWN_TYPE",
         }
     }
 
@@ -71,9 +71,9 @@ impl RecordType {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::RType, message::RecordType};
-    /// assert_eq!(RecordType::from(RType::A).is_data_type(), true);
-    /// assert_eq!(RecordType::from(RType::Any).is_data_type(), false);
+    /// # use rsdns::{constants::Type, message::RecordType};
+    /// assert_eq!(RecordType::from(Type::A).is_data_type(), true);
+    /// assert_eq!(RecordType::from(Type::Any).is_data_type(), false);
     /// assert_eq!(RecordType::from(u16::MAX).is_data_type(), false);
     /// ```
     #[inline]
@@ -88,9 +88,9 @@ impl RecordType {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::RType, message::RecordType};
-    /// assert_eq!(RecordType::from(RType::Any).is_meta_type(), true);
-    /// assert_eq!(RecordType::from(RType::A).is_meta_type(), false);
+    /// # use rsdns::{constants::Type, message::RecordType};
+    /// assert_eq!(RecordType::from(Type::Any).is_meta_type(), true);
+    /// assert_eq!(RecordType::from(Type::A).is_meta_type(), false);
     /// assert_eq!(RecordType::from(u16::MAX).is_meta_type(), false);
     /// ```
     #[inline]
@@ -106,23 +106,23 @@ impl From<u16> for RecordType {
     }
 }
 
-impl From<RType> for RecordType {
+impl From<Type> for RecordType {
     #[inline]
-    fn from(rt: RType) -> Self {
+    fn from(rt: Type) -> Self {
         Self { value: rt as u16 }
     }
 }
 
-impl TryFrom<RecordType> for RType {
+impl TryFrom<RecordType> for Type {
     type Error = Error;
 
     #[inline]
     fn try_from(rt: RecordType) -> Result<Self> {
-        RType::try_from_u16(rt.value)
+        Type::try_from_u16(rt.value)
     }
 }
 
-impl TryFrom<&RecordType> for RType {
+impl TryFrom<&RecordType> for Type {
     type Error = Error;
 
     #[inline]
@@ -133,7 +133,7 @@ impl TryFrom<&RecordType> for RType {
 
 impl Display for RecordType {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match RType::try_from(self) {
+        match Type::try_from(self) {
             Ok(rt) => f.pad(rt.to_str())?,
             _ => {
                 use std::fmt::Write;
@@ -174,28 +174,28 @@ impl PartialOrd<RecordType> for u16 {
     }
 }
 
-impl PartialEq<RType> for RecordType {
+impl PartialEq<Type> for RecordType {
     #[inline]
-    fn eq(&self, other: &RType) -> bool {
+    fn eq(&self, other: &Type) -> bool {
         self.value == *other as u16
     }
 }
 
-impl PartialEq<RecordType> for RType {
+impl PartialEq<RecordType> for Type {
     #[inline]
     fn eq(&self, other: &RecordType) -> bool {
         *self as u16 == other.value
     }
 }
 
-impl PartialOrd<RType> for RecordType {
+impl PartialOrd<Type> for RecordType {
     #[inline]
-    fn partial_cmp(&self, other: &RType) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Type) -> Option<Ordering> {
         self.value.partial_cmp(&(*other as u16))
     }
 }
 
-impl PartialOrd<RecordType> for RType {
+impl PartialOrd<RecordType> for Type {
     #[inline]
     fn partial_cmp(&self, other: &RecordType) -> Option<Ordering> {
         (*self as u16).partial_cmp(&other.value)

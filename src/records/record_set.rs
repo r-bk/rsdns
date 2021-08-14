@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, RCode, RType, RecordsSection},
+    constants::{RClass, RCode, RecordsSection, Type},
     message::{reader::MessageReader, MessageType},
     records::{
         data::{RData, RecordData},
@@ -34,7 +34,7 @@ pub struct RecordSet<D: RData> {
 
 impl<D: RData> RecordSet<D> {
     /// Record type as associated constant.
-    pub const RTYPE: RType = D::RTYPE;
+    pub const RTYPE: Type = D::RTYPE;
 
     /// Parses a RecordSet from a response message.
     ///
@@ -136,7 +136,7 @@ impl<D: RData> RecordSet<D> {
         #[allow(clippy::manual_flatten)]
         for o in records.iter_mut() {
             if let Some(r) = o {
-                if r.name == name && r.rtype == RType::Cname && r.rclass == rclass {
+                if r.name == name && r.rtype == Type::Cname && r.rclass == rclass {
                     return o.take();
                 }
             }

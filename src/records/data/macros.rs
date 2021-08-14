@@ -2,13 +2,13 @@ macro_rules! rr_data {
     ($RR:ident) => {
         impl $RR {
             /// The record type as associated constant.
-            pub const RTYPE: RType = RType::$RR;
+            pub const RTYPE: Type = Type::$RR;
 
             /// Returns the record type.
             ///
             /// This is a convenience method to obtain the instance record type.
             #[inline]
-            pub const fn rtype(&self) -> RType {
+            pub const fn rtype(&self) -> Type {
                 Self::RTYPE
             }
         }
@@ -24,7 +24,7 @@ macro_rules! rr_data {
         }
 
         impl crate::records::data::RData for $RR {
-            const RTYPE: RType = Self::RTYPE;
+            const RTYPE: Type = Self::RTYPE;
         }
     };
 }

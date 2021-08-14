@@ -2,7 +2,7 @@
 
 use crate::{
     constants::{
-        RClass, RType, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH,
+        RClass, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH,
         DOMAIN_NAME_MAX_POINTERS,
     },
     message::{MessageType, OperationCode, RecordClass, RecordType, ResponseCode},
@@ -19,8 +19,8 @@ pub enum Error {
     #[error("unknown record type: {0}")]
     UnknownRecordType(RecordType),
 
-    #[error("RTYPE {0} is not expected")]
-    UnexpectedRType(RType),
+    #[error("TYPE {0} is not expected")]
+    UnexpectedType(Type),
 
     #[error("unknown record class: {0}")]
     UnknownRecordClass(RecordClass),
@@ -98,8 +98,8 @@ pub enum Error {
     NoAnswer,
 
     /// Resolver API is supported for a subset of record types
-    #[error("RType {0} is not supported")]
-    UnsupportedRType(RType),
+    #[error("Type {0} is not supported")]
+    UnsupportedType(Type),
 
     /// Resolver API is supported for a subset of record classes
     #[error("RClass {0} is not supported")]

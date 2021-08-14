@@ -9,14 +9,14 @@ use std::{
 /// - [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
 /// - [RFC 3596 section 2.1](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.1) `(AAAA)`
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum RType {
+pub enum Type {
     /// a host address (IPv4)
     A = 1,
     /// an authoritative name server
     Ns = 2,
-    /// a mail destination (obsolete - use [`RType::Mx`])
+    /// a mail destination (obsolete - use [`Type::Mx`])
     Md = 3,
-    /// a mail forwarder (obsolete - use [`RType::Mx`])
+    /// a mail forwarder (obsolete - use [`Type::Mx`])
     Mf = 4,
     /// the canonical name of an alias
     Cname = 5,
@@ -48,90 +48,90 @@ pub enum RType {
     Axfr = 252,
     /// a request for mailbox-related records (MB, MG or MR)
     Mailb = 253,
-    /// a request for mail agent RRs (Obsolete - see [`RType::Mx`])
+    /// a request for mail agent RRs (Obsolete - see [`Type::Mx`])
     Maila = 254,
     /// a request for all records
     Any = 255,
 }
 
-impl RType {
+impl Type {
     /// Array of all discriminants in this enum.
     #[cfg(test)]
-    pub const VALUES: [RType; 21] = [
-        RType::A,
-        RType::Ns,
-        RType::Md,
-        RType::Mf,
-        RType::Cname,
-        RType::Soa,
-        RType::Mb,
-        RType::Mg,
-        RType::Mr,
-        RType::Null,
-        RType::Wks,
-        RType::Ptr,
-        RType::Hinfo,
-        RType::Minfo,
-        RType::Mx,
-        RType::Txt,
-        RType::Aaaa,
-        RType::Axfr,
-        RType::Mailb,
-        RType::Maila,
-        RType::Any,
+    pub const VALUES: [Type; 21] = [
+        Type::A,
+        Type::Ns,
+        Type::Md,
+        Type::Mf,
+        Type::Cname,
+        Type::Soa,
+        Type::Mb,
+        Type::Mg,
+        Type::Mr,
+        Type::Null,
+        Type::Wks,
+        Type::Ptr,
+        Type::Hinfo,
+        Type::Minfo,
+        Type::Mx,
+        Type::Txt,
+        Type::Aaaa,
+        Type::Axfr,
+        Type::Mailb,
+        Type::Maila,
+        Type::Any,
     ];
 
-    /// Converts `RType` to a static string.
+    /// Converts `self` to a static string.
     #[inline]
     pub fn to_str(self) -> &'static str {
         match self {
-            RType::A => "A",
-            RType::Ns => "NS",
-            RType::Md => "MD",
-            RType::Mf => "MF",
-            RType::Cname => "CNAME",
-            RType::Soa => "SOA",
-            RType::Mb => "MB",
-            RType::Mg => "MG",
-            RType::Mr => "MR",
-            RType::Null => "NULL",
-            RType::Wks => "WKS",
-            RType::Ptr => "PTR",
-            RType::Hinfo => "HINFO",
-            RType::Minfo => "MINFO",
-            RType::Mx => "MX",
-            RType::Txt => "TXT",
-            RType::Aaaa => "AAAA",
-            RType::Axfr => "AXFR",
-            RType::Mailb => "MAILB",
-            RType::Maila => "MAILA",
-            RType::Any => "ANY",
+            Type::A => "A",
+            Type::Ns => "NS",
+            Type::Md => "MD",
+            Type::Mf => "MF",
+            Type::Cname => "CNAME",
+            Type::Soa => "SOA",
+            Type::Mb => "MB",
+            Type::Mg => "MG",
+            Type::Mr => "MR",
+            Type::Null => "NULL",
+            Type::Wks => "WKS",
+            Type::Ptr => "PTR",
+            Type::Hinfo => "HINFO",
+            Type::Minfo => "MINFO",
+            Type::Mx => "MX",
+            Type::Txt => "TXT",
+            Type::Aaaa => "AAAA",
+            Type::Axfr => "AXFR",
+            Type::Mailb => "MAILB",
+            Type::Maila => "MAILA",
+            Type::Any => "ANY",
         }
     }
 
     pub(crate) fn try_from_u16(value: u16) -> Result<Self> {
         let me = match value {
-            1 => RType::A,
-            2 => RType::Ns,
-            3 => RType::Md,
-            4 => RType::Mf,
-            5 => RType::Cname,
-            6 => RType::Soa,
-            7 => RType::Mb,
-            8 => RType::Mg,
-            9 => RType::Mr,
-            10 => RType::Null,
-            11 => RType::Wks,
-            12 => RType::Ptr,
-            13 => RType::Hinfo,
-            14 => RType::Minfo,
-            15 => RType::Mx,
-            16 => RType::Txt,
-            28 => RType::Aaaa,
-            252 => RType::Axfr,
-            253 => RType::Mailb,
-            254 => RType::Maila,
-            255 => RType::Any,
+            1 => Type::A,
+            2 => Type::Ns,
+            3 => Type::Md,
+            4 => Type::Mf,
+            5 => Type::Cname,
+            6 => Type::Soa,
+            7 => Type::Mb,
+            8 => Type::Mg,
+            9 => Type::Mr,
+            10 => Type::Null,
+            11 => Type::Wks,
+            12 => Type::Ptr,
+            13 => Type::Hinfo,
+            14 => Type::Minfo,
+            15 => Type::Mx,
+            16 => Type::Txt,
+            28 => Type::Aaaa,
+            252 => Type::Axfr,
+            253 => Type::Mailb,
+            254 => Type::Maila,
+            255 => Type::Any,
             _ => {
                 return Err(Error::UnknownRecordType(value.into()));
             }
@@ -157,40 +157,40 @@ impl RType {
     }
 }
 
-impl FromStr for RType {
+impl FromStr for Type {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
         let rtype = match s {
-            "A" => RType::A,
-            "NS" => RType::Ns,
-            "MD" => RType::Md,
-            "MF" => RType::Mf,
-            "CNAME" => RType::Cname,
-            "SOA" => RType::Soa,
-            "MB" => RType::Mb,
-            "MG" => RType::Mg,
-            "MR" => RType::Mr,
-            "NULL" => RType::Null,
-            "WKS" => RType::Wks,
-            "PTR" => RType::Ptr,
-            "HINFO" => RType::Hinfo,
-            "MINFO" => RType::Minfo,
-            "MX" => RType::Mx,
-            "TXT" => RType::Txt,
-            "AAAA" => RType::Aaaa,
-            "AXFR" => RType::Axfr,
-            "MAILB" => RType::Mailb,
-            "MAILA" => RType::Maila,
-            "ANY" => RType::Any,
-            _ => return Err(Error::BadInput("unknown RType str")),
+            "A" => Type::A,
+            "NS" => Type::Ns,
+            "MD" => Type::Md,
+            "MF" => Type::Mf,
+            "CNAME" => Type::Cname,
+            "SOA" => Type::Soa,
+            "MB" => Type::Mb,
+            "MG" => Type::Mg,
+            "MR" => Type::Mr,
+            "NULL" => Type::Null,
+            "WKS" => Type::Wks,
+            "PTR" => Type::Ptr,
+            "HINFO" => Type::Hinfo,
+            "MINFO" => Type::Minfo,
+            "MX" => Type::Mx,
+            "TXT" => Type::Txt,
+            "AAAA" => Type::Aaaa,
+            "AXFR" => Type::Axfr,
+            "MAILB" => Type::Mailb,
+            "MAILA" => Type::Maila,
+            "ANY" => Type::Any,
+            _ => return Err(Error::BadInput("unknown Type str")),
         };
 
         Ok(rtype)
     }
 }
 
-impl Display for RType {
+impl Display for Type {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.pad(self.to_str())
     }
@@ -203,12 +203,12 @@ mod tests {
 
     #[test]
     fn test_try_from_u16() {
-        for qtype in RType::VALUES {
-            assert_eq!(qtype, RType::try_from_u16(qtype as u16).unwrap());
+        for qtype in Type::VALUES {
+            assert_eq!(qtype, Type::try_from_u16(qtype as u16).unwrap());
         }
 
         assert!(matches!(
-            RType::try_from_u16(0),
+            Type::try_from_u16(0),
             Err(Error::UnknownRecordType(RecordType { value: 0 }))
         ));
     }
@@ -217,29 +217,29 @@ mod tests {
     fn test_values() {
         let mut count = 0;
 
-        for qtype in RType::VALUES {
+        for qtype in Type::VALUES {
             let found = match qtype {
-                RType::A => true,
-                RType::Ns => true,
-                RType::Md => true,
-                RType::Mf => true,
-                RType::Cname => true,
-                RType::Soa => true,
-                RType::Mb => true,
-                RType::Mg => true,
-                RType::Mr => true,
-                RType::Null => true,
-                RType::Wks => true,
-                RType::Ptr => true,
-                RType::Hinfo => true,
-                RType::Minfo => true,
-                RType::Mx => true,
-                RType::Txt => true,
-                RType::Aaaa => true,
-                RType::Axfr => true,
-                RType::Mailb => true,
-                RType::Maila => true,
-                RType::Any => true,
+                Type::A => true,
+                Type::Ns => true,
+                Type::Md => true,
+                Type::Mf => true,
+                Type::Cname => true,
+                Type::Soa => true,
+                Type::Mb => true,
+                Type::Mg => true,
+                Type::Mr => true,
+                Type::Null => true,
+                Type::Wks => true,
+                Type::Ptr => true,
+                Type::Hinfo => true,
+                Type::Minfo => true,
+                Type::Mx => true,
+                Type::Txt => true,
+                Type::Aaaa => true,
+                Type::Axfr => true,
+                Type::Mailb => true,
+                Type::Maila => true,
+                Type::Any => true,
             };
 
             if found {
@@ -247,6 +247,6 @@ mod tests {
             }
         }
 
-        assert_eq!(count, RType::VALUES.len());
+        assert_eq!(count, Type::VALUES.len());
     }
 }

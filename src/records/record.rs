@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, RType},
+    constants::{RClass, Type},
     records::data::RecordData,
     InlineName,
 };
@@ -14,7 +14,7 @@ pub struct ResourceRecord {
     pub rclass: RClass,
 
     /// The record type.
-    pub rtype: RType,
+    pub rtype: Type,
 
     /// The time (in seconds) that the resource record may be cached before it should
     /// be discarded. Zero value means the record should not be cached.
