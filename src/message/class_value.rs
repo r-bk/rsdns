@@ -35,6 +35,7 @@ use std::{
 ///                  Err(Error::UnknownClass(rclass)) if rclass == u16::MAX));
 ///
 /// // Display implementation follows rfc3597
+/// assert_eq!(format!("{}", ClassValue::from(Class::In)).as_str(), "IN");
 /// assert_eq!(format!("{}", ClassValue::from(17)).as_str(), "CLASS17");
 /// ```
 ///
