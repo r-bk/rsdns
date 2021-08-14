@@ -23,11 +23,18 @@ use std::{
 /// ```rust
 /// # use rsdns::{constants::RType, message::RecordType, Error};
 /// # use std::convert::TryFrom;
+/// // RecordType implements From<RType>
 /// assert_eq!(RecordType::from(RType::Mx), RType::Mx);
 /// assert_eq!(RecordType::from(RType::Any), 255);
+///
+/// // RType implements TryFrom<RecordType>
 /// assert_eq!(RType::try_from(RecordType::from(255)).unwrap(), RType::Any);
+///
+/// // RecordType implements From<u16>
 /// assert!(matches!(RType::try_from(RecordType::from(u16::MAX)),
 ///                  Err(Error::UnknownRecordType(rtype)) if rtype == u16::MAX));
+///
+/// // Display implementation follows rfc3597
 /// assert_eq!(format!("{}", RecordType::from(29)).as_str(), "TYPE29");
 /// ```
 ///

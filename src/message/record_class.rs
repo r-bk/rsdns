@@ -23,11 +23,18 @@ use std::{
 /// ```rust
 /// # use rsdns::{constants::RClass, message::RecordClass, Error};
 /// # use std::convert::TryFrom;
+/// // RecordClass implements From<RClass>
 /// assert_eq!(RecordClass::from(RClass::In), RClass::In);
 /// assert_eq!(RecordClass::from(RClass::Any), 255);
+///
+/// // RClass implements TryFrom<RecordClass>
 /// assert_eq!(RClass::try_from(RecordClass::from(255)).unwrap(), RClass::Any);
+///
+/// // RecordClass implements From<u16>
 /// assert!(matches!(RClass::try_from(RecordClass::from(u16::MAX)),
 ///                  Err(Error::UnknownRecordClass(rclass)) if rclass == u16::MAX));
+///
+/// // Display implementation follows rfc3597
 /// assert_eq!(format!("{}", RecordClass::from(17)).as_str(), "CLASS17");
 /// ```
 ///

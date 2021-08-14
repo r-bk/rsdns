@@ -17,9 +17,14 @@ use std::{
 /// ```rust
 /// # use rsdns::{constants::RCode, message::ResponseCode, Error};
 /// # use std::convert::TryFrom;
+/// // ResponseCode implements From<RCode>
 /// assert_eq!(ResponseCode::from(RCode::NoError), RCode::NoError);
 /// assert_eq!(ResponseCode::from(RCode::NxDomain), 3);
+///
+/// // RCode implements TryFrom<ResponseCode>
 /// assert_eq!(RCode::try_from(ResponseCode::from(1)).unwrap(), RCode::FormErr);
+///
+/// // ResponseCode implements From<u16>
 /// assert!(matches!(RCode::try_from(ResponseCode::from(u16::MAX)),
 ///                  Err(Error::UnknownResponseCode(rcode)) if rcode == u16::MAX));
 /// ```

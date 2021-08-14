@@ -17,9 +17,14 @@ use std::{
 /// ```rust
 /// # use rsdns::{constants::OpCode, message::OperationCode, Error};
 /// # use std::convert::TryFrom;
+/// // OperationCode implements From<OpCode>
 /// assert_eq!(OperationCode::from(OpCode::Query), OpCode::Query);
 /// assert_eq!(OperationCode::from(OpCode::IQuery), 1);
+///
+/// // OpCode implements TryFrom<OperationCode>
 /// assert_eq!(OpCode::try_from(OperationCode::from(2)).unwrap(), OpCode::Status);
+///
+/// // OperationCode implements From<u16>
 /// assert!(matches!(OpCode::try_from(OperationCode::from(15)),
 ///                  Err(Error::UnknownOperationCode(opcode)) if opcode == 15));
 /// ```
