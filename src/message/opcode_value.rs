@@ -24,7 +24,7 @@ use std::{
 /// // OpCode implements TryFrom<OpCodeValue>
 /// assert_eq!(OpCode::try_from(OpCodeValue::from(2)).unwrap(), OpCode::Status);
 ///
-/// // OpCodeValue implements From<u16>
+/// // OpCodeValue implements From<u8>
 /// assert!(matches!(OpCode::try_from(OpCodeValue::from(15)),
 ///                  Err(Error::UnknownOpCode(opcode)) if opcode == 15));
 /// ```
