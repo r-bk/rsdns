@@ -68,7 +68,7 @@ impl Resolver {
     /// This method allocates.
     ///
     /// [`CNAME`]: crate::records::data::Cname
-    pub {{ as }} fn query_rrset<D: RData>(&mut self, qname: &str, rclass: Class) -> Result<RecordSet<D>> {
-        self.internal.query_rrset(qname, rclass){{ aw }}
+    pub {{ as }} fn query_rrset<D: RData>(&mut self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
+        self.internal.query_rrset(qname, qclass){{ aw }}
     }
 }

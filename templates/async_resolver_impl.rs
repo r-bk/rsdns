@@ -71,16 +71,16 @@ impl ResolverImpl {
         ctx.query_raw().await
     }
 
-    pub async fn query_rrset<D: RData>(&mut self, qname: &str, rclass: Class) -> Result<RecordSet<D>> {
-        if !rclass.is_data_class() {
-            return Err(Error::UnsupportedClass(rclass));
+    pub async fn query_rrset<D: RData>(&mut self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
+        if !qclass.is_data_class() {
+            return Err(Error::UnsupportedClass(qclass));
         }
 
         let capacity = u16::MAX as usize;
         let mut vec: Vec<u8> = Vec::with_capacity(capacity);
         unsafe { vec.set_len(capacity) };
 
-        let response_len = self.query_raw(qname, D::RTYPE, rclass, &mut vec).await?;
+        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut vec).await?;
         unsafe { vec.set_len(response_len) };
 
         RecordSet::from_msg(&vec)
