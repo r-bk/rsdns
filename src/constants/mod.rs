@@ -3,8 +3,8 @@
 mod opcode;
 pub use opcode::*;
 
-mod rclass;
-pub use rclass::*;
+mod class;
+pub use class::*;
 
 mod r#type;
 pub use r#type::*;
