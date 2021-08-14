@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, Type},
+    constants::{Class, Type},
     records::data::RecordData,
     InlineName,
 };
@@ -11,7 +11,7 @@ pub struct ResourceRecord {
     pub name: InlineName,
 
     /// The record class.
-    pub rclass: RClass,
+    pub rclass: Class,
 
     /// The record type.
     pub rtype: Type,

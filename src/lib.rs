@@ -66,7 +66,7 @@
 //! [`resolvers`]: crate::resolvers
 //!
 //! ```rust
-//! use rsdns::{constants::RClass, records::data::A};
+//! use rsdns::{constants::Class, records::data::A};
 //! # #[cfg(feature = "net-tokio")]
 //! use rsdns::resolvers::{tokio::Resolver, ResolverConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
@@ -83,7 +83,7 @@
 //!     let mut resolver = Resolver::new(config).await?;
 //!
 //!     // issue an A query
-//!     let rrset = resolver.query_rrset::<A>(qname, RClass::In).await?;
+//!     let rrset = resolver.query_rrset::<A>(qname, Class::In).await?;
 //!
 //!     Ok(rrset.rdata)
 //! }
@@ -94,7 +94,7 @@
 //! [`std::Resolver`]: crate::resolvers::std::Resolver
 //!
 //! ```rust
-//! use rsdns::{constants::RClass, records::data::A};
+//! use rsdns::{constants::Class, records::data::A};
 //! # #[cfg(feature = "net-std")]
 //! use rsdns::resolvers::{std::Resolver, ResolverConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
@@ -103,7 +103,7 @@
 //! fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
 //!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver))?;
-//!     let rrset = resolver.query_rrset::<A>(qname, RClass::In)?;
+//!     let rrset = resolver.query_rrset::<A>(qname, Class::In)?;
 //!     Ok(rrset.rdata)
 //! }
 //! ```

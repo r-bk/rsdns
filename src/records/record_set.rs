@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, RCode, RecordsSection, Type},
+    constants::{Class, RCode, RecordsSection, Type},
     message::{reader::MessageReader, MessageType},
     records::{
         data::{RData, RecordData},
@@ -21,7 +21,7 @@ pub struct RecordSet<D: RData> {
     pub name: Name,
 
     /// The class of records in this set.
-    pub rclass: RClass,
+    pub rclass: Class,
 
     /// The TTL of records in this set.
     ///
@@ -66,7 +66,7 @@ impl<D: RData> RecordSet<D> {
         let question = mr.question()?;
         let mut records = Self::read_answer_records(&mr)?;
 
-        let rclass = RClass::try_from(question.qclass)?;
+        let rclass = Class::try_from(question.qclass)?;
         let mut name = Name::from(&question.qname);
         let mut cnames = Vec::new();
 
@@ -101,7 +101,7 @@ impl<D: RData> RecordSet<D> {
     fn extract_rrset(
         records: &mut Vec<Option<ResourceRecord>>,
         name: &Name,
-        rclass: RClass,
+        rclass: Class,
     ) -> Result<Option<RecordSet<D>>> {
         let mut rrset = RecordSet {
             name: Name::default(),
@@ -131,7 +131,7 @@ impl<D: RData> RecordSet<D> {
     fn extract_cname(
         records: &mut Vec<Option<ResourceRecord>>,
         name: &Name,
-        rclass: RClass,
+        rclass: Class,
     ) -> Option<ResourceRecord> {
         #[allow(clippy::manual_flatten)]
         for o in records.iter_mut() {

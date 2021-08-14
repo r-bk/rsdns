@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::RClass,
+    constants::Class,
     Error, Result,
 };
 use std::{
@@ -12,26 +12,26 @@ use std::{
 /// Record class value.
 ///
 /// This struct represents an `RCLASS`[^rfc1][^rfc2] value.
-/// It may be a value still not supported by the [`RClass`] enumeration.
+/// It may be a value still not supported by the [`Class`] enumeration.
 ///
-/// [`RecordClass`] is interoperable with [`RClass`] and [`u16`].
+/// [`RecordClass`] is interoperable with [`Class`] and [`u16`].
 ///
 /// [`RecordClass`] follows [RFC 3597] to display unknown values.
 ///
 /// # Examples
 ///
 /// ```rust
-/// # use rsdns::{constants::RClass, message::RecordClass, Error};
+/// # use rsdns::{constants::Class, message::RecordClass, Error};
 /// # use std::convert::TryFrom;
-/// // RecordClass implements From<RClass>
-/// assert_eq!(RecordClass::from(RClass::In), RClass::In);
-/// assert_eq!(RecordClass::from(RClass::Any), 255);
+/// // RecordClass implements From<Class>
+/// assert_eq!(RecordClass::from(Class::In), Class::In);
+/// assert_eq!(RecordClass::from(Class::Any), 255);
 ///
-/// // RClass implements TryFrom<RecordClass>
-/// assert_eq!(RClass::try_from(RecordClass::from(255)).unwrap(), RClass::Any);
+/// // Class implements TryFrom<RecordClass>
+/// assert_eq!(Class::try_from(RecordClass::from(255)).unwrap(), Class::Any);
 ///
 /// // RecordClass implements From<u16>
-/// assert!(matches!(RClass::try_from(RecordClass::from(u16::MAX)),
+/// assert!(matches!(Class::try_from(RecordClass::from(u16::MAX)),
 ///                  Err(Error::UnknownRecordClass(rclass)) if rclass == u16::MAX));
 ///
 /// // Display implementation follows rfc3597
@@ -51,19 +51,19 @@ pub struct RecordClass {
 impl RecordClass {
     /// Converts `self` to a string.
     ///
-    /// If the value is not supported in the [`RClass`] enum, the string `"UNKNOWN_RCLASS"` is
+    /// If the value is not supported in the [`Class`] enum, the string `"UNKNOWN_CLASS"` is
     /// returned.
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::RClass, message::RecordClass};
-    /// assert_eq!(RecordClass::from(RClass::In).to_str(), "IN");
-    /// assert_eq!(RecordClass::from(u16::MAX).to_str(), "UNKNOWN_RCLASS");
+    /// # use rsdns::{constants::Class, message::RecordClass};
+    /// assert_eq!(RecordClass::from(Class::In).to_str(), "IN");
+    /// assert_eq!(RecordClass::from(u16::MAX).to_str(), "UNKNOWN_CLASS");
     /// ```
     pub fn to_str(self) -> &'static str {
-        match RClass::try_from_u16(self.value) {
+        match Class::try_from_u16(self.value) {
             Ok(rt) => rt.to_str(),
-            _ => "UNKNOWN_RCLASS",
+            _ => "UNKNOWN_CLASS",
         }
     }
 
@@ -73,9 +73,9 @@ impl RecordClass {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::RClass, message::RecordClass};
-    /// assert_eq!(RecordClass::from(RClass::In).is_data_class(), true);
-    /// assert_eq!(RecordClass::from(RClass::Any).is_data_class(), false);
+    /// # use rsdns::{constants::Class, message::RecordClass};
+    /// assert_eq!(RecordClass::from(Class::In).is_data_class(), true);
+    /// assert_eq!(RecordClass::from(Class::Any).is_data_class(), false);
     /// assert_eq!(RecordClass::from(u16::MAX).is_data_class(), false);
     /// ```
     #[inline]
@@ -89,9 +89,9 @@ impl RecordClass {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::RClass, message::RecordClass};
-    /// assert_eq!(RecordClass::from(RClass::Any).is_meta_class(), true);
-    /// assert_eq!(RecordClass::from(RClass::In).is_meta_class(), false);
+    /// # use rsdns::{constants::Class, message::RecordClass};
+    /// assert_eq!(RecordClass::from(Class::Any).is_meta_class(), true);
+    /// assert_eq!(RecordClass::from(Class::In).is_meta_class(), false);
     /// assert_eq!(RecordClass::from(u16::MAX).is_meta_class(), false);
     /// ```
     #[inline]
@@ -107,34 +107,34 @@ impl From<u16> for RecordClass {
     }
 }
 
-impl From<RClass> for RecordClass {
+impl From<Class> for RecordClass {
     #[inline]
-    fn from(rc: RClass) -> Self {
+    fn from(rc: Class) -> Self {
         Self { value: rc as u16 }
     }
 }
 
-impl TryFrom<RecordClass> for RClass {
+impl TryFrom<RecordClass> for Class {
     type Error = Error;
 
     #[inline]
     fn try_from(rc: RecordClass) -> Result<Self> {
-        RClass::try_from_u16(rc.value)
+        Class::try_from_u16(rc.value)
     }
 }
 
-impl TryFrom<&RecordClass> for RClass {
+impl TryFrom<&RecordClass> for Class {
     type Error = Error;
 
     #[inline]
     fn try_from(rc: &RecordClass) -> Result<Self> {
-        RClass::try_from_u16(rc.value)
+        Class::try_from_u16(rc.value)
     }
 }
 
 impl Display for RecordClass {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match RClass::try_from_u16(self.value) {
+        match Class::try_from_u16(self.value) {
             Ok(rc) => f.pad(rc.to_str())?,
             _ => {
                 use std::fmt::Write;
@@ -175,28 +175,28 @@ impl PartialOrd<RecordClass> for u16 {
     }
 }
 
-impl PartialEq<RClass> for RecordClass {
+impl PartialEq<Class> for RecordClass {
     #[inline]
-    fn eq(&self, other: &RClass) -> bool {
+    fn eq(&self, other: &Class) -> bool {
         self.value == *other as u16
     }
 }
 
-impl PartialEq<RecordClass> for RClass {
+impl PartialEq<RecordClass> for Class {
     #[inline]
     fn eq(&self, other: &RecordClass) -> bool {
         *self as u16 == other.value
     }
 }
 
-impl PartialOrd<RClass> for RecordClass {
+impl PartialOrd<Class> for RecordClass {
     #[inline]
-    fn partial_cmp(&self, other: &RClass) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &Class) -> Option<Ordering> {
         self.value.partial_cmp(&(*other as u16))
     }
 }
 
-impl PartialOrd<RecordClass> for RClass {
+impl PartialOrd<RecordClass> for Class {
     #[inline]
     fn partial_cmp(&self, other: &RecordClass) -> Option<Ordering> {
         (*self as u16).partial_cmp(&other.value)

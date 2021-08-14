@@ -1,5 +1,5 @@
 use crate::{
-  constants::{Type, RClass},
+  constants::{Type, Class},
   records::{data::RData, RecordSet},
   resolvers::{
       {{ crate_module_name }}::ResolverImpl,
@@ -51,7 +51,7 @@ impl Resolver {
     ///
     /// [`MessageReader`]: crate::message::reader::MessageReader
     #[inline(always)]
-    pub {{ as }} fn query_raw(&mut self, qname: &str, qtype: Type, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
+    pub {{ as }} fn query_raw(&mut self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
         self.internal.query_raw(qname, qtype, qclass, buf){{ aw }}
     }
 
@@ -68,7 +68,7 @@ impl Resolver {
     /// This method allocates.
     ///
     /// [`CNAME`]: crate::records::data::Cname
-    pub {{ as }} fn query_rrset<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
+    pub {{ as }} fn query_rrset<D: RData>(&mut self, qname: &str, rclass: Class) -> Result<RecordSet<D>> {
         self.internal.query_rrset(qname, rclass){{ aw }}
     }
 }

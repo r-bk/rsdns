@@ -1,5 +1,5 @@
 use crate::{
-    constants::{RClass, Type},
+    constants::{Class, Type},
     errors::{Error, Result},
     message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
@@ -17,7 +17,7 @@ type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
     qtype: Type,
-    qclass: RClass,
+    qclass: Class,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
     msg_id: u16,
@@ -48,7 +48,7 @@ impl ResolverImpl {
         &self,
         qname: &str,
         qtype: Type,
-        qclass: RClass,
+        qclass: Class,
         buf: &mut [u8],
     ) -> Result<usize> {
         let now = Instant::now();
@@ -68,9 +68,9 @@ impl ResolverImpl {
         ctx.query_raw()
     }
 
-    pub fn query_rrset<D: RData>(&self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
+    pub fn query_rrset<D: RData>(&self, qname: &str, rclass: Class) -> Result<RecordSet<D>> {
         if !rclass.is_data_class() {
-            return Err(Error::UnsupportedRClass(rclass));
+            return Err(Error::UnsupportedClass(rclass));
         }
         let capacity = u16::MAX as usize;
         let mut vec: Vec<u8> = Vec::with_capacity(capacity);

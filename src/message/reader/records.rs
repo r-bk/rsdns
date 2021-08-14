@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::{RClass, RecordsSection, Type},
+    constants::{Class, RecordsSection, Type},
     message::{reader::SectionTracker, Header, RecordClass, RecordType},
     records::{data::RecordData, ResourceRecord},
     Error, Result,
@@ -121,7 +121,7 @@ impl<'a> Records<'a> {
                 let ttl = self.cursor.u32_be()?;
                 let rdlen = self.cursor.u16_be()? as usize;
 
-                let rclass = match RClass::try_from(rclass) {
+                let rclass = match Class::try_from(rclass) {
                     Ok(rc) => rc,
                     _ => {
                         /* unsupported RCLASS */

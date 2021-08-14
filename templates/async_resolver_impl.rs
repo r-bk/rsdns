@@ -1,5 +1,5 @@
 use crate::{
-    constants::{Type, RClass},
+    constants::{Type, Class},
     message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
     resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
@@ -56,7 +56,7 @@ impl ResolverImpl {
         &self.config
     }
 
-    pub async fn query_raw(&mut self, qname: &str, qtype: Type, qclass: RClass, buf: &mut [u8]) -> Result<usize> {
+    pub async fn query_raw(&mut self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
         let mut ctx = ResolverCtx{
             qname,
             qtype,
@@ -71,9 +71,9 @@ impl ResolverImpl {
         ctx.query_raw().await
     }
 
-    pub async fn query_rrset<D: RData>(&mut self, qname: &str, rclass: RClass) -> Result<RecordSet<D>> {
+    pub async fn query_rrset<D: RData>(&mut self, qname: &str, rclass: Class) -> Result<RecordSet<D>> {
         if !rclass.is_data_class() {
-            return Err(Error::UnsupportedRClass(rclass));
+            return Err(Error::UnsupportedClass(rclass));
         }
 
         let capacity = u16::MAX as usize;
@@ -90,7 +90,7 @@ impl ResolverImpl {
 struct ResolverCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
     qtype: Type,
-    qclass: RClass,
+    qclass: Class,
     sock: &'b UdpSocket,
     config: &'c ResolverConfig,
     msg_id: u16,

@@ -2,8 +2,7 @@
 
 use crate::{
     constants::{
-        RClass, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH,
-        DOMAIN_NAME_MAX_POINTERS,
+        Class, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
     },
     message::{MessageType, OperationCode, RecordClass, RecordType, ResponseCode},
 };
@@ -102,8 +101,8 @@ pub enum Error {
     UnsupportedType(Type),
 
     /// Resolver API is supported for a subset of record classes
-    #[error("RClass {0} is not supported")]
-    UnsupportedRClass(RClass),
+    #[error("Class {0} is not supported")]
+    UnsupportedClass(Class),
 
     /// Generic timeout error
     #[error("operation timed-out")]
