@@ -16,6 +16,8 @@ use std::{
 ///
 /// [`RecordType`] is interoperable with [`RType`] and [`u16`].
 ///
+/// [`RecordType`] follows [RFC 3597] to display unknown values.
+///
 /// # Examples
 ///
 /// ```rust
@@ -26,9 +28,12 @@ use std::{
 /// assert_eq!(RType::try_from(RecordType::from(255)).unwrap(), RType::Any);
 /// assert!(matches!(RType::try_from(RecordType::from(u16::MAX)),
 ///                  Err(Error::UnrecognizedRecordType(rtype)) if rtype == u16::MAX));
+/// assert_eq!(format!("{}", RecordType::from(29)).as_str(), "TYPE29");
 /// ```
 ///
 /// [^rfc]: [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
+///
+/// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordType {
     pub(crate) value: u16,
@@ -126,7 +131,7 @@ impl Display for RecordType {
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "RTYPE({})", self.value)?;
+                write!(&mut buf, "TYPE{}", self.value)?;
                 f.pad(buf.as_str())?;
             }
         }

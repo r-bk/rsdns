@@ -16,6 +16,8 @@ use std::{
 ///
 /// [`RecordClass`] is interoperable with [`RClass`] and [`u16`].
 ///
+/// [`RecordClass`] follows [RFC 3597] to display unknown values.
+///
 /// # Examples
 ///
 /// ```rust
@@ -26,11 +28,14 @@ use std::{
 /// assert_eq!(RClass::try_from(RecordClass::from(255)).unwrap(), RClass::Any);
 /// assert!(matches!(RClass::try_from(RecordClass::from(u16::MAX)),
 ///                  Err(Error::UnrecognizedRecordClass(rclass)) if rclass == u16::MAX));
+/// assert_eq!(format!("{}", RecordClass::from(17)).as_str(), "CLASS17");
 /// ```
 ///
 /// [^rfc1]: [RFC 1035 section 3.2.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.4)
 ///
 /// [^rfc2]: [RFC 1035 section 3.2.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.5)
+///
+/// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
 pub struct RecordClass {
     pub(crate) value: u16,
@@ -127,7 +132,7 @@ impl Display for RecordClass {
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "RCLASS({})", self.value)?;
+                write!(&mut buf, "CLASS{}", self.value)?;
                 f.pad(buf.as_str())?;
             }
         }

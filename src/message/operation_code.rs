@@ -91,7 +91,7 @@ impl Display for OperationCode {
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "OPCODE({})", self.value)?;
+                write!(&mut buf, "OPCODE{}", self.value)?;
                 f.pad(buf.as_str())?;
             }
         }

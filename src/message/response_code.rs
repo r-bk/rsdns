@@ -81,7 +81,7 @@ impl Display for ResponseCode {
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "RCODE({})", self.value)?;
+                write!(&mut buf, "RCODE{}", self.value)?;
                 f.pad(buf.as_str())?;
             }
         }
