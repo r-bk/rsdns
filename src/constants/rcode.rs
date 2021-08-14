@@ -53,7 +53,7 @@ impl RCode {
             3 => RCode::NxDomain,
             4 => RCode::NotImp,
             5 => RCode::Refused,
-            _ => return Err(Error::UnrecognizedResponseCode(value.into())),
+            _ => return Err(Error::UnknownResponseCode(value.into())),
         };
 
         Ok(me)
@@ -79,7 +79,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from_u16(128),
-            Err(Error::UnrecognizedResponseCode(ResponseCode { value: 128 }))
+            Err(Error::UnknownResponseCode(ResponseCode { value: 128 }))
         ));
     }
 

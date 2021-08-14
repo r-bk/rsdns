@@ -58,7 +58,7 @@ impl RClass {
             3 => RClass::Ch,
             4 => RClass::Hs,
             255 => RClass::Any,
-            _ => return Err(Error::UnrecognizedRecordClass(value.into())),
+            _ => return Err(Error::UnknownRecordClass(value.into())),
         };
 
         Ok(me)
@@ -84,7 +84,7 @@ mod tests {
 
         assert!(matches!(
             RClass::try_from_u16(0),
-            Err(Error::UnrecognizedRecordClass(RecordClass { value: 0 }))
+            Err(Error::UnknownRecordClass(RecordClass { value: 0 }))
         ));
     }
 

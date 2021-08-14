@@ -21,7 +21,7 @@ use std::{
 /// assert_eq!(OperationCode::from(OpCode::IQuery), 1);
 /// assert_eq!(OpCode::try_from(OperationCode::from(2)).unwrap(), OpCode::Status);
 /// assert!(matches!(OpCode::try_from(OperationCode::from(15)),
-///                  Err(Error::UnrecognizedOperationCode(opcode)) if opcode == 15));
+///                  Err(Error::UnknownOperationCode(opcode)) if opcode == 15));
 /// ```
 ///
 /// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
@@ -33,7 +33,7 @@ pub struct OperationCode {
 impl OperationCode {
     /// Converts `self` to a string.
     ///
-    /// If the value is not supported in the [`OpCode`] enum, the string `"UNRECOGNIZED_OPCODE"` is
+    /// If the value is not supported in the [`OpCode`] enum, the string `"UNKNOWN_OPCODE"` is
     /// returned.
     ///
     /// # Examples
@@ -41,13 +41,13 @@ impl OperationCode {
     /// ```rust
     /// # use rsdns::{constants::OpCode, message::OperationCode};
     /// assert_eq!(OperationCode::from(OpCode::IQuery).to_str(), "IQUERY");
-    /// assert_eq!(OperationCode::from(15).to_str(), "UNRECOGNIZED_OPCODE");
+    /// assert_eq!(OperationCode::from(15).to_str(), "UNKNOWN_OPCODE");
     /// ```
     #[inline]
     pub fn to_str(self) -> &'static str {
         match OpCode::try_from(self) {
             Ok(c) => c.to_str(),
-            _ => "UNRECOGNIZED_OPCODE",
+            _ => "UNKNOWN_OPCODE",
         }
     }
 }

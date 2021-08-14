@@ -16,20 +16,20 @@ pub enum Error {
     #[error("io error")]
     IoError(#[from] std::io::Error),
 
-    #[error("unrecognized record type: {0}")]
-    UnrecognizedRecordType(RecordType),
+    #[error("unknown record type: {0}")]
+    UnknownRecordType(RecordType),
 
     #[error("RTYPE {0} is not expected")]
     UnexpectedRType(RType),
 
-    #[error("reserved resource record class: {0}")]
-    UnrecognizedRecordClass(RecordClass),
+    #[error("unknown record class: {0}")]
+    UnknownRecordClass(RecordClass),
 
-    #[error("unrecognized operation code: {0}")]
-    UnrecognizedOperationCode(OperationCode),
+    #[error("unknown operation code: {0}")]
+    UnknownOperationCode(OperationCode),
 
-    #[error("reserved response code: {0}")]
-    UnrecognizedResponseCode(ResponseCode),
+    #[error("unknown response code: {0}")]
+    UnknownResponseCode(ResponseCode),
 
     #[error("{0}: {1:#02X}")]
     DomainNameLabelInvalidChar(&'static str, u8),

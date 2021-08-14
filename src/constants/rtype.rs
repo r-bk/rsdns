@@ -133,7 +133,7 @@ impl RType {
             254 => RType::Maila,
             255 => RType::Any,
             _ => {
-                return Err(Error::UnrecognizedRecordType(value.into()));
+                return Err(Error::UnknownRecordType(value.into()));
             }
         };
 
@@ -183,7 +183,7 @@ impl FromStr for RType {
             "MAILB" => RType::Mailb,
             "MAILA" => RType::Maila,
             "ANY" => RType::Any,
-            _ => return Err(Error::BadInput("unrecognized RType str")),
+            _ => return Err(Error::BadInput("unknown RType str")),
         };
 
         Ok(rtype)
@@ -209,7 +209,7 @@ mod tests {
 
         assert!(matches!(
             RType::try_from_u16(0),
-            Err(Error::UnrecognizedRecordType(RecordType { value: 0 }))
+            Err(Error::UnknownRecordType(RecordType { value: 0 }))
         ));
     }
 

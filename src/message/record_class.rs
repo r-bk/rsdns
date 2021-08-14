@@ -27,7 +27,7 @@ use std::{
 /// assert_eq!(RecordClass::from(RClass::Any), 255);
 /// assert_eq!(RClass::try_from(RecordClass::from(255)).unwrap(), RClass::Any);
 /// assert!(matches!(RClass::try_from(RecordClass::from(u16::MAX)),
-///                  Err(Error::UnrecognizedRecordClass(rclass)) if rclass == u16::MAX));
+///                  Err(Error::UnknownRecordClass(rclass)) if rclass == u16::MAX));
 /// assert_eq!(format!("{}", RecordClass::from(17)).as_str(), "CLASS17");
 /// ```
 ///
@@ -44,19 +44,19 @@ pub struct RecordClass {
 impl RecordClass {
     /// Converts `self` to a string.
     ///
-    /// If the value is not supported in the [`RClass`] enum, the string `"UNRECOGNIZED_RCLASS"` is
+    /// If the value is not supported in the [`RClass`] enum, the string `"UNKNOWN_RCLASS"` is
     /// returned.
     ///
     /// # Examples
     /// ```rust
     /// # use rsdns::{constants::RClass, message::RecordClass};
     /// assert_eq!(RecordClass::from(RClass::In).to_str(), "IN");
-    /// assert_eq!(RecordClass::from(u16::MAX).to_str(), "UNRECOGNIZED_RCLASS");
+    /// assert_eq!(RecordClass::from(u16::MAX).to_str(), "UNKNOWN_RCLASS");
     /// ```
     pub fn to_str(self) -> &'static str {
         match RClass::try_from_u16(self.value) {
             Ok(rt) => rt.to_str(),
-            _ => "UNRECOGNIZED_RCLASS",
+            _ => "UNKNOWN_RCLASS",
         }
     }
 

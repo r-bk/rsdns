@@ -33,7 +33,7 @@ impl OpCode {
             0 => OpCode::Query,
             1 => OpCode::IQuery,
             2 => OpCode::Status,
-            _ => return Err(Error::UnrecognizedOperationCode(value.into())),
+            _ => return Err(Error::UnknownOperationCode(value.into())),
         };
         Ok(me)
     }
@@ -58,9 +58,7 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from_u8(128),
-            Err(Error::UnrecognizedOperationCode(OperationCode {
-                value: 128
-            }))
+            Err(Error::UnknownOperationCode(OperationCode { value: 128 }))
         ));
     }
 

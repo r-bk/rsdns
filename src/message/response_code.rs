@@ -21,7 +21,7 @@ use std::{
 /// assert_eq!(ResponseCode::from(RCode::NxDomain), 3);
 /// assert_eq!(RCode::try_from(ResponseCode::from(1)).unwrap(), RCode::FormErr);
 /// assert!(matches!(RCode::try_from(ResponseCode::from(u16::MAX)),
-///                  Err(Error::UnrecognizedResponseCode(rcode)) if rcode == u16::MAX));
+///                  Err(Error::UnknownResponseCode(rcode)) if rcode == u16::MAX));
 /// ```
 ///
 /// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
@@ -33,7 +33,7 @@ pub struct ResponseCode {
 impl ResponseCode {
     /// Converts `self` to a string.
     ///
-    /// If the value is not supported in the [`RCode`] enum, the string `"UNRECOGNIZED_RCODE"` is
+    /// If the value is not supported in the [`RCode`] enum, the string `"UNKNOWN_RCODE"` is
     /// returned.
     ///
     /// # Examples
@@ -41,12 +41,12 @@ impl ResponseCode {
     /// ```rust
     /// # use rsdns::{constants::RCode, message::ResponseCode};
     /// assert_eq!(ResponseCode::from(RCode::NxDomain).to_str(), "NXDOMAIN");
-    /// assert_eq!(ResponseCode::from(u16::MAX).to_str(), "UNRECOGNIZED_RCODE");
+    /// assert_eq!(ResponseCode::from(u16::MAX).to_str(), "UNKNOWN_RCODE");
     /// ```
     pub fn to_str(self) -> &'static str {
         match RCode::try_from_u16(self.value) {
             Ok(rc) => rc.to_str(),
-            _ => "UNRECOGNIZED_RCODE",
+            _ => "UNKNOWN_RCODE",
         }
     }
 }

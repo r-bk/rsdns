@@ -27,7 +27,7 @@ use std::{
 /// assert_eq!(RecordType::from(RType::Any), 255);
 /// assert_eq!(RType::try_from(RecordType::from(255)).unwrap(), RType::Any);
 /// assert!(matches!(RType::try_from(RecordType::from(u16::MAX)),
-///                  Err(Error::UnrecognizedRecordType(rtype)) if rtype == u16::MAX));
+///                  Err(Error::UnknownRecordType(rtype)) if rtype == u16::MAX));
 /// assert_eq!(format!("{}", RecordType::from(29)).as_str(), "TYPE29");
 /// ```
 ///
@@ -42,19 +42,19 @@ pub struct RecordType {
 impl RecordType {
     /// Converts `self` to a string.
     ///
-    /// If the value is not supported in the [`RType`] enum, the string `"UNRECOGNIZED_RTYPE"` is
+    /// If the value is not supported in the [`RType`] enum, the string `"UNKNOWN_RTYPE"` is
     /// returned.
     ///
     /// # Examples
     /// ```rust
     /// # use rsdns::{constants::RType, message::RecordType};
     /// assert_eq!(RecordType::from(RType::Cname).to_str(), "CNAME");
-    /// assert_eq!(RecordType::from(u16::MAX).to_str(), "UNRECOGNIZED_RTYPE");
+    /// assert_eq!(RecordType::from(u16::MAX).to_str(), "UNKNOWN_RTYPE");
     /// ```
     pub fn to_str(self) -> &'static str {
         match RType::try_from(self) {
             Ok(rt) => rt.to_str(),
-            _ => "UNRECOGNIZED_RTYPE",
+            _ => "UNKNOWN_RTYPE",
         }
     }
 
