@@ -3,6 +3,9 @@
 **rsnds** is a **R**u**s**t lib crate implementing a **DNS** **S**tub **R**esolver
 ([RFC 1034](https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1)).
 
+Its main goal is to query the Domain Name System and return the results in easily
+consumable Rust types.
+
 *rsdns* strives to be simple and fast. To be simple *rsdns* keeps a minimal API.
 To be fast *rsdns* aims to allow DNS message parsing with zero memory allocations at runtime.
 
