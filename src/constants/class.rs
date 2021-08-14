@@ -1,4 +1,4 @@
-use crate::{message::RecordClass, Error, Result};
+use crate::{message::ClassValue, Error, Result};
 use std::fmt::{self, Display, Formatter};
 
 /// Record classes.
@@ -40,7 +40,7 @@ impl Class {
     /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
     #[inline]
     pub fn is_data_class(self) -> bool {
-        RecordClass::from(self).is_data_class()
+        ClassValue::from(self).is_data_class()
     }
 
     /// Checks if this a question or meta-class.
@@ -48,7 +48,7 @@ impl Class {
     /// [RFC 6895 section 3.2](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.2)
     #[inline]
     pub fn is_meta_class(self) -> bool {
-        RecordClass::from(self).is_meta_class()
+        ClassValue::from(self).is_meta_class()
     }
 
     pub(crate) fn try_from_u16(value: u16) -> Result<Self> {
@@ -58,7 +58,7 @@ impl Class {
             3 => Class::Ch,
             4 => Class::Hs,
             255 => Class::Any,
-            _ => return Err(Error::UnknownRecordClass(value.into())),
+            _ => return Err(Error::UnknownClass(value.into())),
         };
 
         Ok(me)
@@ -74,7 +74,7 @@ impl Display for Class {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::RecordClass;
+    use crate::message::ClassValue;
 
     #[test]
     fn test_try_from_u16() {
@@ -84,7 +84,7 @@ mod tests {
 
         assert!(matches!(
             Class::try_from_u16(0),
-            Err(Error::UnknownRecordClass(RecordClass { value: 0 }))
+            Err(Error::UnknownClass(ClassValue { value: 0 }))
         ));
     }
 

@@ -29,8 +29,8 @@ pub mod reader;
 mod response_code;
 pub use response_code::*;
 
-mod record_class;
-pub use record_class::*;
+mod class_value;
+pub use class_value::*;
 
 mod type_value;
 pub use type_value::*;

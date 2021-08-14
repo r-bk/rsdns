@@ -49,7 +49,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        message::{RecordClass, TypeValue},
+        message::{ClassValue, TypeValue},
         InlineName,
     };
     use std::convert::TryFrom;
@@ -73,7 +73,7 @@ mod tests {
         let header: Header = c.read().unwrap();
         let dn: InlineName = c.read().unwrap();
         let qt = Type::try_from(TypeValue::from(c.u16_be().unwrap())).unwrap();
-        let qc = Class::try_from(RecordClass::from(c.u16_be().unwrap())).unwrap();
+        let qc = Class::try_from(ClassValue::from(c.u16_be().unwrap())).unwrap();
 
         assert_eq!(size, 34);
         assert!(header.flags.recursion_desired());
