@@ -35,6 +35,7 @@ use std::{
 ///                  Err(Error::UnknownType(rtype)) if rtype == u16::MAX));
 ///
 /// // Display implementation follows rfc3597
+/// assert_eq!(format!("{}", TypeValue::from(Type::Txt)).as_str(), "TXT");
 /// assert_eq!(format!("{}", TypeValue::from(29)).as_str(), "TYPE29");
 /// ```
 ///
