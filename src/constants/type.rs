@@ -1,4 +1,4 @@
-use crate::{message::RecordType, Error, Result};
+use crate::{message::TypeValue, Error, Result};
 use std::{
     fmt::{self, Display, Formatter},
     str::FromStr,
@@ -133,7 +133,7 @@ impl Type {
             254 => Type::Maila,
             255 => Type::Any,
             _ => {
-                return Err(Error::UnknownRecordType(value.into()));
+                return Err(Error::UnknownType(value.into()));
             }
         };
 
@@ -145,7 +145,7 @@ impl Type {
     /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
     #[inline]
     pub fn is_data_type(self) -> bool {
-        RecordType::from(self).is_data_type()
+        TypeValue::from(self).is_data_type()
     }
 
     /// Checks if this is a question or meta-type.
@@ -153,7 +153,7 @@ impl Type {
     /// [RFC 6895 section 3.1](https://www.rfc-editor.org/rfc/rfc6895.html#section-3.1)
     #[inline]
     pub fn is_meta_type(self) -> bool {
-        RecordType::from(self).is_meta_type()
+        TypeValue::from(self).is_meta_type()
     }
 }
 
@@ -199,7 +199,7 @@ impl Display for Type {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::RecordType;
+    use crate::message::TypeValue;
 
     #[test]
     fn test_try_from_u16() {
@@ -209,7 +209,7 @@ mod tests {
 
         assert!(matches!(
             Type::try_from_u16(0),
-            Err(Error::UnknownRecordType(RecordType { value: 0 }))
+            Err(Error::UnknownType(TypeValue { value: 0 }))
         ));
     }
 

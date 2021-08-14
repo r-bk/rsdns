@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    message::{RecordClass, RecordType},
+    message::{RecordClass, TypeValue},
     InlineName, Result,
 };
 
@@ -14,7 +14,7 @@ pub struct Question {
     /// Domain name to query.
     pub qname: InlineName,
     /// Question type.
-    pub qtype: RecordType,
+    pub qtype: TypeValue,
     /// Question class.
     pub qclass: RecordClass,
 }

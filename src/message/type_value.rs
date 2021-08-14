@@ -14,39 +14,39 @@ use std::{
 /// This struct represents an `RTYPE`[^rfc] value.
 /// It may be a value still not supported by the [`Type`] enumeration.
 ///
-/// [`RecordType`] is interoperable with [`Type`] and [`u16`].
+/// [`TypeValue`] is interoperable with [`Type`] and [`u16`].
 ///
-/// [`RecordType`] follows [RFC 3597] to display unknown values.
+/// [`TypeValue`] follows [RFC 3597] to display unknown values.
 ///
 /// # Examples
 ///
 /// ```rust
-/// # use rsdns::{constants::Type, message::RecordType, Error};
+/// # use rsdns::{constants::Type, message::TypeValue, Error};
 /// # use std::convert::TryFrom;
-/// // RecordType implements From<Type>
-/// assert_eq!(RecordType::from(Type::Mx), Type::Mx);
-/// assert_eq!(RecordType::from(Type::Any), 255);
+/// // TypeValue implements From<Type>
+/// assert_eq!(TypeValue::from(Type::Mx), Type::Mx);
+/// assert_eq!(TypeValue::from(Type::Any), 255);
 ///
-/// // Type implements TryFrom<RecordType>
-/// assert_eq!(Type::try_from(RecordType::from(255)).unwrap(), Type::Any);
+/// // Type implements TryFrom<TypeValue>
+/// assert_eq!(Type::try_from(TypeValue::from(255)).unwrap(), Type::Any);
 ///
-/// // RecordType implements From<u16>
-/// assert!(matches!(Type::try_from(RecordType::from(u16::MAX)),
-///                  Err(Error::UnknownRecordType(rtype)) if rtype == u16::MAX));
+/// // TypeValue implements From<u16>
+/// assert!(matches!(Type::try_from(TypeValue::from(u16::MAX)),
+///                  Err(Error::UnknownType(rtype)) if rtype == u16::MAX));
 ///
 /// // Display implementation follows rfc3597
-/// assert_eq!(format!("{}", RecordType::from(29)).as_str(), "TYPE29");
+/// assert_eq!(format!("{}", TypeValue::from(29)).as_str(), "TYPE29");
 /// ```
 ///
 /// [^rfc]: [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
 ///
 /// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
-pub struct RecordType {
+pub struct TypeValue {
     pub(crate) value: u16,
 }
 
-impl RecordType {
+impl TypeValue {
     /// Converts `self` to a string.
     ///
     /// If the value is not supported in the [`Type`] enum, the string `"UNKNOWN_TYPE"` is
@@ -54,9 +54,9 @@ impl RecordType {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::Type, message::RecordType};
-    /// assert_eq!(RecordType::from(Type::Cname).to_str(), "CNAME");
-    /// assert_eq!(RecordType::from(u16::MAX).to_str(), "UNKNOWN_TYPE");
+    /// # use rsdns::{constants::Type, message::TypeValue};
+    /// assert_eq!(TypeValue::from(Type::Cname).to_str(), "CNAME");
+    /// assert_eq!(TypeValue::from(u16::MAX).to_str(), "UNKNOWN_TYPE");
     /// ```
     pub fn to_str(self) -> &'static str {
         match Type::try_from(self) {
@@ -71,10 +71,10 @@ impl RecordType {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::Type, message::RecordType};
-    /// assert_eq!(RecordType::from(Type::A).is_data_type(), true);
-    /// assert_eq!(RecordType::from(Type::Any).is_data_type(), false);
-    /// assert_eq!(RecordType::from(u16::MAX).is_data_type(), false);
+    /// # use rsdns::{constants::Type, message::TypeValue};
+    /// assert_eq!(TypeValue::from(Type::A).is_data_type(), true);
+    /// assert_eq!(TypeValue::from(Type::Any).is_data_type(), false);
+    /// assert_eq!(TypeValue::from(u16::MAX).is_data_type(), false);
     /// ```
     #[inline]
     pub fn is_data_type(self) -> bool {
@@ -88,10 +88,10 @@ impl RecordType {
     ///
     /// # Examples
     /// ```rust
-    /// # use rsdns::{constants::Type, message::RecordType};
-    /// assert_eq!(RecordType::from(Type::Any).is_meta_type(), true);
-    /// assert_eq!(RecordType::from(Type::A).is_meta_type(), false);
-    /// assert_eq!(RecordType::from(u16::MAX).is_meta_type(), false);
+    /// # use rsdns::{constants::Type, message::TypeValue};
+    /// assert_eq!(TypeValue::from(Type::Any).is_meta_type(), true);
+    /// assert_eq!(TypeValue::from(Type::A).is_meta_type(), false);
+    /// assert_eq!(TypeValue::from(u16::MAX).is_meta_type(), false);
     /// ```
     #[inline]
     pub fn is_meta_type(self) -> bool {
@@ -99,39 +99,39 @@ impl RecordType {
     }
 }
 
-impl From<u16> for RecordType {
+impl From<u16> for TypeValue {
     #[inline]
     fn from(value: u16) -> Self {
         Self { value }
     }
 }
 
-impl From<Type> for RecordType {
+impl From<Type> for TypeValue {
     #[inline]
     fn from(rt: Type) -> Self {
         Self { value: rt as u16 }
     }
 }
 
-impl TryFrom<RecordType> for Type {
+impl TryFrom<TypeValue> for Type {
     type Error = Error;
 
     #[inline]
-    fn try_from(rt: RecordType) -> Result<Self> {
+    fn try_from(rt: TypeValue) -> Result<Self> {
         Type::try_from_u16(rt.value)
     }
 }
 
-impl TryFrom<&RecordType> for Type {
+impl TryFrom<&TypeValue> for Type {
     type Error = Error;
 
     #[inline]
-    fn try_from(rtype: &RecordType) -> Result<Self> {
+    fn try_from(rtype: &TypeValue) -> Result<Self> {
         Self::try_from_u16(rtype.value)
     }
 }
 
-impl Display for RecordType {
+impl Display for TypeValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match Type::try_from(self) {
             Ok(rt) => f.pad(rt.to_str())?,
@@ -146,65 +146,65 @@ impl Display for RecordType {
     }
 }
 
-impl PartialEq<u16> for RecordType {
+impl PartialEq<u16> for TypeValue {
     #[inline]
     fn eq(&self, other: &u16) -> bool {
         self.value == *other
     }
 }
 
-impl PartialEq<RecordType> for u16 {
+impl PartialEq<TypeValue> for u16 {
     #[inline]
-    fn eq(&self, other: &RecordType) -> bool {
+    fn eq(&self, other: &TypeValue) -> bool {
         *self == other.value
     }
 }
 
-impl PartialOrd<u16> for RecordType {
+impl PartialOrd<u16> for TypeValue {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
         self.value.partial_cmp(other)
     }
 }
 
-impl PartialOrd<RecordType> for u16 {
+impl PartialOrd<TypeValue> for u16 {
     #[inline]
-    fn partial_cmp(&self, other: &RecordType) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &TypeValue) -> Option<Ordering> {
         self.partial_cmp(&other.value)
     }
 }
 
-impl PartialEq<Type> for RecordType {
+impl PartialEq<Type> for TypeValue {
     #[inline]
     fn eq(&self, other: &Type) -> bool {
         self.value == *other as u16
     }
 }
 
-impl PartialEq<RecordType> for Type {
+impl PartialEq<TypeValue> for Type {
     #[inline]
-    fn eq(&self, other: &RecordType) -> bool {
+    fn eq(&self, other: &TypeValue) -> bool {
         *self as u16 == other.value
     }
 }
 
-impl PartialOrd<Type> for RecordType {
+impl PartialOrd<Type> for TypeValue {
     #[inline]
     fn partial_cmp(&self, other: &Type) -> Option<Ordering> {
         self.value.partial_cmp(&(*other as u16))
     }
 }
 
-impl PartialOrd<RecordType> for Type {
+impl PartialOrd<TypeValue> for Type {
     #[inline]
-    fn partial_cmp(&self, other: &RecordType) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &TypeValue) -> Option<Ordering> {
         (*self as u16).partial_cmp(&other.value)
     }
 }
 
-impl Reader<RecordType> for Cursor<'_> {
+impl Reader<TypeValue> for Cursor<'_> {
     #[inline]
-    fn read(&mut self) -> Result<RecordType> {
-        Ok(RecordType::from(self.u16_be()?))
+    fn read(&mut self) -> Result<TypeValue> {
+        Ok(TypeValue::from(self.u16_be()?))
     }
 }

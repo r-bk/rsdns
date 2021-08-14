@@ -32,5 +32,5 @@ pub use response_code::*;
 mod record_class;
 pub use record_class::*;
 
-mod record_type;
-pub use record_type::*;
+mod type_value;
+pub use type_value::*;
