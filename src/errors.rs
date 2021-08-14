@@ -4,7 +4,7 @@ use crate::{
     constants::{
         Class, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
     },
-    message::{ClassValue, MessageType, OperationCode, RCodeValue, TypeValue},
+    message::{ClassValue, MessageType, OpCodeValue, RCodeValue, TypeValue},
 };
 
 /// Errors returned by [rsdns](crate).
@@ -25,7 +25,7 @@ pub enum Error {
     UnknownClass(ClassValue),
 
     #[error("unknown operation code: {0}")]
-    UnknownOperationCode(OperationCode),
+    UnknownOpCode(OpCodeValue),
 
     #[error("unknown response code: {0}")]
     UnknownRCode(RCodeValue),

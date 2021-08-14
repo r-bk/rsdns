@@ -10,32 +10,32 @@ use std::{
 /// This struct represents an `OPCODE`[^rfc] value.
 /// It may be a value still not supported by the [`OpCode`] enumeration.
 ///
-/// [`OperationCode`] is interoperable with [`OpCode`] and [`u8`].
+/// [`OpCodeValue`] is interoperable with [`OpCode`] and [`u8`].
 ///
 /// # Examples
 ///
 /// ```rust
-/// # use rsdns::{constants::OpCode, message::OperationCode, Error};
+/// # use rsdns::{constants::OpCode, message::OpCodeValue, Error};
 /// # use std::convert::TryFrom;
-/// // OperationCode implements From<OpCode>
-/// assert_eq!(OperationCode::from(OpCode::Query), OpCode::Query);
-/// assert_eq!(OperationCode::from(OpCode::IQuery), 1);
+/// // OpCodeValue implements From<OpCode>
+/// assert_eq!(OpCodeValue::from(OpCode::Query), OpCode::Query);
+/// assert_eq!(OpCodeValue::from(OpCode::IQuery), 1);
 ///
-/// // OpCode implements TryFrom<OperationCode>
-/// assert_eq!(OpCode::try_from(OperationCode::from(2)).unwrap(), OpCode::Status);
+/// // OpCode implements TryFrom<OpCodeValue>
+/// assert_eq!(OpCode::try_from(OpCodeValue::from(2)).unwrap(), OpCode::Status);
 ///
-/// // OperationCode implements From<u16>
-/// assert!(matches!(OpCode::try_from(OperationCode::from(15)),
-///                  Err(Error::UnknownOperationCode(opcode)) if opcode == 15));
+/// // OpCodeValue implements From<u16>
+/// assert!(matches!(OpCode::try_from(OpCodeValue::from(15)),
+///                  Err(Error::UnknownOpCode(opcode)) if opcode == 15));
 /// ```
 ///
 /// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Debug, Default, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub struct OperationCode {
+pub struct OpCodeValue {
     pub(crate) value: u8,
 }
 
-impl OperationCode {
+impl OpCodeValue {
     /// Converts `self` to a string.
     ///
     /// If the value is not supported in the [`OpCode`] enum, the string `"UNKNOWN_OPCODE"` is
@@ -44,9 +44,9 @@ impl OperationCode {
     /// # Examples
     ///
     /// ```rust
-    /// # use rsdns::{constants::OpCode, message::OperationCode};
-    /// assert_eq!(OperationCode::from(OpCode::IQuery).to_str(), "IQUERY");
-    /// assert_eq!(OperationCode::from(15).to_str(), "UNKNOWN_OPCODE");
+    /// # use rsdns::{constants::OpCode, message::OpCodeValue};
+    /// assert_eq!(OpCodeValue::from(OpCode::IQuery).to_str(), "IQUERY");
+    /// assert_eq!(OpCodeValue::from(15).to_str(), "UNKNOWN_OPCODE");
     /// ```
     #[inline]
     pub fn to_str(self) -> &'static str {
@@ -57,39 +57,39 @@ impl OperationCode {
     }
 }
 
-impl From<u8> for OperationCode {
+impl From<u8> for OpCodeValue {
     #[inline]
     fn from(value: u8) -> Self {
-        OperationCode { value }
+        OpCodeValue { value }
     }
 }
 
-impl From<OperationCode> for u8 {
+impl From<OpCodeValue> for u8 {
     #[inline]
-    fn from(opcode: OperationCode) -> Self {
+    fn from(opcode: OpCodeValue) -> Self {
         opcode.value
     }
 }
 
-impl From<OpCode> for OperationCode {
+impl From<OpCode> for OpCodeValue {
     #[inline]
     fn from(opcode: OpCode) -> Self {
-        OperationCode {
+        OpCodeValue {
             value: opcode as u8,
         }
     }
 }
 
-impl TryFrom<OperationCode> for OpCode {
+impl TryFrom<OpCodeValue> for OpCode {
     type Error = Error;
 
     #[inline]
-    fn try_from(value: OperationCode) -> Result<Self, Self::Error> {
+    fn try_from(value: OpCodeValue) -> Result<Self, Self::Error> {
         OpCode::try_from_u8(value.value)
     }
 }
 
-impl Display for OperationCode {
+impl Display for OpCodeValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match OpCode::try_from(*self) {
             Ok(c) => f.pad(c.to_str())?,
@@ -104,58 +104,58 @@ impl Display for OperationCode {
     }
 }
 
-impl PartialEq<u8> for OperationCode {
+impl PartialEq<u8> for OpCodeValue {
     #[inline]
     fn eq(&self, other: &u8) -> bool {
         self.value == *other
     }
 }
 
-impl PartialEq<OperationCode> for u8 {
+impl PartialEq<OpCodeValue> for u8 {
     #[inline]
-    fn eq(&self, other: &OperationCode) -> bool {
+    fn eq(&self, other: &OpCodeValue) -> bool {
         *self == other.value
     }
 }
 
-impl PartialEq<OpCode> for OperationCode {
+impl PartialEq<OpCode> for OpCodeValue {
     #[inline]
     fn eq(&self, other: &OpCode) -> bool {
         self.value == *other as u8
     }
 }
 
-impl PartialEq<OperationCode> for OpCode {
+impl PartialEq<OpCodeValue> for OpCode {
     #[inline]
-    fn eq(&self, other: &OperationCode) -> bool {
+    fn eq(&self, other: &OpCodeValue) -> bool {
         *self as u8 == other.value
     }
 }
 
-impl PartialOrd<OpCode> for OperationCode {
+impl PartialOrd<OpCode> for OpCodeValue {
     #[inline]
     fn partial_cmp(&self, other: &OpCode) -> Option<Ordering> {
         self.value.partial_cmp(&(*other as u8))
     }
 }
 
-impl PartialOrd<OperationCode> for OpCode {
+impl PartialOrd<OpCodeValue> for OpCode {
     #[inline]
-    fn partial_cmp(&self, other: &OperationCode) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &OpCodeValue) -> Option<Ordering> {
         (*self as u8).partial_cmp(&other.value)
     }
 }
 
-impl PartialOrd<u8> for OperationCode {
+impl PartialOrd<u8> for OpCodeValue {
     #[inline]
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.value.partial_cmp(other)
     }
 }
 
-impl PartialOrd<OperationCode> for u8 {
+impl PartialOrd<OpCodeValue> for u8 {
     #[inline]
-    fn partial_cmp(&self, other: &OperationCode) -> Option<Ordering> {
+    fn partial_cmp(&self, other: &OpCodeValue) -> Option<Ordering> {
         self.partial_cmp(&other.value)
     }
 }

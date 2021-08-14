@@ -33,7 +33,7 @@ impl OpCode {
             0 => OpCode::Query,
             1 => OpCode::IQuery,
             2 => OpCode::Status,
-            _ => return Err(Error::UnknownOperationCode(value.into())),
+            _ => return Err(Error::UnknownOpCode(value.into())),
         };
         Ok(me)
     }
@@ -48,7 +48,7 @@ impl Display for OpCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::OperationCode;
+    use crate::message::OpCodeValue;
 
     #[test]
     fn test_try_from_u8() {
@@ -58,7 +58,7 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from_u8(128),
-            Err(Error::UnknownOperationCode(OperationCode { value: 128 }))
+            Err(Error::UnknownOpCode(OpCodeValue { value: 128 }))
         ));
     }
 

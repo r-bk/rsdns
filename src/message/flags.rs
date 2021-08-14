@@ -1,6 +1,6 @@
 #[cfg(test)]
 use crate::constants::{OpCode, RCode};
-use crate::message::{MessageType, OperationCode, RCodeValue};
+use crate::message::{MessageType, OpCodeValue, RCodeValue};
 
 macro_rules! get_bit {
     ($e:expr, $l:literal) => {
@@ -54,7 +54,7 @@ impl Flags {
 
     /// Returns the message opcode.
     #[inline]
-    pub fn opcode(self) -> OperationCode {
+    pub fn opcode(self) -> OpCodeValue {
         let bits = ((self.bits & 0b0111_1000_0000_0000) >> 11) as u8;
         bits.into()
     }

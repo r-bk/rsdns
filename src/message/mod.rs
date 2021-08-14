@@ -11,8 +11,8 @@ pub use header::*;
 mod message_type;
 pub use message_type::*;
 
-mod operation_code;
-pub use operation_code::*;
+mod opcode_value;
+pub use opcode_value::*;
 
 cfg_any_resolver! {
     mod query_writer;
