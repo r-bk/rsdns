@@ -26,8 +26,8 @@ pub use question::*;
 
 pub mod reader;
 
-mod response_code;
-pub use response_code::*;
+mod rcode_value;
+pub use rcode_value::*;
 
 mod class_value;
 pub use class_value::*;

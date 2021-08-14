@@ -1,6 +1,6 @@
 #[cfg(test)]
 use crate::constants::{OpCode, RCode};
-use crate::message::{MessageType, OperationCode, ResponseCode};
+use crate::message::{MessageType, OperationCode, RCodeValue};
 
 macro_rules! get_bit {
     ($e:expr, $l:literal) => {
@@ -144,7 +144,7 @@ impl Flags {
     }
 
     /// Returns the response code.
-    pub fn response_code(self) -> ResponseCode {
+    pub fn response_code(self) -> RCodeValue {
         let bits = self.bits & 0b0000_0000_0000_1111;
         bits.into()
     }
@@ -281,7 +281,7 @@ mod tests {
                 let f = Flags { bits: i as u16 };
                 matches!(
                     RCode::try_from(f.response_code()),
-                    Err(Error::UnknownResponseCode(v)) if v == i
+                    Err(Error::UnknownRCode(v)) if v == i
                 );
             }
         }

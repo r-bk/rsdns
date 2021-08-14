@@ -53,7 +53,7 @@ impl RCode {
             3 => RCode::NxDomain,
             4 => RCode::NotImp,
             5 => RCode::Refused,
-            _ => return Err(Error::UnknownResponseCode(value.into())),
+            _ => return Err(Error::UnknownRCode(value.into())),
         };
 
         Ok(me)
@@ -69,7 +69,7 @@ impl Display for RCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::ResponseCode;
+    use crate::message::RCodeValue;
 
     #[test]
     fn test_try_from_u16() {
@@ -79,7 +79,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from_u16(128),
-            Err(Error::UnknownResponseCode(ResponseCode { value: 128 }))
+            Err(Error::UnknownRCode(RCodeValue { value: 128 }))
         ));
     }
 

@@ -4,7 +4,7 @@ use crate::{
     constants::{
         Class, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
     },
-    message::{ClassValue, MessageType, OperationCode, ResponseCode, TypeValue},
+    message::{ClassValue, MessageType, OperationCode, RCodeValue, TypeValue},
 };
 
 /// Errors returned by [rsdns](crate).
@@ -28,7 +28,7 @@ pub enum Error {
     UnknownOperationCode(OperationCode),
 
     #[error("unknown response code: {0}")]
-    UnknownResponseCode(ResponseCode),
+    UnknownRCode(RCodeValue),
 
     #[error("{0}: {1:#02X}")]
     DomainNameLabelInvalidChar(&'static str, u8),
@@ -88,7 +88,7 @@ pub enum Error {
     BadMessageType(MessageType),
 
     #[error("bad response code: {0}")]
-    BadResponseCode(ResponseCode),
+    BadResponseCode(RCodeValue),
 
     #[error("message is truncated")]
     MessageTruncated,
