@@ -1,0 +1,62 @@
+name: fuzz
+
+on:
+  push:
+    branches:
+      - '**-fuzz'
+  schedule:
+    - cron: '0 1,18 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install llvm-12
+        run: sudo apt install -y llvm-12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: nightly
+          override: true
+          components: llvm-tools-preview,rust-src
+
+      - uses: actions-rs/cargo@v1
+        name: install cargo-fuzz
+        with:
+          command: install
+          args: cargo-fuzz
+
+      - uses: actions-rs/cargo@v1
+        name: install rustfilt
+        with:
+          command: install
+          args: rustfilt
+
+      - uses: actions-rs/cargo@v1
+        name: fuzz rrset_from_msg
+        with:
+          command: fuzz
+          args: run rrset_from_msg -- -max_total_time=7200 -jobs=2 -workers=2 -verbosity=0
+
+      - uses: actions-rs/cargo@v1
+        name: cover rrset_from_msg
+        with:
+          command: fuzz
+          args: coverage rrset_from_msg
+
+      - name: generate coverage.html
+        run: >
+          llvm-cov-12 show fuzz/target/x86_64-unknown-linux-gnu/release/rrset_from_msg --format html
+          --instr-profile=fuzz/coverage/rrset_from_msg/coverage.profdata --Xdemangler=rustfilt >
+          rrset_from_msg.fuzz.coverage.html
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: rrset_from_msg.fuzz.coverage.html
+          path: rrset_from_msg.fuzz.coverage.html
