@@ -223,7 +223,6 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
     #[inline]
     fn udp_first(&self) -> bool {
         match self.config.protocol_strategy_ {
-            ProtocolStrategy::Default => self.qtype != Type::Any,
             ProtocolStrategy::Udp | ProtocolStrategy::NoTcp => true,
             ProtocolStrategy::Tcp => false,
         }

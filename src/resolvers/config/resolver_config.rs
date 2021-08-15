@@ -42,7 +42,7 @@ impl ResolverConfig {
             interface_: InterfaceName::default(),
             query_lifetime_: Duration::from_millis(10000),
             query_timeout_: Some(Duration::from_millis(2000)),
-            protocol_strategy_: ProtocolStrategy::Default,
+            protocol_strategy_: ProtocolStrategy::Udp,
             recursion_: Recursion::On,
         }
     }
