@@ -1,0 +1,27 @@
+
+[package]
+name = "rsdns-fuzz"
+version = "0.0.0"
+authors = ["Automatically generated"]
+publish = false
+edition = "2018"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.rsdns]
+version = "0.3.0"
+# path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "rrset_from_msg"
+path = "fuzz_targets/rrset_from_msg.rs"
+test = false
+doc = false
