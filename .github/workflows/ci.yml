@@ -135,3 +135,50 @@ jobs:
         with:
           command: doc
           args: --all-features --no-deps
+
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install llvm-12
+        run: sudo apt install -y llvm-12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            lines = []
+            with open("fuzz/Cargo.toml", "r") as cargo:
+                lines = cargo.readlines()
+
+            for i in range(len(lines)):
+                if lines[i] == '# path = ".."\n':
+                    lines[i] = 'path = ".."\n'
+                    print('rsdns path set to ".."')
+
+            with open("fuzz/Cargo.toml", "w") as cargo:
+                cargo.write(''.join(lines))
+            print('Cargo.toml updated succcessfully')
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: nightly
+          override: true
+          components: llvm-tools-preview,rust-src
+
+      - uses: actions-rs/cargo@v1
+        name: install cargo-fuzz
+        with:
+          command: install
+          args: cargo-fuzz
+
+      - uses: actions-rs/cargo@v1
+        name: fuzz rrset_from_msg
+        with:
+          command: fuzz
+          args: run rrset_from_msg -- -max_total_time=5 -verbosity=0
