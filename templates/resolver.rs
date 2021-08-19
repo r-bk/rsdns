@@ -17,7 +17,7 @@ use crate::{
 {% else -%}
 {% set as = "" %}
 {% set aw = "" %}
-/// Synchronous resolver implemented on top of [`std::net`].
+/// Synchronous resolver implemented with [`std::net`].
 ///
 /// [`std::net`]: https://doc.rust-lang.org/std/net
 {% endif -%}

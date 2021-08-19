@@ -26,7 +26,7 @@ runtimes. Moreover, for completeness, *rsdns* has an independent synchronous res
 
 * Minimal API
 * Asynchronous resolvers for `tokio`, `async-std` and `smol`
-* Blocking resolver implemented on top of `std::net`
+* Blocking resolver implemented with `std::net`
 * Zero memory allocations when parsing records with no variable size fields
 * Sockets can be bound to network interfaces by name (available on operating
   systems with `SO_BINDTODEVICE` support)
