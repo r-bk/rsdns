@@ -1,4 +1,4 @@
-//! [rsdns] is a library implementing a [DNS Stub Resolver][^rfc1034].
+//! [rsdns] is a library implementing a [DNS Stub Resolver][^definition].
 //!
 //! DNS is a large, distributed and hierarchical system comprised of many types of servers.
 //! The data is held in *Authoritative Servers*, which are responsible for specific domains only.
@@ -24,10 +24,12 @@
 //!   from the underlying OS)
 //! * Minimal set of dependencies
 //!
-//! [^rfc1034]: Initial definition of stub resolvers is in [RFC 1034].
+//! [^definition]: Initial definition of stub resolvers is in [RFC 1034]. And a full definition
+//! is in [RFC 1123 section 6.1.3.1].
 //!
 //! [rsdns]: crate
 //! [RFC 1034]: https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1
+//! [RFC 1123 section 6.1.3.1]: https://www.rfc-editor.org/rfc/rfc1123.html#section-6.1.3.1
 //! [DNS Stub Resolver]: https://en.wikipedia.org/wiki/Domain_Name_System#DNS_resolvers
 //! [`tokio`]: https://docs.rs/tokio
 //! [`async-std`]: https://docs.rs/async-std
