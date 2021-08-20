@@ -44,9 +44,6 @@ especially on platforms where *dig* is not originally supported.
 
 ## Supported RFCs
 
-*rsdns* focuses on querying the Domain Name System and strives to support all
-essential data-type records.
-
 * [RFC 1035] - the foundation of DNS protocol: `A`, `NS`, `TXT`, `CNAME`, `SOA`, `MX`, `PTR`, `ANY` etc.
 * [RFC 1101], [RFC 1123] - allow leading digits in domain name labels
 * [RFC 2181] - RRSet definition and TTL handling
