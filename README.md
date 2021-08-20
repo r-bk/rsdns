@@ -47,12 +47,18 @@ especially on platforms where *dig* is not originally supported.
 *rsdns* focuses on querying the Domain Name System and strives to support all
 essential data-type records.
 
-* [RFC 1035](https://www.rfc-editor.org/rfc/rfc1035.html) - the foundation of DNS
-  protocol: `A`, `NS`, `TXT`, `CNAME`, `SOA`, `MX`, `PTR`, `ANY` etc.
-* [RFC 1101](https://www.rfc-editor.org/rfc/rfc1101.html) - allow leading digits
-  in domain name labels
-* [RFC 3596](https://www.rfc-editor.org/rfc/rfc3596.html) - `AAAA`
+* [RFC 1035] - the foundation of DNS protocol: `A`, `NS`, `TXT`, `CNAME`, `SOA`, `MX`, `PTR`, `ANY` etc.
+* [RFC 1101], [RFC 1123] - allow leading digits in domain name labels
+* [RFC 2181] - RRSet definition and TTL handling
+* [RFC 3596] - `AAAA`
+* [RFC 7766] - DNS Transport over TCP, TCP message length field handling
 
+[RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html
+[RFC 1101]: https://www.rfc-editor.org/rfc/rfc1101.html
+[RFC 1123]: https://www.rfc-editor.org/rfc/rfc1123.html
+[RFC 2181]: https://www.rfc-editor.org/rfc/rfc2181#section-5
+[RFC 3596]: https://www.rfc-editor.org/rfc/rfc3596.html
+[RFC 7766]: https://www.rfc-editor.org/rfc/rfc7766.html
 
 ## Roadmap
 
