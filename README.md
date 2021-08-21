@@ -1,7 +1,7 @@
 # rsdns - DNS Client Library
 
 **rsnds** is a **R**u**s**t lib crate implementing a **DNS** **S**tub **R**esolver
-([RFC 1034](https://www.rfc-editor.org/rfc/rfc1034.html#section-5.3.1)).
+[RFC 1123 section 6.1.3.1 (B)](https://www.rfc-editor.org/rfc/rfc1123.html#section-6.1.3.1).
 
 Its main goal is to query the Domain Name System and return the results in easily
 consumable Rust types.
@@ -12,7 +12,7 @@ To be fast *rsdns* aims to allow DNS message parsing with zero memory allocation
 There are DNS crates which implement asynchronous resolvers, but are built for a single
 async runtime. This somewhat blocks usage of such resolver in an application built around
 another runtime. *rsdns* closes this gap and genuinely supports three different async
-runtimes. Moreover, for completeness, *rsdns* has an independent synchronous resolver as well.
+runtimes. Moreover, *rsdns* has an independent synchronous resolver as well.
 
 [![crates.io][crates-badge]][crates-url]
 [![docs.rs][docs-badge]][docs-url]
