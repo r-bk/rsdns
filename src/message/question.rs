@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
-    domain_name::InlineName,
     message::{ClassValue, TypeValue},
+    names::InlineName,
     Result,
 };
 

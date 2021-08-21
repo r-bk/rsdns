@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
-    domain_name::{DName, InlineName, Name},
+    names::{DName, InlineName, Name},
     Error, Result,
 };
 

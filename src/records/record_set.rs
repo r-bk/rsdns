@@ -1,7 +1,7 @@
 use crate::{
     constants::{Class, RCode, RecordsSection, Type},
-    domain_name::Name,
     message::{reader::MessageReader, MessageType},
+    names::Name,
     records::{
         data::{RData, RecordData},
         ResourceRecord,

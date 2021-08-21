@@ -1,6 +1,6 @@
 use crate::{
     constants::{Class, Type},
-    domain_name::InlineName,
+    names::InlineName,
     records::data::RecordData,
 };
 

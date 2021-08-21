@@ -141,9 +141,9 @@
 pub(crate) mod macros;
 pub(crate) mod bytes;
 pub mod constants;
-pub mod domain_name;
 mod errors;
 pub mod message;
+pub mod names;
 pub mod records;
 
 cfg_any_resolver! {

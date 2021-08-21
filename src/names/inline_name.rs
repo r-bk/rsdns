@@ -1,4 +1,4 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, domain_name::Name, Error, Result};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, names::Name, Error, Result};
 use arrayvec::ArrayString;
 use std::{
     cmp::Ordering,
@@ -51,7 +51,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// #
     /// let dn = InlineName::new();
     /// assert_eq!(dn.len(), 0);
@@ -67,7 +67,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// #
     /// let dn = InlineName::root();
     /// assert_eq!(dn.len(), 1);
@@ -108,7 +108,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -138,7 +138,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -165,7 +165,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -190,7 +190,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -253,7 +253,7 @@ impl InlineName {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::domain_name::InlineName;
+    /// # use rsdns::names::InlineName;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
