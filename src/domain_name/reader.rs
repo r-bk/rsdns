@@ -1,7 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
-    DName, Error, InlineName, Name, Result,
+    domain_name::{DName, InlineName, Name},
+    Error, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;

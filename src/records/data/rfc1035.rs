@@ -1,7 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::Type,
-    Name, Result,
+    domain_name::Name,
+    Result,
 };
 use std::net::Ipv4Addr;
 

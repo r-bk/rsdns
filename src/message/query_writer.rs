@@ -49,8 +49,8 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
+        domain_name::InlineName,
         message::{ClassValue, TypeValue},
-        InlineName,
     };
     use std::convert::TryFrom;
 

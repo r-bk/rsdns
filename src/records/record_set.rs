@@ -1,11 +1,12 @@
 use crate::{
     constants::{Class, RCode, RecordsSection, Type},
+    domain_name::Name,
     message::{reader::MessageReader, MessageType},
     records::{
         data::{RData, RecordData},
         ResourceRecord,
     },
-    Error, Name, Result,
+    Error, Result,
 };
 use std::convert::TryFrom;
 

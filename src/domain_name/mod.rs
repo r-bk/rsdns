@@ -1,3 +1,5 @@
+//! Domain name types and utilities.
+
 mod inline_name;
 pub use inline_name::*;
 

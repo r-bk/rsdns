@@ -65,7 +65,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        InlineName,
+        domain_name::InlineName,
     };
     use std::str::FromStr;
 

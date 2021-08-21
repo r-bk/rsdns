@@ -1,4 +1,4 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, Error, InlineName, Result};
+use crate::{constants::DOMAIN_NAME_MAX_LENGTH, domain_name::InlineName, Error, Result};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -36,7 +36,7 @@ use std::{
 /// - [RFC 1101 section 3.1](https://www.rfc-editor.org/rfc/rfc1101.html#section-3.1)
 ///
 /// [RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1
-/// [InlineName]: crate::InlineName
+/// [InlineName]: crate::domain_name::InlineName
 /// [ResourceRecord]: crate::records::ResourceRecord
 /// [Soa]: crate::records::data::Soa
 #[derive(Debug, Default, Clone)]
@@ -50,7 +50,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// #
     /// let dn = Name::new();
     /// assert_eq!(dn.len(), 0);
@@ -68,7 +68,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// #
     /// let dn = Name::root();
     /// assert_eq!(dn.len(), 1);
@@ -109,7 +109,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -140,7 +140,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -167,7 +167,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -192,7 +192,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
@@ -253,7 +253,7 @@ impl Name {
     /// # Examples
     ///
     /// ```
-    /// # use rsdns::Name;
+    /// # use rsdns::domain_name::Name;
     /// # use std::str::FromStr;
     /// #
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {

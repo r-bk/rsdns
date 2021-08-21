@@ -1,7 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader},
+    domain_name::InlineName,
     message::{ClassValue, TypeValue},
-    InlineName, Result,
+    Result,
 };
 
 /// Query question.
