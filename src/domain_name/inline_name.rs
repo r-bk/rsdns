@@ -393,7 +393,7 @@ impl From<Name> for InlineName {
     }
 }
 
-impl super::NameContract for InlineName {
+impl super::private::DNameBase for InlineName {
     #[inline(always)]
     fn as_str(&self) -> &str {
         self.as_str()
@@ -429,6 +429,8 @@ impl super::NameContract for InlineName {
         self.set_root()
     }
 }
+
+impl super::DName for InlineName {}
 
 #[cfg(test)]
 mod tests {

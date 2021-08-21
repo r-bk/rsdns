@@ -388,7 +388,7 @@ impl From<&InlineName> for Name {
     }
 }
 
-impl super::NameContract for Name {
+impl super::private::DNameBase for Name {
     #[inline(always)]
     fn as_str(&self) -> &str {
         self.as_str()
@@ -424,6 +424,8 @@ impl super::NameContract for Name {
         self.set_root()
     }
 }
+
+impl super::DName for Name {}
 
 #[cfg(test)]
 mod tests {

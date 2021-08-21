@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
-    Error, InlineName, Name, NameContract, Result,
+    DName, Error, InlineName, Name, Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
@@ -28,7 +28,7 @@ impl<'a> DomainNameReader<'a> {
         Ok(dn)
     }
 
-    fn read_internal<T: NameContract>(cursor: &mut Cursor<'a>, dn: &mut T) -> Result<()> {
+    fn read_internal<N: DName>(cursor: &mut Cursor<'a>, dn: &mut N) -> Result<()> {
         let mut dnr = Self::new(cursor.clone());
         dnr.read_impl(dn)?;
         cursor.set_pos(dnr.max_pos);
@@ -83,7 +83,7 @@ impl<'a> DomainNameReader<'a> {
         Ok(())
     }
 
-    fn read_impl<T: NameContract>(&mut self, dn: &mut T) -> Result<()> {
+    fn read_impl<N: DName>(&mut self, dn: &mut N) -> Result<()> {
         loop {
             let length = self.cursor.u8()?;
             if length == 0 {
