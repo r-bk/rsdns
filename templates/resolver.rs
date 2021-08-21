@@ -57,10 +57,9 @@ impl Resolver {
 
     /// Issues a DNS query and returns the resulting [`RecordSet`].
     ///
-    /// Usually the resulting [`RecordSet`] will belong to the domain name specified in `qname`
-    /// parameter. However, if `qname` has a [`CNAME`] record, the RecordSet will belong to
-    /// `qname`'s canonical name.
-    /// See [`RecordSet::from_msg`] for CNAME chain resolution description.
+    /// Usually the resulting record set will belong to the domain name specified in `qname`.
+    /// However, if `qname` has a [`CNAME`] record, the record set will belong to `qname`'s
+    /// canonical name. See [`RecordSet::from_msg`] for *CNAME flattening* description.
     ///
     /// This method allows data-type queries only.
     /// For meta-queries (e.g. [`Type::Any`]) use [`query_raw`](Resolver::query_raw).

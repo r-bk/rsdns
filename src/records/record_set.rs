@@ -38,16 +38,17 @@ impl<D: RData> RecordSet<D> {
     /// Record type as associated constant.
     pub const RTYPE: Type = D::RTYPE;
 
-    /// Parses a RecordSet from a response message.
+    /// Parses a [`RecordSet`] from a response message.
     ///
-    /// The RecordSet is built for the domain name specified in the Question section of the response
-    /// message. However, the resulting RecordSet's `name` may differ from the question name due to
-    /// CNAME chain resolution.
+    /// This method performs *CNAME flattening*, which is the process of traversing a *chain* of
+    /// CNAME records until requested record set is found.
     ///
-    /// CNAME chain occurs in a DNS message if the question name has a CNAME record pointing to
-    /// its canonical name. The canonical name may have a CNAME record of its own, creating a chain
-    /// of CNAMEs. The data records belong to the last name in the chain, which is reflected in the
-    /// returned RecordSet's `name` attribute.
+    /// A *CNAME chain* may occur in a DNS message if the question name has a [`CNAME`] record
+    /// pointing to its canonical name. The canonical name may have a [`CNAME`] record of its own,
+    /// creating a *chain*. The record set belongs to the last name in the *chain*,
+    /// which is reflected in the returned record set's [`name`](RecordSet::name) attribute.
+    ///
+    /// [`CNAME`]: crate::constants::Type::Cname
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
         let mr = MessageReader::new(msg)?;
 
