@@ -1,16 +1,29 @@
-# 0.3.0 (Aug 13, 2021)
+# Changelog
+All notable changes to this project will be documented in this file.
 
-- support leading digits in domain name labels [RFC1101](https://www.rfc-editor.org/rfc/rfc1101.html)
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+
+## [0.3.0] - 2021-08-13
+### Added
 - add a link to **ch4** in README
 
-# 0.2.0 (Aug 12, 2021)
+### Changed
+- support leading digits in domain name labels `RFC 1101`
 
+
+## [0.2.0] - 2021-08-12
+### Fixed
 - fix `Display` trait implementation. Padding, alignment and fill specifiers are
   supported now: `println!("{:+>32}", name)`
-- dependencies were updated and are stricter now, using tilde specification
-- some documentation was cleaned
-- templates were refactored for readability
 
-# 0.1.0 (Aug 6, 2021)
+### Changed
+- update dependencies to be stricter, using tilde specification
+- cleanup documentation
+- refactor templates for readability
+
+
+## [0.1.0] - 2021-08-06
 
 - Initial crate release.
