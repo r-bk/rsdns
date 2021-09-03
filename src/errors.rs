@@ -115,6 +115,10 @@ pub enum Error {
     /// *rsdns* tries to avoid panics. InternalError is used instead.
     #[error("internal error: {0}")]
     InternalError(&'static str),
+
+    #[cfg(windows)]
+    #[error("{0}: {1:#x}")]
+    Win32Error(&'static str, u32),
 }
 
 /// Result returned by [rsdns](crate).

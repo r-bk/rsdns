@@ -76,6 +76,13 @@ fn write_resolvers(tera: &Tera) {
 }
 
 fn main() {
+    #[cfg(windows)]
+    windows::build!(
+        Windows::Win32::NetworkManagement::IpHelper::*,
+        Windows::Win32::System::Diagnostics::Debug::*,
+        Windows::Win32::Networking::WinSock::*,
+    );
+
     let tera = match Tera::new("templates/*.rs") {
         Ok(t) => t,
         Err(e) => {

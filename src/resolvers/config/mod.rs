@@ -8,3 +8,6 @@ pub use recursion::*;
 
 mod resolver_config;
 pub use resolver_config::*;
+
+#[cfg(windows)]
+pub(crate) mod win;
