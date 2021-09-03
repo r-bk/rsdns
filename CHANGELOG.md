@@ -6,9 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- add the `DName` marker-trait, for domain name types who own the domain name bytes
+- add the `names` module for domain name types
+
 ### Changed
 - starting from this release the tags are prefixed with `v`.
   Old tags were adjusted accordingly.
+- rename `Unrecognized*` errors to `Unknown*`, for compatibility with the language used
+  in RFCs
+- rename `RType` to `Type` and `RClass` to `Class`. These enums are used not only for
+  records now, so the `R` prefix is obsolete.
+- rename `RecordType` to `TypeValue` and `RecordClass` to `ClassValue`. These types are
+  relevant not only for records, so the `Record` prefix is obsolete.
+- rename `OperationCode` to `OpCodeValue`, for consistency with the rest of enum
+  and value types
+- move `Name` and `InlineName` structs to the newly added `names` module
+
+### Removed
+- remove `ProtocolStrategy::Default`. `ProtocolStrategy::Udp` is now the default strategy
+  in resolver configuration.
+
 
 ## [0.3.0] - 2021-08-13
 ### Added
