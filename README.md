@@ -66,6 +66,11 @@ The following is a short list of features planned for the near future.
   UDP messages longer than 512 bytes
 
 
+## Changelog
+
+The changelog is maintained in [CHANGELOG.md](CHANGELOG.md)
+
+
 ## License
 
 Licensed under either of
