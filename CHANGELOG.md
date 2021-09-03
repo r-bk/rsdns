@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - add the `DName` marker-trait, for domain name types who own the domain name bytes
 - add the `names` module for domain name types
+- add `resolvers::os_nameservers` function that finds the nameservers configured on
+  the host operating system
 
 ### Changed
 - starting from this release the tags are prefixed with `v`.
