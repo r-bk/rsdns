@@ -11,3 +11,6 @@ pub use resolver_config::*;
 
 #[cfg(windows)]
 pub(crate) mod win;
+
+#[cfg(unix)]
+pub(crate) mod uni;
