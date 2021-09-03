@@ -134,11 +134,9 @@
 //!
 //! Async runtimes provide async equivalents to the standard trait:
 //!
-//! 1. `tokio` - provides the `tokio::net::ToSocketAddrs` trait and the `tokio::net::lookup_host`
-//!    function.
-//! 2. `async-std` - provides the `async_std::net::ToSocketAddrs` trait.
-//! 3. `smol` - provides the `smol::net::AsyncToSocketAddrs` trait and the `smol::net::resolve`
-//!    function.
+//! 1. `tokio::net::ToSocketAddrs` trait and `tokio::net::lookup_host` function
+//! 2. `async_std::net::ToSocketAddrs` trait
+//! 3. `smol::net::AsyncToSocketAddrs` trait and `smol::net::resolve` function
 //!
 //! [`ToSocketAddrs`]: https://doc.rust-lang.org/std/net/trait.ToSocketAddrs.html
 
