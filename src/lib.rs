@@ -124,13 +124,21 @@
 //! * it doesn't allow you to choose which DNS server to consult
 //! * it doesn't allow you to control how the communication is performed (network protocol,
 //!   network interface, timeout etc.)
-//! * it is blocking - harder to use in an asynchronous context
 //!
 //! If any of the above is an issue in your application, or if you need to directly communicate with
 //! a DNS server, you may find *rsdns* useful.
-//! Otherwise, if all you need is a host address, and a blocking API call is not an issue,
-//! consider using [`ToSocketAddrs`] instead. It comes built-in with the Rust standard library,
-//! and is very simple to use.
+//! Otherwise, if all you need is a host address, consider using [`ToSocketAddrs`] instead.
+//! It comes built-in with the Rust standard library, and is very simple to use.
+//!
+//! ## Async equivalents to `std::net::ToSocketAddrs`
+//!
+//! Async runtimes provide async equivalents to the standard trait:
+//!
+//! 1. `tokio` - provides the `tokio::net::ToSocketAddrs` trait and the `tokio::net::lookup_host`
+//!    function.
+//! 2. `async-std` - provides the `async_std::net::ToSocketAddrs` trait.
+//! 3. `smol` - provides the `smol::net::AsyncToSocketAddrs` trait and the `smol::net::resolve`
+//!    function.
 //!
 //! [`ToSocketAddrs`]: https://doc.rust-lang.org/std/net/trait.ToSocketAddrs.html
 
