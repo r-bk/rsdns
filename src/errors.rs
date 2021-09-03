@@ -115,6 +115,10 @@ pub enum Error {
     /// *rsdns* tries to avoid panics. InternalError is used instead.
     #[error("internal error: {0}")]
     InternalError(&'static str),
+
+    /// No nameservers found
+    #[error("no nameservers found")]
+    NoNameservers,
 }
 
 /// Result returned by [rsdns](crate).

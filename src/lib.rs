@@ -79,7 +79,7 @@
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
 //!
 //!     // default resolver configuration; specify nameserver address only
-//!     let config = ResolverConfig::new(nameserver);
+//!     let config = ResolverConfig::with_nameserver(nameserver);
 //!
 //!     // create tokio Resolver
 //!     let mut resolver = Resolver::new(config).await?;
@@ -104,7 +104,7 @@
 //! # #[cfg(feature = "net-std")]
 //! fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
-//!     let mut resolver = Resolver::new(ResolverConfig::new(nameserver))?;
+//!     let mut resolver = Resolver::new(ResolverConfig::with_nameserver(nameserver))?;
 //!     let rrset = resolver.query_rrset::<A>(qname, Class::In)?;
 //!     Ok(rrset.rdata)
 //! }

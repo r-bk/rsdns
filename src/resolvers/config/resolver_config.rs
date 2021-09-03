@@ -28,41 +28,85 @@ pub struct ResolverConfig {
 }
 
 impl ResolverConfig {
-    /// Creates resolver configuration for `nameserver` with default values.
-    pub fn new(nameserver: SocketAddr) -> ResolverConfig {
+    /// Creates the default resolver configuration.
+    pub fn new() -> ResolverConfig {
+        ResolverConfig::default()
+    }
+
+    /// Creates the default resolver configuration with a specific nameserver.
+    pub fn with_nameserver(nameserver: SocketAddr) -> ResolverConfig {
         let bind_addr = if nameserver.is_ipv4() {
-            Self::default_ipv4_bind_address()
+            Self::ipv4_unspecified()
         } else {
-            Self::default_ipv6_bind_address()
+            Self::ipv6_unspecified()
         };
         ResolverConfig {
             nameserver_: nameserver,
             bind_addr_: bind_addr,
-            #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-            interface_: InterfaceName::default(),
-            query_lifetime_: Duration::from_millis(10000),
-            query_timeout_: Some(Duration::from_millis(2000)),
-            protocol_strategy_: ProtocolStrategy::Udp,
-            recursion_: Recursion::On,
+            ..Default::default()
         }
     }
 
+    /// Checks if the nameserver is specified.
+    ///
+    /// The default configuration doesn't specify a nameserver.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use rsdns::resolvers::ResolverConfig;
+    /// # use std::net::{SocketAddr, IpAddr, Ipv4Addr};
+    /// let addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 53));
+    /// assert!(!ResolverConfig::new().has_nameserver());
+    /// assert!(ResolverConfig::with_nameserver(addr).has_nameserver());
+    /// ```
+    pub fn has_nameserver(&self) -> bool {
+        self.nameserver_ != Self::ipv4_unspecified() && self.nameserver_ != Self::ipv6_unspecified()
+    }
+
     /// Returns the nameserver address.
+    ///
+    /// By default a nameserver is not specified. Use [`set_nameserver`] or [`with_nameserver`]
+    /// to specify a nameserver of your choice.
+    ///
+    /// Default: `0.0.0.0:0`
+    ///
+    /// [`set_nameserver`]: ResolverConfig::set_nameserver
+    /// [`with_nameserver`]: ResolverConfig::with_nameserver
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use rsdns::resolvers::ResolverConfig;
+    /// # use std::{net::{IpAddr, SocketAddr}, str::FromStr};
+    /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
+    /// let mut conf = ResolverConfig::new();
+    /// assert_eq!(conf.nameserver(), SocketAddr::from_str("0.0.0.0:0")?);
+    ///
+    /// conf = conf.set_nameserver(SocketAddr::from_str("127.0.0.53:53")?);
+    /// assert_eq!(conf.nameserver().ip(), IpAddr::from_str("127.0.0.53")?);
+    /// assert_eq!(conf.nameserver().port(), 53);
+    /// # Ok(())
+    /// # }
+    ///
+    /// ```
     pub fn nameserver(&self) -> SocketAddr {
         self.nameserver_
     }
 
     /// Sets the nameserver address.
     ///
-    /// This method is useful to create identical configuration for several nameservers.
+    /// This method is useful to specify a nameserver of your choice, or to create identical
+    /// configuration with several different nameservers.
     ///
     /// # Examples
+    ///
     /// ```rust
     /// # use rsdns::resolvers::ResolverConfig;
     /// # use std::{net::SocketAddr, str::FromStr, time::Duration};
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let conf1 = ResolverConfig::new(SocketAddr::from_str("127.0.0.53:53")?)
+    /// let conf1 = ResolverConfig::with_nameserver(SocketAddr::from_str("127.0.0.53:53")?)
     ///     .set_query_lifetime(Duration::from_secs(5));
     ///
     /// let conf2 = conf1
@@ -80,12 +124,12 @@ impl ResolverConfig {
     pub fn set_nameserver(mut self, nameserver: SocketAddr) -> Self {
         self.nameserver_ = nameserver;
 
-        if self.nameserver_.is_ipv6() && self.bind_addr_ == Self::default_ipv4_bind_address() {
-            self.bind_addr_ = Self::default_ipv6_bind_address();
+        if self.nameserver_.is_ipv6() && self.bind_addr_ == Self::ipv4_unspecified() {
+            self.bind_addr_ = Self::ipv6_unspecified();
         }
 
-        if self.nameserver_.is_ipv4() && self.bind_addr_ == Self::default_ipv6_bind_address() {
-            self.bind_addr_ = Self::default_ipv4_bind_address();
+        if self.nameserver_.is_ipv4() && self.bind_addr_ == Self::ipv6_unspecified() {
+            self.bind_addr_ = Self::ipv4_unspecified();
         }
 
         self
@@ -232,11 +276,26 @@ impl ResolverConfig {
         self
     }
 
-    fn default_ipv4_bind_address() -> SocketAddr {
+    fn ipv4_unspecified() -> SocketAddr {
         SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0))
     }
 
-    fn default_ipv6_bind_address() -> SocketAddr {
+    fn ipv6_unspecified() -> SocketAddr {
         SocketAddr::V6(SocketAddrV6::new(Ipv6Addr::UNSPECIFIED, 0, 0, 0))
+    }
+}
+
+impl Default for ResolverConfig {
+    fn default() -> Self {
+        ResolverConfig {
+            nameserver_: Self::ipv4_unspecified(),
+            bind_addr_: Self::ipv4_unspecified(),
+            #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
+            interface_: InterfaceName::default(),
+            query_lifetime_: Duration::from_secs(10),
+            query_timeout_: Some(Duration::from_secs(2)),
+            protocol_strategy_: ProtocolStrategy::Udp,
+            recursion_: Recursion::On,
+        }
     }
 }

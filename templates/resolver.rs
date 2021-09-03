@@ -5,7 +5,7 @@ use crate::{
       {{ crate_module_name }}::ResolverImpl,
       config::ResolverConfig,
   },
-  Result
+  Error, Result
 };
 
 {% if async == "true" -%}
@@ -27,8 +27,17 @@ pub struct Resolver {
 
 impl Resolver {
     /// Creates a new instance of [`Resolver`] with specified configuration.
+    ///
+    /// # Returns
+    ///
+    /// [`NoNameservers`] - if no nameserver is specified in the configuration
+    ///
+    /// [`NoNameservers`]: Error::NoNameservers
     #[inline(always)]
     pub {{ as }} fn new(conf: ResolverConfig) -> Result<Self> {
+        if !conf.has_nameserver() {
+            return Err(Error::NoNameservers);
+        }
         Ok(Self {
             internal: ResolverImpl::new(conf){{ aw }}?,
         })
