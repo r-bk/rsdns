@@ -1,6 +1,6 @@
 [package]
 name = "rsdns"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["Rafael Buchbinder <rafi@rbk.io>"]
 edition = "2018"
 description = "DNS Client Library"
