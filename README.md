@@ -1,6 +1,6 @@
 # rsdns - DNS Client Library
 
-**rsnds** is a **R**u**s**t lib crate implementing a **DNS** **S**tub **R**esolver
+**rsdns** is a **R**u**s**t lib crate implementing a **DNS** **S**tub **R**esolver
 [RFC 1123 section 6.1.3.1 (B)](https://www.rfc-editor.org/rfc/rfc1123.html#section-6.1.3.1).
 
 Its main goal is to query the Domain Name System and return the results in easily

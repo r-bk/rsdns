@@ -9,7 +9,7 @@
 //! *rsdns* implements a *Stub Resolver*, which is the simplest resolver in DNS.
 //! It delegates queries to another DNS server, usually (but not necessarily) a *recursor*.
 //!
-//! *rsnds* provides an API to directly communicate with DNS servers using its own implementation
+//! *rsdns* provides an API to directly communicate with DNS servers using its own implementation
 //! of the DNS protocol. It strives to be minimal and fast.
 //!
 //! # Notable Features
