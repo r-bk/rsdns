@@ -48,7 +48,6 @@ impl Display for OpCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::OpCodeValue;
 
     #[test]
     fn test_try_from_u8() {
@@ -58,7 +57,7 @@ mod tests {
 
         assert!(matches!(
             OpCode::try_from_u8(128),
-            Err(Error::UnknownOpCode(OpCodeValue { value: 128 }))
+            Err(Error::UnknownOpCode(ov)) if ov == 128
         ));
     }
 

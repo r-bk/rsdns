@@ -31,9 +31,7 @@ use std::{
 ///
 /// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Debug, Default, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub struct OpCodeValue {
-    pub(crate) value: u8,
-}
+pub struct OpCodeValue(u8);
 
 impl OpCodeValue {
     /// Converts `self` to a string.
@@ -60,23 +58,21 @@ impl OpCodeValue {
 impl From<u8> for OpCodeValue {
     #[inline]
     fn from(value: u8) -> Self {
-        OpCodeValue { value }
+        OpCodeValue(value)
     }
 }
 
 impl From<OpCodeValue> for u8 {
     #[inline]
     fn from(opcode: OpCodeValue) -> Self {
-        opcode.value
+        opcode.0
     }
 }
 
 impl From<OpCode> for OpCodeValue {
     #[inline]
     fn from(opcode: OpCode) -> Self {
-        OpCodeValue {
-            value: opcode as u8,
-        }
+        OpCodeValue(opcode as u8)
     }
 }
 
@@ -85,7 +81,7 @@ impl TryFrom<OpCodeValue> for OpCode {
 
     #[inline]
     fn try_from(value: OpCodeValue) -> Result<Self, Self::Error> {
-        OpCode::try_from_u8(value.value)
+        OpCode::try_from_u8(value.0)
     }
 }
 
@@ -96,7 +92,7 @@ impl Display for OpCodeValue {
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "OPCODE{}", self.value)?;
+                write!(&mut buf, "OPCODE{}", self.0)?;
                 f.pad(buf.as_str())?;
             }
         }
@@ -107,55 +103,55 @@ impl Display for OpCodeValue {
 impl PartialEq<u8> for OpCodeValue {
     #[inline]
     fn eq(&self, other: &u8) -> bool {
-        self.value == *other
+        self.0 == *other
     }
 }
 
 impl PartialEq<OpCodeValue> for u8 {
     #[inline]
     fn eq(&self, other: &OpCodeValue) -> bool {
-        *self == other.value
+        *self == other.0
     }
 }
 
 impl PartialEq<OpCode> for OpCodeValue {
     #[inline]
     fn eq(&self, other: &OpCode) -> bool {
-        self.value == *other as u8
+        self.0 == *other as u8
     }
 }
 
 impl PartialEq<OpCodeValue> for OpCode {
     #[inline]
     fn eq(&self, other: &OpCodeValue) -> bool {
-        *self as u8 == other.value
+        *self as u8 == other.0
     }
 }
 
 impl PartialOrd<OpCode> for OpCodeValue {
     #[inline]
     fn partial_cmp(&self, other: &OpCode) -> Option<Ordering> {
-        self.value.partial_cmp(&(*other as u8))
+        self.0.partial_cmp(&(*other as u8))
     }
 }
 
 impl PartialOrd<OpCodeValue> for OpCode {
     #[inline]
     fn partial_cmp(&self, other: &OpCodeValue) -> Option<Ordering> {
-        (*self as u8).partial_cmp(&other.value)
+        (*self as u8).partial_cmp(&other.0)
     }
 }
 
 impl PartialOrd<u8> for OpCodeValue {
     #[inline]
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.value.partial_cmp(other)
+        self.0.partial_cmp(other)
     }
 }
 
 impl PartialOrd<OpCodeValue> for u8 {
     #[inline]
     fn partial_cmp(&self, other: &OpCodeValue) -> Option<Ordering> {
-        self.partial_cmp(&other.value)
+        self.partial_cmp(&other.0)
     }
 }
