@@ -69,7 +69,6 @@ impl Display for RCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::RCodeValue;
 
     #[test]
     fn test_try_from_u16() {
@@ -79,7 +78,7 @@ mod tests {
 
         assert!(matches!(
             RCode::try_from_u16(128),
-            Err(Error::UnknownRCode(RCodeValue { value: 128 }))
+            Err(Error::UnknownRCode(rc)) if rc == 128
         ));
     }
 

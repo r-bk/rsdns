@@ -31,9 +31,7 @@ use std::{
 ///
 /// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
-pub struct RCodeValue {
-    pub(crate) value: u16,
-}
+pub struct RCodeValue(u16);
 
 impl RCodeValue {
     /// Converts `self` to a string.
@@ -49,7 +47,7 @@ impl RCodeValue {
     /// assert_eq!(RCodeValue::from(u16::MAX).to_str(), "UNKNOWN_RCODE");
     /// ```
     pub fn to_str(self) -> &'static str {
-        match RCode::try_from_u16(self.value) {
+        match RCode::try_from_u16(self.0) {
             Ok(rc) => rc.to_str(),
             _ => "UNKNOWN_RCODE",
         }
@@ -59,14 +57,14 @@ impl RCodeValue {
 impl From<u16> for RCodeValue {
     #[inline]
     fn from(value: u16) -> Self {
-        Self { value }
+        Self(value)
     }
 }
 
 impl From<RCode> for RCodeValue {
     #[inline]
     fn from(rc: RCode) -> Self {
-        Self { value: rc as u16 }
+        Self(rc as u16)
     }
 }
 
@@ -75,18 +73,18 @@ impl TryFrom<RCodeValue> for RCode {
 
     #[inline]
     fn try_from(rc: RCodeValue) -> Result<Self, Self::Error> {
-        RCode::try_from_u16(rc.value)
+        RCode::try_from_u16(rc.0)
     }
 }
 
 impl Display for RCodeValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match RCode::try_from_u16(self.value) {
+        match RCode::try_from_u16(self.0) {
             Ok(c) => f.pad(c.to_str())?,
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "RCODE{}", self.value)?;
+                write!(&mut buf, "RCODE{}", self.0)?;
                 f.pad(buf.as_str())?;
             }
         }
@@ -97,55 +95,55 @@ impl Display for RCodeValue {
 impl PartialEq<RCode> for RCodeValue {
     #[inline]
     fn eq(&self, other: &RCode) -> bool {
-        self.value == *other as u16
+        self.0 == *other as u16
     }
 }
 
 impl PartialEq<RCodeValue> for RCode {
     #[inline]
     fn eq(&self, other: &RCodeValue) -> bool {
-        (*self as u16) == other.value
+        (*self as u16) == other.0
     }
 }
 
 impl PartialOrd<RCode> for RCodeValue {
     #[inline]
     fn partial_cmp(&self, other: &RCode) -> Option<Ordering> {
-        self.value.partial_cmp(&(*other as u16))
+        self.0.partial_cmp(&(*other as u16))
     }
 }
 
 impl PartialOrd<RCodeValue> for RCode {
     #[inline]
     fn partial_cmp(&self, other: &RCodeValue) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&other.value)
+        (*self as u16).partial_cmp(&other.0)
     }
 }
 
 impl PartialEq<u16> for RCodeValue {
     #[inline]
     fn eq(&self, other: &u16) -> bool {
-        self.value == *other
+        self.0 == *other
     }
 }
 
 impl PartialEq<RCodeValue> for u16 {
     #[inline]
     fn eq(&self, other: &RCodeValue) -> bool {
-        *self == other.value
+        *self == other.0
     }
 }
 
 impl PartialOrd<u16> for RCodeValue {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
-        self.value.partial_cmp(other)
+        self.0.partial_cmp(other)
     }
 }
 
 impl PartialOrd<RCodeValue> for u16 {
     #[inline]
     fn partial_cmp(&self, other: &RCodeValue) -> Option<Ordering> {
-        self.partial_cmp(&other.value)
+        self.partial_cmp(&other.0)
     }
 }
