@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+### Changed
+- define *rsdns* as *DNS Client* instead of *DNS Stub Resolver*.
+  The term *Resolver* may be confused with a system-resolver (e.g. `systemd-resolved`),
+  which *rsdns* is not. A more accurate definition for *rsdns* is *DNS Client*.
+  A fully featured Resolver can be build above *rsdns*.
+- rename the `resolvers` module to `clients`
+- rename `resolvers::ResolverConfig` to `clients::ClientConfig`
+- rename `resolvers::*::Resolver` to `clients::*::Client`
+- reimplement `ClassValue`, `OpCodeValue`, `RCodeValue` and `TypeValue` as new types
+
+
 ## [0.4.1] - 2021-09-04
 ### Fixed
 - fix documentation
