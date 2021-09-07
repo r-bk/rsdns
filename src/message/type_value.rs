@@ -43,9 +43,7 @@ use std::{
 ///
 /// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
-pub struct TypeValue {
-    pub(crate) value: u16,
-}
+pub struct TypeValue(u16);
 
 impl TypeValue {
     /// Converts `self` to a string.
@@ -79,8 +77,7 @@ impl TypeValue {
     /// ```
     #[inline]
     pub fn is_data_type(self) -> bool {
-        (0x0001 <= self.value && self.value <= 0x007F)
-            || (0x0100 <= self.value && self.value <= 0xEFFF)
+        (0x0001 <= self.0 && self.0 <= 0x007F) || (0x0100 <= self.0 && self.0 <= 0xEFFF)
     }
 
     /// Checks if this is a question-type or meta-type value.
@@ -96,21 +93,21 @@ impl TypeValue {
     /// ```
     #[inline]
     pub fn is_meta_type(self) -> bool {
-        0x0080 <= self.value && self.value <= 0x00FF
+        0x0080 <= self.0 && self.0 <= 0x00FF
     }
 }
 
 impl From<u16> for TypeValue {
     #[inline]
     fn from(value: u16) -> Self {
-        Self { value }
+        Self(value)
     }
 }
 
 impl From<Type> for TypeValue {
     #[inline]
     fn from(rt: Type) -> Self {
-        Self { value: rt as u16 }
+        Self(rt as u16)
     }
 }
 
@@ -119,7 +116,7 @@ impl TryFrom<TypeValue> for Type {
 
     #[inline]
     fn try_from(rt: TypeValue) -> Result<Self> {
-        Type::try_from_u16(rt.value)
+        Type::try_from_u16(rt.0)
     }
 }
 
@@ -128,7 +125,7 @@ impl TryFrom<&TypeValue> for Type {
 
     #[inline]
     fn try_from(rtype: &TypeValue) -> Result<Self> {
-        Self::try_from_u16(rtype.value)
+        Self::try_from_u16(rtype.0)
     }
 }
 
@@ -139,7 +136,7 @@ impl Display for TypeValue {
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "TYPE{}", self.value)?;
+                write!(&mut buf, "TYPE{}", self.0)?;
                 f.pad(buf.as_str())?;
             }
         }
@@ -150,56 +147,56 @@ impl Display for TypeValue {
 impl PartialEq<u16> for TypeValue {
     #[inline]
     fn eq(&self, other: &u16) -> bool {
-        self.value == *other
+        self.0 == *other
     }
 }
 
 impl PartialEq<TypeValue> for u16 {
     #[inline]
     fn eq(&self, other: &TypeValue) -> bool {
-        *self == other.value
+        *self == other.0
     }
 }
 
 impl PartialOrd<u16> for TypeValue {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
-        self.value.partial_cmp(other)
+        self.0.partial_cmp(other)
     }
 }
 
 impl PartialOrd<TypeValue> for u16 {
     #[inline]
     fn partial_cmp(&self, other: &TypeValue) -> Option<Ordering> {
-        self.partial_cmp(&other.value)
+        self.partial_cmp(&other.0)
     }
 }
 
 impl PartialEq<Type> for TypeValue {
     #[inline]
     fn eq(&self, other: &Type) -> bool {
-        self.value == *other as u16
+        self.0 == *other as u16
     }
 }
 
 impl PartialEq<TypeValue> for Type {
     #[inline]
     fn eq(&self, other: &TypeValue) -> bool {
-        *self as u16 == other.value
+        *self as u16 == other.0
     }
 }
 
 impl PartialOrd<Type> for TypeValue {
     #[inline]
     fn partial_cmp(&self, other: &Type) -> Option<Ordering> {
-        self.value.partial_cmp(&(*other as u16))
+        self.0.partial_cmp(&(*other as u16))
     }
 }
 
 impl PartialOrd<TypeValue> for Type {
     #[inline]
     fn partial_cmp(&self, other: &TypeValue) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&other.value)
+        (*self as u16).partial_cmp(&other.0)
     }
 }
 

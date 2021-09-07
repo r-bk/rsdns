@@ -199,7 +199,6 @@ impl Display for Type {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::TypeValue;
 
     #[test]
     fn test_try_from_u16() {
@@ -209,7 +208,7 @@ mod tests {
 
         assert!(matches!(
             Type::try_from_u16(0),
-            Err(Error::UnknownType(TypeValue { value: 0 }))
+            Err(Error::UnknownType(tv)) if tv == 0
         ));
     }
 
