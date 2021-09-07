@@ -19,7 +19,7 @@ runtimes. Moreover, *rsdns* has an independent synchronous resolver as well.
 
 [crates-badge]: https://img.shields.io/crates/v/rsdns.svg
 [crates-url]: https://crates.io/crates/rsdns
-[docs-badge]: https://docs.rs/rsdns/badge.svg
+[docs-badge]: https://img.shields.io/docsrs/rsdns
 [docs-url]: https://docs.rs/rsdns/latest/rsdns
 
 ## Notable Features
