@@ -74,7 +74,6 @@ impl Display for Class {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::message::ClassValue;
 
     #[test]
     fn test_try_from_u16() {
@@ -84,7 +83,7 @@ mod tests {
 
         assert!(matches!(
             Class::try_from_u16(0),
-            Err(Error::UnknownClass(ClassValue { value: 0 }))
+            Err(Error::UnknownClass(cv)) if cv == 0
         ));
     }
 

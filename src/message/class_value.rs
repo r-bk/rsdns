@@ -45,9 +45,7 @@ use std::{
 ///
 /// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
-pub struct ClassValue {
-    pub(crate) value: u16,
-}
+pub struct ClassValue(u16);
 
 impl ClassValue {
     /// Converts `self` to a string.
@@ -62,7 +60,7 @@ impl ClassValue {
     /// assert_eq!(ClassValue::from(u16::MAX).to_str(), "UNKNOWN_CLASS");
     /// ```
     pub fn to_str(self) -> &'static str {
-        match Class::try_from_u16(self.value) {
+        match Class::try_from_u16(self.0) {
             Ok(rt) => rt.to_str(),
             _ => "UNKNOWN_CLASS",
         }
@@ -81,7 +79,7 @@ impl ClassValue {
     /// ```
     #[inline]
     pub fn is_data_class(self) -> bool {
-        0x0001 <= self.value && self.value <= 0x007F
+        0x0001 <= self.0 && self.0 <= 0x007F
     }
 
     /// Checks if this a meta-class value.
@@ -97,21 +95,21 @@ impl ClassValue {
     /// ```
     #[inline]
     pub fn is_meta_class(self) -> bool {
-        0x0080 <= self.value && self.value <= 0x00FF
+        0x0080 <= self.0 && self.0 <= 0x00FF
     }
 }
 
 impl From<u16> for ClassValue {
     #[inline]
     fn from(value: u16) -> Self {
-        Self { value }
+        Self(value)
     }
 }
 
 impl From<Class> for ClassValue {
     #[inline]
-    fn from(rc: Class) -> Self {
-        Self { value: rc as u16 }
+    fn from(c: Class) -> Self {
+        Self(c as u16)
     }
 }
 
@@ -119,8 +117,8 @@ impl TryFrom<ClassValue> for Class {
     type Error = Error;
 
     #[inline]
-    fn try_from(rc: ClassValue) -> Result<Self> {
-        Class::try_from_u16(rc.value)
+    fn try_from(cv: ClassValue) -> Result<Self> {
+        Class::try_from_u16(cv.0)
     }
 }
 
@@ -128,19 +126,19 @@ impl TryFrom<&ClassValue> for Class {
     type Error = Error;
 
     #[inline]
-    fn try_from(rc: &ClassValue) -> Result<Self> {
-        Class::try_from_u16(rc.value)
+    fn try_from(cv: &ClassValue) -> Result<Self> {
+        Class::try_from_u16(cv.0)
     }
 }
 
 impl Display for ClassValue {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match Class::try_from_u16(self.value) {
+        match Class::try_from_u16(self.0) {
             Ok(rc) => f.pad(rc.to_str())?,
             _ => {
                 use std::fmt::Write;
                 let mut buf = arrayvec::ArrayString::<32>::new();
-                write!(&mut buf, "CLASS{}", self.value)?;
+                write!(&mut buf, "CLASS{}", self.0)?;
                 f.pad(buf.as_str())?;
             }
         }
@@ -151,56 +149,56 @@ impl Display for ClassValue {
 impl PartialEq<u16> for ClassValue {
     #[inline]
     fn eq(&self, other: &u16) -> bool {
-        self.value == *other
+        self.0 == *other
     }
 }
 
 impl PartialEq<ClassValue> for u16 {
     #[inline]
     fn eq(&self, other: &ClassValue) -> bool {
-        *self == other.value
+        *self == other.0
     }
 }
 
 impl PartialOrd<u16> for ClassValue {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
-        self.value.partial_cmp(other)
+        self.0.partial_cmp(other)
     }
 }
 
 impl PartialOrd<ClassValue> for u16 {
     #[inline]
     fn partial_cmp(&self, other: &ClassValue) -> Option<Ordering> {
-        self.partial_cmp(&other.value)
+        self.partial_cmp(&other.0)
     }
 }
 
 impl PartialEq<Class> for ClassValue {
     #[inline]
     fn eq(&self, other: &Class) -> bool {
-        self.value == *other as u16
+        self.0 == *other as u16
     }
 }
 
 impl PartialEq<ClassValue> for Class {
     #[inline]
     fn eq(&self, other: &ClassValue) -> bool {
-        *self as u16 == other.value
+        *self as u16 == other.0
     }
 }
 
 impl PartialOrd<Class> for ClassValue {
     #[inline]
     fn partial_cmp(&self, other: &Class) -> Option<Ordering> {
-        self.value.partial_cmp(&(*other as u16))
+        self.0.partial_cmp(&(*other as u16))
     }
 }
 
 impl PartialOrd<ClassValue> for Class {
     #[inline]
     fn partial_cmp(&self, other: &ClassValue) -> Option<Ordering> {
-        (*self as u16).partial_cmp(&other.value)
+        (*self as u16).partial_cmp(&other.0)
     }
 }
 
