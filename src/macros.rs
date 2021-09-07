@@ -1,4 +1,4 @@
-macro_rules! cfg_any_resolver {
+macro_rules! cfg_any_client {
     ($($item:item)*) => {
         $(
             #[cfg(

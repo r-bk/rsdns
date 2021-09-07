@@ -8,7 +8,7 @@ macro_rules! get_bit {
     };
 }
 
-cfg_any_resolver! {
+cfg_any_client! {
     macro_rules! set_bit {
         ($e:expr, $l:literal, $v:ident) => {
             let mask = 1 << $l;
@@ -105,7 +105,7 @@ impl Flags {
         get_bit!(self.bits, 8)
     }
 
-    cfg_any_resolver! {
+    cfg_any_client! {
         /// Sets the recursion desired flag.
         pub(crate) fn set_recursion_desired(&mut self, value: bool) -> &mut Self {
             set_bit!(self.bits, 8, value);

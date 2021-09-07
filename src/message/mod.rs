@@ -14,7 +14,7 @@ pub use message_type::*;
 mod opcode_value;
 pub use opcode_value::*;
 
-cfg_any_resolver! {
+cfg_any_client! {
     mod query_writer;
 
     #[cfg_attr(test, allow(unused_imports))]

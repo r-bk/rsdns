@@ -7,7 +7,7 @@ pub use cursor::*;
 mod reader;
 pub use reader::*;
 
-cfg_any_resolver! {
+cfg_any_client! {
     mod wcursor;
     pub use wcursor::*;
 }

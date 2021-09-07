@@ -23,7 +23,7 @@ macro_rules! ru_be {
     }};
 }
 
-cfg_any_resolver! {
+cfg_any_client! {
     macro_rules! wu_be {
         ($self:ident, $t:ty, $val:ident) => {{
             debug_assert!($self.len() >= std::mem::size_of::<$t>());

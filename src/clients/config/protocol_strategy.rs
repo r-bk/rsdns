@@ -1,6 +1,6 @@
 /// Protocol selection strategy.
 ///
-/// Defines resolver's usage of UDP and TCP protocols.
+/// Defines client's usage of UDP and TCP protocols.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum ProtocolStrategy {
     /// Use UDP by default. Fallback to TCP on truncated responses.

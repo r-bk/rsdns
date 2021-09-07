@@ -1,18 +1,17 @@
 # rsdns - DNS Client Library
 
-**rsdns** is a **R**u**s**t lib crate implementing a **DNS** **S**tub **R**esolver
-[RFC 1123 section 6.1.3.1 (B)](https://www.rfc-editor.org/rfc/rfc1123.html#section-6.1.3.1).
+**rsdns** is a Rust library for interacting with DNS servers.
 
 Its main goal is to query the Domain Name System and return the results in easily
 consumable Rust types.
 
 *rsdns* strives to be simple and fast. To be simple *rsdns* keeps a minimal API.
-To be fast *rsdns* aims to allow DNS message parsing with zero memory allocations at runtime.
+To be fast *rsdns* aims to allow DNS message parsing with minimal overhead.
 
-There are DNS crates which implement asynchronous resolvers, but are built for a single
-async runtime. This somewhat blocks usage of such resolver in an application built around
+There are crates which implement asynchronous DNS clients, but are built for a single
+async runtime. This somewhat blocks usage of such client in an application built around
 another runtime. *rsdns* closes this gap and genuinely supports three different async
-runtimes. Moreover, *rsdns* has an independent synchronous resolver as well.
+runtimes. Moreover, *rsdns* has an independent synchronous client as well.
 
 [![crates.io][crates-badge]][crates-url]
 [![docs.rs][docs-badge]][docs-url]
@@ -25,8 +24,8 @@ runtimes. Moreover, *rsdns* has an independent synchronous resolver as well.
 ## Notable Features
 
 * Minimal API
-* Asynchronous resolvers for `tokio`, `async-std` and `smol`
-* Blocking resolver implemented with `std::net`
+* Asynchronous DNS clients for `tokio`, `async-std` and `smol`
+* Blocking client implemented with `std::net`
 * Zero memory allocations when parsing records with no variable size fields
 * Sockets can be bound to network interfaces by name (available on operating
   systems with `SO_BINDTODEVICE` support)

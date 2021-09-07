@@ -1,5 +1,5 @@
-//! Defines configuration for resolvers.
-use crate::resolvers::{ProtocolStrategy, Recursion};
+//! Defines configuration for clients.
+use crate::clients::{ProtocolStrategy, Recursion};
 use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     time::Duration,
@@ -14,9 +14,9 @@ const INTERFACE_NAME_MAX_LENGTH: usize = 16; // socket(7), IFNAMSIZ
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
 type InterfaceName = arrayvec::ArrayString<INTERFACE_NAME_MAX_LENGTH>;
 
-/// Configuration for resolvers.
+/// Configuration for clients.
 #[derive(Clone, Eq, PartialEq, Debug)]
-pub struct ResolverConfig {
+pub struct ClientConfig {
     pub(crate) nameserver_: SocketAddr,
     pub(crate) bind_addr_: SocketAddr,
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
@@ -27,20 +27,20 @@ pub struct ResolverConfig {
     pub(crate) recursion_: Recursion,
 }
 
-impl ResolverConfig {
-    /// Creates the default resolver configuration.
-    pub fn new() -> ResolverConfig {
-        ResolverConfig::default()
+impl ClientConfig {
+    /// Creates the default client configuration.
+    pub fn new() -> ClientConfig {
+        ClientConfig::default()
     }
 
-    /// Creates the default resolver configuration with a specific nameserver.
-    pub fn with_nameserver(nameserver: SocketAddr) -> ResolverConfig {
+    /// Creates the default client configuration with a specific nameserver.
+    pub fn with_nameserver(nameserver: SocketAddr) -> ClientConfig {
         let bind_addr = if nameserver.is_ipv4() {
             Self::ipv4_unspecified()
         } else {
             Self::ipv6_unspecified()
         };
-        ResolverConfig {
+        ClientConfig {
             nameserver_: nameserver,
             bind_addr_: bind_addr,
             ..Default::default()
@@ -54,11 +54,11 @@ impl ResolverConfig {
     /// # Examples
     ///
     /// ```rust
-    /// # use rsdns::resolvers::ResolverConfig;
+    /// # use rsdns::clients::ClientConfig;
     /// # use std::net::{SocketAddr, IpAddr, Ipv4Addr};
     /// let addr = SocketAddr::from((Ipv4Addr::LOCALHOST, 53));
-    /// assert!(!ResolverConfig::new().has_nameserver());
-    /// assert!(ResolverConfig::with_nameserver(addr).has_nameserver());
+    /// assert!(!ClientConfig::new().has_nameserver());
+    /// assert!(ClientConfig::with_nameserver(addr).has_nameserver());
     /// ```
     pub fn has_nameserver(&self) -> bool {
         self.nameserver_ != Self::ipv4_unspecified() && self.nameserver_ != Self::ipv6_unspecified()
@@ -71,16 +71,16 @@ impl ResolverConfig {
     ///
     /// Default: `0.0.0.0:0`
     ///
-    /// [`set_nameserver`]: ResolverConfig::set_nameserver
-    /// [`with_nameserver`]: ResolverConfig::with_nameserver
+    /// [`set_nameserver`]: ClientConfig::set_nameserver
+    /// [`with_nameserver`]: ClientConfig::with_nameserver
     ///
     /// # Examples
     ///
     /// ```rust
-    /// # use rsdns::resolvers::ResolverConfig;
+    /// # use rsdns::clients::ClientConfig;
     /// # use std::{net::{IpAddr, SocketAddr}, str::FromStr};
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
-    /// let mut conf = ResolverConfig::new();
+    /// let mut conf = ClientConfig::new();
     /// assert_eq!(conf.nameserver(), SocketAddr::from_str("0.0.0.0:0")?);
     ///
     /// conf = conf.set_nameserver(SocketAddr::from_str("127.0.0.53:53")?);
@@ -102,11 +102,11 @@ impl ResolverConfig {
     /// # Examples
     ///
     /// ```rust
-    /// # use rsdns::resolvers::ResolverConfig;
+    /// # use rsdns::clients::ClientConfig;
     /// # use std::{net::SocketAddr, str::FromStr, time::Duration};
     /// # fn foo() -> Result<(), Box<dyn std::error::Error>> {
     /// #
-    /// let conf1 = ResolverConfig::with_nameserver(SocketAddr::from_str("127.0.0.53:53")?)
+    /// let conf1 = ClientConfig::with_nameserver(SocketAddr::from_str("127.0.0.53:53")?)
     ///     .set_query_lifetime(Duration::from_secs(5));
     ///
     /// let conf2 = conf1
@@ -170,7 +170,7 @@ impl ResolverConfig {
 
     /// Sets the interface name to bind to.
     ///
-    /// This option forces the resolver to bind sockets to a specified interface using the
+    /// This option forces a client to bind sockets to a specified interface using the
     /// `SO_BINDTODEVICE` socket option (see `socket(7)` man page).
     ///
     /// `interface_name` should be a non-empty string shorter than 16 bytes (`IFNAMSIZ`).
@@ -285,9 +285,9 @@ impl ResolverConfig {
     }
 }
 
-impl Default for ResolverConfig {
+impl Default for ClientConfig {
     fn default() -> Self {
-        ResolverConfig {
+        ClientConfig {
             nameserver_: Self::ipv4_unspecified(),
             bind_addr_: Self::ipv4_unspecified(),
             #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]

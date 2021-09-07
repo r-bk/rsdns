@@ -1,32 +1,32 @@
 use crate::{
-  constants::{Type, Class},
-  records::{data::RData, RecordSet},
-  resolvers::{
-      {{ crate_module_name }}::ResolverImpl,
-      config::ResolverConfig,
-  },
-  Error, Result
+    clients::{
+        {{ crate_module_name }}::ClientImpl,
+        config::ClientConfig,
+    },
+    constants::{Type, Class},
+    records::{data::RData, RecordSet},
+    Error, Result
 };
 
 {% if async == "true" -%}
 {% set as = "async" %}
 {% set aw = ".await" %}
-/// Asynchronous resolver for the [`{{ crate_name }}`] async runtime.
+/// Asynchronous client for the [`{{ crate_name }}`] async runtime.
 ///
 /// [`{{ crate_name }}`]: https://docs.rs/{{ crate_name }}
 {% else -%}
 {% set as = "" %}
 {% set aw = "" %}
-/// Synchronous resolver implemented with [`std::net`].
+/// Synchronous client implemented with [`std::net`].
 ///
 /// [`std::net`]: https://doc.rust-lang.org/std/net
 {% endif -%}
-pub struct Resolver {
-    internal: ResolverImpl,
+pub struct Client {
+    internal: ClientImpl,
 }
 
-impl Resolver {
-    /// Creates a new instance of [`Resolver`] with specified configuration.
+impl Client {
+    /// Creates a new instance of [`Client`] with specified configuration.
     ///
     /// # Returns
     ///
@@ -34,18 +34,18 @@ impl Resolver {
     ///
     /// [`NoNameservers`]: Error::NoNameservers
     #[inline(always)]
-    pub {{ as }} fn new(conf: ResolverConfig) -> Result<Self> {
+    pub {{ as }} fn new(conf: ClientConfig) -> Result<Self> {
         if !conf.has_nameserver() {
             return Err(Error::NoNameservers);
         }
         Ok(Self {
-            internal: ResolverImpl::new(conf){{ aw }}?,
+            internal: ClientImpl::new(conf){{ aw }}?,
         })
     }
 
-    /// Returns the resolver configuration.
+    /// Returns the client configuration.
     #[inline(always)]
-    pub fn config(&self) -> &ResolverConfig {
+    pub fn config(&self) -> &ClientConfig {
         self.internal.config()
     }
 
@@ -71,7 +71,7 @@ impl Resolver {
     /// canonical name. See [`RecordSet::from_msg`] for *CNAME flattening* description.
     ///
     /// This method allows data-type queries only.
-    /// For meta-queries (e.g. [`Type::Any`]) use [`query_raw`](Resolver::query_raw).
+    /// For meta-queries (e.g. [`Type::Any`]) use [`query_raw()`](Client::query_raw).
     ///
     /// This method allocates.
     ///

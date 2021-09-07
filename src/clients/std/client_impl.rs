@@ -1,9 +1,9 @@
 use crate::{
+    clients::config::{ClientConfig, ProtocolStrategy, Recursion},
     constants::{Class, Type},
     errors::{Error, Result},
     message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
-    resolvers::config::{ProtocolStrategy, Recursion, ResolverConfig},
 };
 use std::{
     io::{ErrorKind, Read, Write},
@@ -14,12 +14,12 @@ use std::{
 const QUERY_BUFFER_SIZE: usize = 288;
 type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 
-struct ResolverCtx<'a, 'b, 'c, 'd> {
+struct ClientCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
     qtype: Type,
     qclass: Class,
     sock: &'b UdpSocket,
-    config: &'c ResolverConfig,
+    config: &'c ClientConfig,
     msg_id: u16,
     msg: MsgBuf,
     buf: &'d mut [u8],
@@ -27,20 +27,20 @@ struct ResolverCtx<'a, 'b, 'c, 'd> {
     query_start: Instant,
 }
 
-pub(crate) struct ResolverImpl {
-    config: ResolverConfig,
+pub(crate) struct ClientImpl {
+    config: ClientConfig,
     socket: UdpSocket,
 }
 
-impl ResolverImpl {
-    pub fn new(config: ResolverConfig) -> Result<Self> {
+impl ClientImpl {
+    pub fn new(config: ClientConfig) -> Result<Self> {
         let socket = UdpSocket::bind(config.bind_addr_)?;
         socket.connect(config.nameserver_)?;
 
         Ok(Self { config, socket })
     }
 
-    pub fn config(&self) -> &ResolverConfig {
+    pub fn config(&self) -> &ClientConfig {
         &self.config
     }
 
@@ -52,7 +52,7 @@ impl ResolverImpl {
         buf: &mut [u8],
     ) -> Result<usize> {
         let now = Instant::now();
-        let mut ctx = ResolverCtx {
+        let mut ctx = ClientCtx {
             qname,
             qtype,
             qclass,
@@ -83,7 +83,7 @@ impl ResolverImpl {
     }
 }
 
-impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
+impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
     #[inline]
     fn query_raw(&mut self) -> Result<usize> {
         match self.query_raw_impl() {

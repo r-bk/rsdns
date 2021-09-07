@@ -96,11 +96,11 @@ pub enum Error {
     #[error("message contains no records that answer the query")]
     NoAnswer,
 
-    /// Resolver API is supported for a subset of record types
+    /// Client API is supported for a subset of record types
     #[error("Type {0} is not supported")]
     UnsupportedType(Type),
 
-    /// Resolver API is supported for a subset of record classes
+    /// Client API is supported for a subset of record classes
     #[error("Class {0} is not supported")]
     UnsupportedClass(Class),
 

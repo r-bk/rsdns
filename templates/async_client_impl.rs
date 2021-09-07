@@ -1,8 +1,8 @@
 use crate::{
+    clients::{config::{ProtocolStrategy, Recursion, ClientConfig}},
     constants::{Type, Class},
     message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
-    resolvers::{config::{ProtocolStrategy, Recursion, ResolverConfig}},
     Error, Result,
 };
 
@@ -41,23 +41,23 @@ use crate::{
 const QUERY_BUFFER_SIZE: usize = 288;
 type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 
-pub struct ResolverImpl {
-    config: ResolverConfig,
+pub struct ClientImpl {
+    config: ClientConfig,
     sock: UdpSocket,
 }
 
-impl ResolverImpl {
-    pub async fn new(config: ResolverConfig) -> Result<Self> {
+impl ClientImpl {
+    pub async fn new(config: ClientConfig) -> Result<Self> {
         let sock = udp_socket(&config).await?;
         Ok(Self { config, sock })
     }
 
-    pub fn config(&self) -> &ResolverConfig {
+    pub fn config(&self) -> &ClientConfig {
         &self.config
     }
 
     pub async fn query_raw(&mut self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
-        let mut ctx = ResolverCtx{
+        let mut ctx = ClientCtx {
             qname,
             qtype,
             qclass,
@@ -87,18 +87,18 @@ impl ResolverImpl {
     }
 }
 
-struct ResolverCtx<'a, 'b, 'c, 'd> {
+struct ClientCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,
     qtype: Type,
     qclass: Class,
     sock: &'b UdpSocket,
-    config: &'c ResolverConfig,
+    config: &'c ClientConfig,
     msg_id: u16,
     msg: MsgBuf,
     buf: &'d mut [u8],
 }
 
-impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
+impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
     async fn query_raw(&mut self) -> Result<usize> {
         let query_lifetime = self.config.query_lifetime();
 
@@ -237,7 +237,7 @@ impl<'a, 'b, 'c, 'd> ResolverCtx<'a, 'b, 'c, 'd> {
 {% if crate_name == "tokio" %}
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-async fn udp_socket2(config: &ResolverConfig) -> Result<UdpSocket> {
+async fn udp_socket2(config: &ClientConfig) -> Result<UdpSocket> {
     if config.interface_.is_empty() {
         return udp_socket_simple(config).await;
     }
@@ -265,7 +265,7 @@ async fn udp_socket2(config: &ResolverConfig) -> Result<UdpSocket> {
 }
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-async fn tcp_socket2(config: &ResolverConfig) -> Result<TcpStream> {
+async fn tcp_socket2(config: &ClientConfig) -> Result<TcpStream> {
     if config.interface_.is_empty() {
         return tcp_socket_simple(config).await;
     }
@@ -290,21 +290,21 @@ async fn tcp_socket2(config: &ResolverConfig) -> Result<TcpStream> {
 {% endif %}
 
 #[inline(always)]
-async fn udp_socket_simple(config: &ResolverConfig) -> Result<UdpSocket> {
+async fn udp_socket_simple(config: &ClientConfig) -> Result<UdpSocket> {
     let sock = UdpSocket::bind(config.bind_addr_).await?;
     sock.connect(config.nameserver_).await?;
     Ok(sock)
 }
 
 #[inline(always)]
-async fn tcp_socket_simple(config: &ResolverConfig) -> Result<TcpStream> {
+async fn tcp_socket_simple(config: &ClientConfig) -> Result<TcpStream> {
     let sock = TcpStream::connect(config.nameserver_).await?;
     sock.set_nodelay(true)?;
     Ok(sock)
 }
 
 #[inline(always)]
-async fn udp_socket(config: &ResolverConfig) -> Result<UdpSocket> {
+async fn udp_socket(config: &ClientConfig) -> Result<UdpSocket> {
     {% if crate_name != "tokio" %}
 
     udp_socket_simple(config).await
@@ -324,7 +324,7 @@ async fn udp_socket(config: &ResolverConfig) -> Result<UdpSocket> {
 }
 
 #[inline(always)]
-async fn tcp_socket(config: &ResolverConfig) -> Result<TcpStream> {
+async fn tcp_socket(config: &ClientConfig) -> Result<TcpStream> {
     {% if crate_name != "tokio" %}
 
     tcp_socket_simple(config).await

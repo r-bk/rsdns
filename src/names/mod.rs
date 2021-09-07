@@ -14,6 +14,6 @@ mod reader;
 mod utils;
 pub(crate) use utils::*;
 
-cfg_any_resolver! {
+cfg_any_client! {
     mod writer;
 }

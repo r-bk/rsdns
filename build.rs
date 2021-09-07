@@ -45,7 +45,7 @@ fn write_file(tera: &Tera, context: &Context, file_name: &str, crate_name: &str)
     format_file(&dest_file_path);
 }
 
-fn write_resolvers(tera: &Tera) {
+fn write_clients(tera: &Tera) {
     for crate_name in NET_CRATES {
         if !need_crate(crate_name) {
             continue;
@@ -64,15 +64,15 @@ fn write_resolvers(tera: &Tera) {
             },
         );
 
-        write_file(tera, &context, "resolver", crate_name);
+        write_file(tera, &context, "client", crate_name);
 
         if *crate_name != "std" {
-            write_file(tera, &context, "async_resolver_impl", crate_name);
+            write_file(tera, &context, "async_client_impl", crate_name);
         }
     }
 
-    println!("cargo:rerun-if-changed=templates/resolver.rs");
-    println!("cargo:rerun-if-changed=templates/async_resolver_impl.rs");
+    println!("cargo:rerun-if-changed=templates/client.rs");
+    println!("cargo:rerun-if-changed=templates/async_client_impl.rs");
 }
 
 fn main() {
@@ -83,5 +83,5 @@ fn main() {
         }
     };
 
-    write_resolvers(&tera);
+    write_clients(&tera);
 }

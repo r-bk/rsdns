@@ -26,7 +26,7 @@ pub struct Header {
     pub ar_count: u16,
 }
 
-cfg_any_resolver! {
+cfg_any_client! {
     impl crate::bytes::Writer<Header> for crate::bytes::WCursor<'_> {
         fn write(&mut self, h: &Header) -> Result<usize> {
             if self.len() >= HEADER_LENGTH {
