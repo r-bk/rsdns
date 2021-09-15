@@ -36,6 +36,20 @@
 //! of the client API. Usually an application will use only one of those.
 //! See the [`clients`] module for more information.
 
+//! ## Cargo Features
+//!
+//! *rsdns* exposes several cargo features which conditionally enable different functionalities:
+//!
+//! 1. `net-tokio` - enables the [`clients::tokio`] module
+//! 2. `net-async-std` - enables the [`clients::async_std`] module
+//! 3. `net-smol` - enables the [`clients::smol`] module
+//! 4. `net-std` - enables the [`clients::std`] module
+//! 5. `socket2` - together with `net-tokio` enables `bind-to-device` support
+//!    (currently on Linux only)
+//!
+//! Note that none of the features is enabled by default. The [`clients`] module exists only
+//! if one of the `net-*` features is enabled.
+
 //! # Examples
 //!
 //! The following function retrieves [`A`] records using *rsdns's* asynchronous [`tokio::Client`].
