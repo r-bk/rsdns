@@ -56,11 +56,11 @@ impl<'a> DomainNameReader<'a> {
             let length = self.cursor.u8()?;
             if length == 0 {
                 break;
-            } else if Self::is_length(length) {
+            } else if is_length(length) {
                 self.cursor.skip(length as usize)?;
-            } else if Self::is_pointer(length) {
+            } else if is_pointer(length) {
                 let o2 = self.cursor.u8()?;
-                let offset = Self::pointer_to_offset(length, o2);
+                let offset = pointer_to_offset(length, o2);
 
                 if self.max_pos == 0 {
                     self.max_pos = self.cursor.pos();
@@ -89,12 +89,12 @@ impl<'a> DomainNameReader<'a> {
             let length = self.cursor.u8()?;
             if length == 0 {
                 break;
-            } else if Self::is_length(length) {
+            } else if is_length(length) {
                 let label = self.cursor.slice(length as usize)?;
                 dn.append_label_bytes(label)?;
-            } else if Self::is_pointer(length) {
+            } else if is_pointer(length) {
                 let o2 = self.cursor.u8()?;
-                let offset = Self::pointer_to_offset(length, o2);
+                let offset = pointer_to_offset(length, o2);
 
                 if self.max_pos == 0 {
                     self.max_pos = self.cursor.pos();
@@ -121,21 +121,6 @@ impl<'a> DomainNameReader<'a> {
         Ok(())
     }
 
-    #[inline]
-    const fn is_pointer(b: u8) -> bool {
-        (b & POINTER_MASK) == POINTER_MASK
-    }
-
-    #[inline]
-    const fn is_length(b: u8) -> bool {
-        (b & LENGTH_MASK) == b
-    }
-
-    #[inline]
-    const fn pointer_to_offset(o1: u8, o2: u8) -> u16 {
-        (((o1 & LENGTH_MASK) as u16) << 8) | o2 as u16
-    }
-
     fn remember_offset(&mut self, offset: u16) -> Result<()> {
         for o in &self.seen_offsets {
             if *o == offset {
@@ -151,6 +136,21 @@ impl<'a> DomainNameReader<'a> {
         unsafe { self.seen_offsets.push_unchecked(offset) };
         Ok(())
     }
+}
+
+#[inline]
+pub(crate) const fn is_pointer(b: u8) -> bool {
+    (b & POINTER_MASK) == POINTER_MASK
+}
+
+#[inline]
+pub(crate) const fn is_length(b: u8) -> bool {
+    (b & LENGTH_MASK) == b
+}
+
+#[inline]
+pub(crate) const fn pointer_to_offset(o1: u8, o2: u8) -> u16 {
+    (((o1 & LENGTH_MASK) as u16) << 8) | o2 as u16
 }
 
 impl Reader<InlineName> for Cursor<'_> {

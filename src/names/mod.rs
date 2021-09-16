@@ -9,7 +9,7 @@ pub use name::*;
 mod dname;
 pub use dname::*;
 
-mod reader;
+pub(crate) mod reader;
 
 mod utils;
 pub(crate) use utils::*;
