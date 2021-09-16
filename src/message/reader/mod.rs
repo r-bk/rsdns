@@ -6,6 +6,9 @@ pub use message_reader::*;
 mod questions;
 pub use questions::*;
 
+mod labels;
+pub use labels::*;
+
 mod records;
 pub use records::*;
 
