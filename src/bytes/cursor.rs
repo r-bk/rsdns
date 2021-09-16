@@ -129,7 +129,7 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    pub fn slice(&mut self, size: usize) -> Result<&[u8]> {
+    pub fn slice(&mut self, size: usize) -> Result<&'a [u8]> {
         if self.len() >= size {
             let pos = self.pos;
             self.pos += size;
