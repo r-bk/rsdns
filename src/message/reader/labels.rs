@@ -11,6 +11,9 @@ mod macros;
 mod label;
 pub use label::*;
 
+#[cfg(test)]
+mod test_labels;
+
 const POINTER_MASK: u8 = 0b1100_0000;
 const LENGTH_MASK: u8 = 0b0011_1111;
 
