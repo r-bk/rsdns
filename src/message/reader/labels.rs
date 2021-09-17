@@ -1,5 +1,5 @@
 use crate::{
-    bytes::Cursor,
+    bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
     names::{self, DName},
     Error, Result,
@@ -140,7 +140,8 @@ pub(crate) fn read_domain_name<N: DName>(c: &mut Cursor<'_>) -> Result<N> {
     Ok(dn)
 }
 
-pub(crate) fn skip_domain_name(c: &mut Cursor<'_>) -> Result<()> {
+pub(crate) fn skip_domain_name(c: &mut Cursor<'_>) -> Result<usize> {
+    let start = c.pos();
     let mut cursor = c.clone();
     let mut max_pos = 0;
     let mut n_pointers = 0;
@@ -160,7 +161,7 @@ pub(crate) fn skip_domain_name(c: &mut Cursor<'_>) -> Result<()> {
     let _ = done; // make clippy happy
 
     c.set_pos(max_pos);
-    Ok(())
+    Ok(c.pos() - start)
 }
 
 #[inline]
@@ -176,4 +177,21 @@ const fn is_length(b: u8) -> bool {
 #[inline]
 const fn pointer_to_offset(o1: u8, o2: u8) -> u16 {
     (((o1 & LENGTH_MASK) as u16) << 8) | o2 as u16
+}
+
+impl<N> Reader<N> for Cursor<'_>
+where
+    N: DName,
+{
+    #[inline]
+    fn read(&mut self) -> Result<N> {
+        read_domain_name(self)
+    }
+}
+
+impl Cursor<'_> {
+    #[inline]
+    pub fn skip_domain_name(&mut self) -> Result<usize> {
+        skip_domain_name(self)
+    }
 }
