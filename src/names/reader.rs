@@ -5,9 +5,6 @@ use crate::{
     Result,
 };
 
-const POINTER_MASK: u8 = 0b1100_0000;
-const LENGTH_MASK: u8 = 0b0011_1111;
-
 pub struct DomainNameReader;
 
 impl DomainNameReader {
@@ -25,21 +22,6 @@ impl DomainNameReader {
     pub fn skip(cursor: &mut Cursor<'_>) -> Result<()> {
         skip_domain_name(cursor)
     }
-}
-
-#[inline]
-pub(crate) const fn is_pointer(b: u8) -> bool {
-    (b & POINTER_MASK) == POINTER_MASK
-}
-
-#[inline]
-pub(crate) const fn is_length(b: u8) -> bool {
-    (b & LENGTH_MASK) == b
-}
-
-#[inline]
-pub(crate) const fn pointer_to_offset(o1: u8, o2: u8) -> u16 {
-    (((o1 & LENGTH_MASK) as u16) << 8) | o2 as u16
 }
 
 impl Reader<InlineName> for Cursor<'_> {

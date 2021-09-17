@@ -9,12 +9,12 @@ macro_rules! labels_loop {
                 }
                 $done = true;
                 $f!();
-            } else if reader::is_length(label) {
+            } else if is_length(label) {
                 let bytes = $cursor.slice(label as usize)?;
                 $l!(bytes, pos, $dn);
-            } else if reader::is_pointer(label) {
+            } else if is_pointer(label) {
                 let o2 = $cursor.u8()?;
-                let offset = reader::pointer_to_offset(label, o2);
+                let offset = pointer_to_offset(label, o2);
 
                 if $max_pos == 0 {
                     $max_pos = $cursor.pos();

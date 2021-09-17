@@ -1,7 +1,7 @@
 use crate::{
     bytes::Cursor,
     constants::DOMAIN_NAME_MAX_POINTERS,
-    names::{self, reader, DName},
+    names::{self, DName},
     Error, Result,
 };
 
@@ -10,6 +10,9 @@ mod macros;
 
 mod label;
 pub use label::*;
+
+const POINTER_MASK: u8 = 0b1100_0000;
+const LENGTH_MASK: u8 = 0b0011_1111;
 
 /// Iterator over encoded domain name labels.
 #[derive(Debug)]
@@ -155,4 +158,19 @@ pub(crate) fn skip_domain_name(c: &mut Cursor<'_>) -> Result<()> {
 
     c.set_pos(max_pos);
     Ok(())
+}
+
+#[inline]
+const fn is_pointer(b: u8) -> bool {
+    (b & POINTER_MASK) == POINTER_MASK
+}
+
+#[inline]
+const fn is_length(b: u8) -> bool {
+    (b & LENGTH_MASK) == b
+}
+
+#[inline]
+const fn pointer_to_offset(o1: u8, o2: u8) -> u16 {
+    (((o1 & LENGTH_MASK) as u16) << 8) | o2 as u16
 }
