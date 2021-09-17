@@ -36,6 +36,6 @@ pub(super) mod private {
 
 /// A marker trait for all domain-name types.
 pub trait DName:
-    private::DNameBase + PartialOrd + Ord + PartialEq + Eq + FromStr + Debug + Display + Clone
+    private::DNameBase + PartialOrd + Ord + PartialEq + Eq + FromStr + Debug + Display + Clone + Default
 {
 }
