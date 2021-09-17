@@ -8,12 +8,10 @@ use crate::{
 const POINTER_MASK: u8 = 0b1100_0000;
 const LENGTH_MASK: u8 = 0b0011_1111;
 
-type OffsetsArray = arrayvec::ArrayVec<u16, DOMAIN_NAME_MAX_POINTERS>;
-
 pub struct DomainNameReader<'a> {
     cursor: Cursor<'a>,
     max_pos: usize,
-    seen_offsets: OffsetsArray,
+    n_pointers: usize,
 }
 
 impl<'a> DomainNameReader<'a> {
@@ -47,7 +45,7 @@ impl<'a> DomainNameReader<'a> {
         DomainNameReader {
             cursor,
             max_pos: 0,
-            seen_offsets: OffsetsArray::default(),
+            n_pointers: 0,
         }
     }
 
@@ -71,7 +69,10 @@ impl<'a> DomainNameReader<'a> {
                         max_offset: self.max_pos,
                     });
                 }
-                self.remember_offset(offset)?;
+                self.n_pointers += 1;
+                if self.n_pointers > DOMAIN_NAME_MAX_POINTERS {
+                    return Err(Error::DomainNameTooMuchPointers);
+                }
                 self.cursor.set_pos(offset as usize);
             } else {
                 return Err(Error::DomainNameBadLabelType(length));
@@ -105,7 +106,10 @@ impl<'a> DomainNameReader<'a> {
                         max_offset: self.max_pos,
                     });
                 }
-                self.remember_offset(offset)?;
+                self.n_pointers += 1;
+                if self.n_pointers > DOMAIN_NAME_MAX_POINTERS {
+                    return Err(Error::DomainNameTooMuchPointers);
+                }
                 self.cursor.set_pos(offset as usize);
             } else {
                 return Err(Error::DomainNameBadLabelType(length));
@@ -118,22 +122,6 @@ impl<'a> DomainNameReader<'a> {
         if self.max_pos == 0 {
             self.max_pos = self.cursor.pos();
         }
-        Ok(())
-    }
-
-    fn remember_offset(&mut self, offset: u16) -> Result<()> {
-        for o in &self.seen_offsets {
-            if *o == offset {
-                return Err(Error::DomainNamePointerLoop {
-                    src: self.cursor.pos() - 2, // the offset of the label's first byte
-                    dst: offset as usize,
-                });
-            }
-        }
-        if self.seen_offsets.is_full() {
-            return Err(Error::DomainNameTooMuchPointers);
-        }
-        unsafe { self.seen_offsets.push_unchecked(offset) };
         Ok(())
     }
 }
@@ -238,7 +226,7 @@ mod tests {
 
         assert!(matches!(
             DomainNameReader::read(&mut Cursor::with_pos(&packet[..], 15)),
-            Err(Error::DomainNamePointerLoop { src, dst }) if src == 19 && dst == 5
+            Err(Error::DomainNameTooMuchPointers)
         ));
     }
 

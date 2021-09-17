@@ -48,9 +48,6 @@ pub enum Error {
     )]
     DomainNameTooLong(usize),
 
-    #[error("domain name pointer loop detected from offset {src} to offset {dst}")]
-    DomainNamePointerLoop { src: usize, dst: usize },
-
     #[error(
         "domain name pointer count exceeds allowed limit {}",
         DOMAIN_NAME_MAX_POINTERS
