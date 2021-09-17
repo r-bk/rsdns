@@ -1,128 +1,29 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::DOMAIN_NAME_MAX_POINTERS,
-    names::{DName, InlineName, Name},
-    Error, Result,
+    message::reader::{read_domain_name, skip_domain_name},
+    names::{InlineName, Name},
+    Result,
 };
 
 const POINTER_MASK: u8 = 0b1100_0000;
 const LENGTH_MASK: u8 = 0b0011_1111;
 
-pub struct DomainNameReader<'a> {
-    cursor: Cursor<'a>,
-    max_pos: usize,
-    n_pointers: usize,
-}
+pub struct DomainNameReader;
 
-impl<'a> DomainNameReader<'a> {
-    pub fn read(cursor: &mut Cursor<'a>) -> Result<InlineName> {
-        let mut dn = InlineName::new();
-        Self::read_internal(cursor, &mut dn)?;
-        Ok(dn)
+impl DomainNameReader {
+    #[inline]
+    pub fn read(cursor: &mut Cursor<'_>) -> Result<InlineName> {
+        read_domain_name(cursor)
     }
 
-    pub fn read_string(cursor: &mut Cursor<'a>) -> Result<Name> {
-        let mut dn = Name::new();
-        Self::read_internal(cursor, &mut dn)?;
-        Ok(dn)
+    #[inline]
+    pub fn read_string(cursor: &mut Cursor<'_>) -> Result<Name> {
+        read_domain_name(cursor)
     }
 
-    fn read_internal<N: DName>(cursor: &mut Cursor<'a>, dn: &mut N) -> Result<()> {
-        let mut dnr = Self::new(cursor.clone());
-        dnr.read_impl(dn)?;
-        cursor.set_pos(dnr.max_pos);
-        Ok(())
-    }
-
-    pub fn skip(cursor: &mut Cursor<'a>) -> Result<()> {
-        let mut dnr = Self::new(cursor.clone());
-        dnr.skip_impl()?;
-        cursor.set_pos(dnr.max_pos);
-        Ok(())
-    }
-
-    fn new(cursor: Cursor<'a>) -> Self {
-        DomainNameReader {
-            cursor,
-            max_pos: 0,
-            n_pointers: 0,
-        }
-    }
-
-    fn skip_impl(&mut self) -> Result<()> {
-        loop {
-            let length = self.cursor.u8()?;
-            if length == 0 {
-                break;
-            } else if is_length(length) {
-                self.cursor.skip(length as usize)?;
-            } else if is_pointer(length) {
-                let o2 = self.cursor.u8()?;
-                let offset = pointer_to_offset(length, o2);
-
-                if self.max_pos == 0 {
-                    self.max_pos = self.cursor.pos();
-                }
-                if offset as usize > self.max_pos {
-                    return Err(Error::DomainNameBadPointer {
-                        pointer: offset as usize,
-                        max_offset: self.max_pos,
-                    });
-                }
-                self.n_pointers += 1;
-                if self.n_pointers > DOMAIN_NAME_MAX_POINTERS {
-                    return Err(Error::DomainNameTooMuchPointers);
-                }
-                self.cursor.set_pos(offset as usize);
-            } else {
-                return Err(Error::DomainNameBadLabelType(length));
-            }
-        }
-
-        if self.max_pos == 0 {
-            self.max_pos = self.cursor.pos();
-        }
-        Ok(())
-    }
-
-    fn read_impl<N: DName>(&mut self, dn: &mut N) -> Result<()> {
-        loop {
-            let length = self.cursor.u8()?;
-            if length == 0 {
-                break;
-            } else if is_length(length) {
-                let label = self.cursor.slice(length as usize)?;
-                dn.append_label_bytes(label)?;
-            } else if is_pointer(length) {
-                let o2 = self.cursor.u8()?;
-                let offset = pointer_to_offset(length, o2);
-
-                if self.max_pos == 0 {
-                    self.max_pos = self.cursor.pos();
-                }
-                if offset as usize > self.max_pos {
-                    return Err(Error::DomainNameBadPointer {
-                        pointer: offset as usize,
-                        max_offset: self.max_pos,
-                    });
-                }
-                self.n_pointers += 1;
-                if self.n_pointers > DOMAIN_NAME_MAX_POINTERS {
-                    return Err(Error::DomainNameTooMuchPointers);
-                }
-                self.cursor.set_pos(offset as usize);
-            } else {
-                return Err(Error::DomainNameBadLabelType(length));
-            }
-        }
-
-        if dn.is_empty() {
-            dn.set_root();
-        }
-        if self.max_pos == 0 {
-            self.max_pos = self.cursor.pos();
-        }
-        Ok(())
+    #[inline]
+    pub fn skip(cursor: &mut Cursor<'_>) -> Result<()> {
+        skip_domain_name(cursor)
     }
 }
 
@@ -166,6 +67,7 @@ impl Cursor<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{constants::DOMAIN_NAME_MAX_POINTERS, Error};
 
     #[test]
     fn test_basic_flow() {
