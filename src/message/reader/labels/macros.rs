@@ -53,7 +53,7 @@ macro_rules! return_label {
     ($bytes:ident, $pos:ident, $dn:expr) => {
         let _ = $dn;
         names::check_label_bytes($bytes)?;
-        return Ok(Some(Label { $bytes, $pos }));
+        return Ok(Some(LabelRef { $bytes, $pos }));
     };
 }
 

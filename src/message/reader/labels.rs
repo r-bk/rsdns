@@ -8,8 +8,8 @@ use crate::{
 #[macro_use]
 mod macros;
 
-mod label;
-pub use label::*;
+mod label_ref;
+pub use label_ref::*;
 
 #[cfg(test)]
 mod test_labels;
@@ -44,7 +44,7 @@ impl<'a> Labels<'a> {
     }
 
     #[inline]
-    fn next_label(&mut self) -> Option<Result<Label<'a>>> {
+    fn next_label(&mut self) -> Option<Result<LabelRef<'a>>> {
         if self.done {
             return None;
         }
@@ -78,7 +78,7 @@ impl<'a> Labels<'a> {
     }
 
     #[inline]
-    fn next_impl(&mut self) -> Result<Option<Label<'a>>> {
+    fn next_impl(&mut self) -> Result<Option<LabelRef<'a>>> {
         labels_loop!(
             self.cursor,
             self.max_pos,
@@ -105,7 +105,7 @@ impl<'a> Labels<'a> {
 }
 
 impl<'a> Iterator for Labels<'a> {
-    type Item = Result<Label<'a>>;
+    type Item = Result<LabelRef<'a>>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
