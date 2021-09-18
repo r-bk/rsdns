@@ -3,8 +3,8 @@
 /// [`Labels`]: super::Labels
 #[derive(Debug)]
 pub struct Label<'a> {
-    pub(super) bytes: &'a [u8],
-    pub(super) pos: usize,
+    pub(crate) bytes: &'a [u8],
+    pub(crate) pos: usize,
 }
 
 impl<'a> Label<'a> {
