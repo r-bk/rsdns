@@ -17,3 +17,7 @@ pub use records::*;
 
 mod section_tracker;
 pub(crate) use section_tracker::*;
+
+/// Offset in an encoded DNS message.
+#[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq, Hash)]
+pub struct Offset(pub(crate) usize);
