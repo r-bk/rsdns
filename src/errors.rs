@@ -116,6 +116,10 @@ pub enum Error {
     /// No nameservers found
     #[error("no nameservers found")]
     NoNameservers,
+
+    /// Records reader is exhausted or in error state
+    #[error("records reader is exhausted or a previous call resulted in error")]
+    ReaderDone,
 }
 
 /// Result returned by [rsdns](crate).

@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader},
     constants::{RecordsSection, HEADER_LENGTH},
     message::{
-        reader::{QuestionRef, Questions, Records},
+        reader::{QuestionRef, Questions, Records, RecordsReader},
         Header, Question,
     },
     Error, Result,
@@ -131,6 +131,25 @@ impl<'a> MessageReader<'a> {
         Records::new(
             Cursor::with_pos(self.buf, self.section_offset(RecordsSection::Answer)),
             &self.header,
+        )
+    }
+
+    /// Returns a records reader for all records sections.
+    #[inline]
+    pub fn records_reader(&self) -> RecordsReader {
+        RecordsReader::new(
+            Cursor::with_pos(self.buf, self.section_offset(RecordsSection::Answer)),
+            &self.header,
+        )
+    }
+
+    /// Returns a records reader for a specific records section.
+    #[inline]
+    pub fn records_reader_for(&self, section: RecordsSection) -> RecordsReader {
+        RecordsReader::with_section(
+            Cursor::with_pos(self.buf, self.section_offset(section)),
+            &self.header,
+            section,
         )
     }
 
