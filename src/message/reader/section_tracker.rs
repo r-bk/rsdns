@@ -20,6 +20,22 @@ impl SectionTracker {
         }
     }
 
+    #[allow(dead_code)]
+    pub fn with_section(header: &Header, section: RecordsSection) -> Self {
+        let (an, ns, ar) = match section {
+            RecordsSection::Answer => (header.an_count, 0, 0),
+            RecordsSection::Authority => (0, header.ns_count, 0),
+            RecordsSection::Additional => (0, 0, header.ar_count),
+        };
+
+        Self {
+            an_count: an,
+            ns_count: ns,
+            ar_count: ar,
+            ..Default::default()
+        }
+    }
+
     pub fn next_section(&self) -> Option<RecordsSection> {
         if self.an_read < self.an_count {
             Some(RecordsSection::Answer)
