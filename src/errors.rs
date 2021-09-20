@@ -105,9 +105,9 @@ pub enum Error {
     #[error("operation timed-out")]
     Timeout,
 
-    /// Generic bad input error
-    #[error("bad input: {0}")]
-    BadInput(&'static str),
+    /// Generic bad parameter error
+    #[error("bad parameter: {0}")]
+    BadParam(&'static str),
 
     /// *rsdns* tries to avoid panics. InternalError is used instead.
     #[error("internal error: {0}")]

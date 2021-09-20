@@ -183,7 +183,7 @@ impl FromStr for Type {
             "MAILB" => Type::Mailb,
             "MAILA" => Type::Maila,
             "ANY" => Type::Any,
-            _ => return Err(Error::BadInput("unknown Type str")),
+            _ => return Err(Error::BadParam("unknown Type string")),
         };
 
         Ok(rtype)
