@@ -194,4 +194,18 @@ impl Cursor<'_> {
     pub fn skip_domain_name(&mut self) -> Result<usize> {
         skip_domain_name(self)
     }
+
+    #[inline]
+    pub fn skip_question(&mut self) -> Result<()> {
+        skip_domain_name(self)?;
+        self.skip(4) // qtype(2) + qclass(2)
+    }
+
+    #[inline]
+    pub fn skip_rr(&mut self) -> Result<()> {
+        skip_domain_name(self)?;
+        self.skip(8)?; // Type(2) + Class(2) + TTL(4)
+        let rd_len = self.u16_be()?;
+        self.skip(rd_len as usize)
+    }
 }

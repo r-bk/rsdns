@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::HEADER_LENGTH,
+    constants::{RecordsSection, HEADER_LENGTH},
     message::{
         reader::{Questions, Records},
         Header, Question,
@@ -75,7 +75,7 @@ use crate::{
 pub struct MessageReader<'a> {
     buf: &'a [u8],
     header: Header,
-    an_offset: usize,
+    offsets: [usize; 3],
 }
 
 impl<'a> MessageReader<'a> {
@@ -83,11 +83,11 @@ impl<'a> MessageReader<'a> {
     pub fn new(buf: &'a [u8]) -> Result<Self> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
-        let an_offset = Self::find_an_offset(cursor, header.qd_count as usize)?;
+        let offsets = Self::find_section_offsets(cursor, &header)?;
         Ok(MessageReader {
             buf,
             header,
-            an_offset,
+            offsets,
         })
     }
 
@@ -117,15 +117,39 @@ impl<'a> MessageReader<'a> {
 
     /// Returns an iterator over the resource record sections of the message.
     pub fn records(&self) -> Records {
-        Records::new(Cursor::with_pos(self.buf, self.an_offset), &self.header)
+        Records::new(
+            Cursor::with_pos(self.buf, self.section_offset(RecordsSection::Answer)),
+            &self.header,
+        )
     }
 
-    fn find_an_offset(mut cursor: Cursor, qd_count: usize) -> Result<usize> {
-        for _ in 0..qd_count {
-            cursor.skip_domain_name()?;
-            cursor.skip(4)?; // qtype(2) + qclass(2)
-        }
+    fn find_section_offsets(mut cursor: Cursor, header: &Header) -> Result<[usize; 3]> {
+        use RecordsSection::*;
 
-        Ok(cursor.pos())
+        let mut ans = [0, 0, 0];
+
+        // skip Question section
+        for _ in 0..header.qd_count {
+            cursor.skip_question()?;
+        }
+        ans[Answer as usize] = cursor.pos();
+
+        // skip Answer section
+        for _ in 0..header.an_count {
+            cursor.skip_rr()?;
+        }
+        ans[Authority as usize] = cursor.pos();
+
+        // skip Authority section
+        for _ in 0..header.ns_count {
+            cursor.skip_rr()?;
+        }
+        ans[Additional as usize] = cursor.pos();
+
+        Ok(ans)
+    }
+
+    fn section_offset(&self, section: RecordsSection) -> usize {
+        self.offsets[section as usize]
     }
 }
