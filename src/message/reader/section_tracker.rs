@@ -56,4 +56,10 @@ impl SectionTracker {
         }
         Ok(())
     }
+
+    pub fn records_left(&self) -> usize {
+        (self.an_count - self.an_read) as usize
+            + (self.ns_count - self.ns_read) as usize
+            + (self.ar_count - self.ar_read) as usize
+    }
 }
