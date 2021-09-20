@@ -9,7 +9,7 @@ pub struct Cursor<'a> {
 
 impl<'a> Cursor<'a> {
     #[inline]
-    pub const fn new(buf: &[u8]) -> Cursor {
+    pub const fn new(buf: &'a [u8]) -> Cursor<'a> {
         Cursor {
             buf,
             pos: 0,
@@ -18,7 +18,7 @@ impl<'a> Cursor<'a> {
     }
 
     #[inline]
-    pub const fn with_pos(buf: &[u8], pos: usize) -> Cursor {
+    pub const fn with_pos(buf: &'a [u8], pos: usize) -> Cursor<'a> {
         Cursor {
             buf,
             pos,
@@ -27,7 +27,7 @@ impl<'a> Cursor<'a> {
     }
 
     #[inline]
-    pub fn clone_with_pos(&self, pos: usize) -> Cursor {
+    pub fn clone_with_pos(&self, pos: usize) -> Cursor<'a> {
         Cursor {
             buf: self.buf,
             pos,
