@@ -72,7 +72,6 @@ impl<D: RData> RecordSet<D> {
 
         let rclass = Class::try_from(question.qclass)?;
         let mut name = Name::from(&question.qname);
-        let mut cnames = Vec::new();
 
         let mut rrset = loop {
             match Self::extract_rrset(&mut records, &name, rclass)? {
@@ -81,7 +80,6 @@ impl<D: RData> RecordSet<D> {
                     if let Some(cname_rec) = Self::extract_cname(&mut records, &name, rclass) {
                         match cname_rec.rdata {
                             RecordData::Cname(s) => {
-                                cnames.push(s.cname.clone());
                                 name = s.cname;
                             }
                             _ => {
