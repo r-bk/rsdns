@@ -1,5 +1,5 @@
 use crate::{
-    bytes::{Cursor, Reader},
+    bytes::{CSize, Cursor, Reader},
     constants::{RecordsSection, HEADER_LENGTH},
     message::{
         reader::{Questions, Records},
@@ -73,19 +73,20 @@ use crate::{
 ///
 /// ```
 pub struct MessageReader<'a> {
-    buf: &'a [u8],
+    cursor: Cursor<'a>,
     header: Header,
-    offsets: [usize; 3],
+    offsets: [CSize; 3],
 }
 
 impl<'a> MessageReader<'a> {
     /// Creates a reader for a message contained in `buf`.
     pub fn new(buf: &'a [u8]) -> Result<Self> {
-        let mut cursor = Cursor::new(buf);
-        let header: Header = cursor.read()?;
-        let offsets = Self::find_section_offsets(cursor, &header)?;
+        let cursor = Cursor::new(buf)?;
+        let mut tmp = cursor.clone();
+        let header: Header = tmp.read()?;
+        let offsets = Self::find_section_offsets(tmp, &header)?;
         Ok(MessageReader {
-            buf,
+            cursor,
             header,
             offsets,
         })
@@ -110,7 +111,7 @@ impl<'a> MessageReader<'a> {
     /// Returns an iterator over the questions section of the message.
     pub fn questions(&self) -> Questions {
         Questions::new(
-            Cursor::with_pos(self.buf, HEADER_LENGTH),
+            self.cursor.clone_with_pos(CSize(HEADER_LENGTH as u16)),
             self.header.qd_count,
         )
     }
@@ -118,15 +119,16 @@ impl<'a> MessageReader<'a> {
     /// Returns an iterator over the resource record sections of the message.
     pub fn records(&self) -> Records {
         Records::new(
-            Cursor::with_pos(self.buf, self.section_offset(RecordsSection::Answer)),
+            self.cursor
+                .clone_with_pos(self.section_offset(RecordsSection::Answer)),
             &self.header,
         )
     }
 
-    fn find_section_offsets(mut cursor: Cursor, header: &Header) -> Result<[usize; 3]> {
+    fn find_section_offsets(mut cursor: Cursor, header: &Header) -> Result<[CSize; 3]> {
         use RecordsSection::*;
 
-        let mut ans = [0, 0, 0];
+        let mut ans = [CSize(0), CSize(0), CSize(0)];
 
         // skip Question section
         for _ in 0..header.qd_count {
@@ -149,7 +151,7 @@ impl<'a> MessageReader<'a> {
         Ok(ans)
     }
 
-    fn section_offset(&self, section: RecordsSection) -> usize {
+    fn section_offset(&self, section: RecordsSection) -> CSize {
         self.offsets[section as usize]
     }
 }

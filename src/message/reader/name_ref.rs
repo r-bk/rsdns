@@ -52,7 +52,7 @@ impl<'a> NameRef<'a> {
 
                     // efficiently compare labels: if two labels are at the same offset,
                     // the rest of the domain name is necessary equal.
-                    if ml.pos == ol.pos {
+                    if ml.pos.0 == ol.pos.0 {
                         break Ok(true);
                     } else if !ml.bytes.eq_ignore_ascii_case(ol.bytes) {
                         break Ok(false);

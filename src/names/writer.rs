@@ -87,7 +87,7 @@ mod tests {
             assert_eq!(len, ex.1.len());
             assert_eq!(&arr[..len], ex.1);
 
-            let mut cursor = Cursor::new(&arr[..len]);
+            let mut cursor = Cursor::new(&arr[..len]).unwrap();
             let dn: InlineName = cursor.read().unwrap();
 
             assert_eq!(dn, InlineName::from_str(ex.0).unwrap());
@@ -126,7 +126,7 @@ mod tests {
                 .unwrap();
             assert_eq!(len, 255);
 
-            let mut cursor = Cursor::new(&arr[..len]);
+            let mut cursor = Cursor::new(&arr[..len]).unwrap();
             let dn: InlineName = cursor.read().unwrap();
 
             assert_eq!(

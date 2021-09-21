@@ -1,45 +1,51 @@
 use crate::{Error, Result};
+use std::marker::PhantomData;
+
+#[derive(Debug, Copy, Clone)]
+pub struct CSize(pub(crate) u16);
 
 #[derive(Clone, Debug)]
 pub struct Cursor<'a> {
-    buf: &'a [u8],
-    pos: usize,
-    orig: Option<&'a [u8]>,
+    buf: *const u8,
+    capacity: CSize,
+    pos: CSize,
+    orig_capacity: CSize,
+    _marker: PhantomData<&'a [u8]>,
 }
 
 impl<'a> Cursor<'a> {
     #[inline]
-    pub const fn new(buf: &[u8]) -> Cursor {
-        Cursor {
-            buf,
-            pos: 0,
-            orig: None,
-        }
+    pub const fn new(buf: &'a [u8]) -> Result<Cursor<'a>> {
+        Self::with_pos(buf, CSize(0))
     }
 
     #[inline]
-    pub const fn with_pos(buf: &[u8], pos: usize) -> Cursor {
-        Cursor {
-            buf,
-            pos,
-            orig: None,
+    pub const fn with_pos(buf: &'a [u8], pos: CSize) -> Result<Cursor<'a>> {
+        if buf.len() > u16::MAX as usize {
+            return Err(Error::BadParam("message buffer cannot exceed 65535 bytes"));
         }
+
+        Ok(Cursor {
+            buf: buf.as_ptr(),
+            capacity: CSize(buf.len() as u16),
+            pos,
+            orig_capacity: CSize(0),
+            _marker: PhantomData,
+        })
     }
 
     #[inline]
-    pub fn clone_with_pos(&self, pos: usize) -> Cursor {
-        Cursor {
-            buf: self.buf,
-            pos,
-            orig: None,
-        }
+    pub fn clone_with_pos(&self, pos: CSize) -> Cursor<'a> {
+        let mut c = self.clone();
+        c.pos = pos;
+        c
     }
 
-    pub fn window(&mut self, size: usize) -> Result<()> {
-        if self.orig.is_none() {
-            if self.len() >= size {
-                self.orig = Some(self.buf);
-                self.buf = unsafe { self.buf.get_unchecked(..self.pos + size) };
+    pub fn window(&mut self, size: CSize) -> Result<()> {
+        if self.orig_capacity.0 == 0 {
+            if self.len().0 >= size.0 {
+                self.orig_capacity = self.capacity;
+                self.capacity = CSize(self.pos.0 + size.0);
                 Ok(())
             } else {
                 Err(Error::EndOfBuffer)
@@ -50,14 +56,15 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn close_window(&mut self) -> Result<()> {
-        if self.orig.is_some() {
-            if self.pos == self.buf.len() {
-                self.buf = self.orig.take().unwrap();
+        if self.orig_capacity.0 != 0 {
+            if self.pos.0 == self.capacity.0 {
+                self.capacity = self.orig_capacity;
+                self.orig_capacity = CSize(0);
                 Ok(())
             } else {
                 Err(Error::CursorWindowError {
-                    window_end: self.buf.len(),
-                    pos: self.pos,
+                    window_end: self.capacity.0 as usize,
+                    pos: self.pos.0 as usize,
                 })
             }
         } else {
@@ -66,41 +73,35 @@ impl<'a> Cursor<'a> {
     }
 
     #[inline]
-    pub fn pos(&self) -> usize {
+    pub fn pos(&self) -> CSize {
         self.pos
     }
 
     #[inline]
-    pub fn set_pos(&mut self, pos: usize) {
+    pub fn set_pos(&mut self, pos: CSize) {
         self.pos = pos
     }
 
-    pub fn skip(&mut self, distance: usize) -> Result<()> {
-        if self.len() >= distance {
-            self.pos += distance;
+    pub fn skip(&mut self, distance: CSize) -> Result<()> {
+        if self.len().0 >= distance.0 {
+            self.pos.0 += distance.0;
             Ok(())
         } else {
             Err(self.bound_error())
         }
     }
 
-    pub fn len(&self) -> usize {
-        let capacity = self.capacity();
-        if self.pos < capacity {
-            capacity - self.pos
+    pub fn len(&self) -> CSize {
+        if self.pos.0 < self.capacity.0 {
+            CSize(self.capacity.0 - self.pos.0)
         } else {
-            0
+            CSize(0)
         }
     }
 
     #[inline]
-    pub fn capacity(&self) -> usize {
-        self.buf.len()
-    }
-
-    #[inline]
     pub fn is_empty(&self) -> bool {
-        self.len() == 0
+        self.len().0 == 0
     }
 
     pub fn u16_be(&mut self) -> Result<u16> {
@@ -121,19 +122,26 @@ impl<'a> Cursor<'a> {
 
     pub fn u8(&mut self) -> Result<u8> {
         if !self.is_empty() {
-            let v = unsafe { *self.buf.get_unchecked(self.pos) };
-            self.pos += 1;
+            let v = unsafe {
+                let ptr = self.buf.add(self.pos.0 as usize);
+                ptr.read_unaligned()
+            };
+            self.pos.0 += 1;
             Ok(v)
         } else {
             Err(self.bound_error())
         }
     }
 
-    pub fn slice(&mut self, size: usize) -> Result<&'a [u8]> {
-        if self.len() >= size {
+    pub fn slice(&mut self, size: CSize) -> Result<&'a [u8]> {
+        if self.len().0 >= size.0 {
             let pos = self.pos;
-            self.pos += size;
-            Ok(unsafe { self.buf.get_unchecked(pos..pos + size) })
+            self.pos.0 += size.0;
+            Ok(
+                unsafe {
+                    std::slice::from_raw_parts(self.buf.add(pos.0 as usize), size.0 as usize)
+                },
+            )
         } else {
             Err(self.bound_error())
         }
@@ -141,10 +149,22 @@ impl<'a> Cursor<'a> {
 
     #[inline]
     fn bound_error(&self) -> Error {
-        if self.orig.is_none() {
+        if self.orig_capacity.0 == 0 {
             Error::EndOfBuffer
         } else {
             Error::EndOfWindow
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ensure_cursor_size() {
+        let buf = [0u8; 32];
+        let cursor = Cursor::new(&buf[..]).unwrap();
+        assert_eq!(std::mem::size_of_val(&cursor), 16);
     }
 }

@@ -48,7 +48,7 @@ cfg_any_client! {
 
 impl Reader<Header> for Cursor<'_> {
     fn read(&mut self) -> Result<Header> {
-        if self.len() >= HEADER_LENGTH {
+        if self.len().0 >= HEADER_LENGTH as u16 {
             unsafe {
                 Ok(Header {
                     id: self.u16_be_unchecked(),
@@ -103,7 +103,7 @@ mod tests {
             wcursor.write(&header).unwrap();
         }
 
-        let mut cursor = Cursor::new(&buf[..]);
+        let mut cursor = Cursor::new(&buf[..]).unwrap();
 
         let another = cursor.read().unwrap();
 
@@ -115,10 +115,10 @@ mod tests {
         let mut empty_arr = [0u8; 0];
         let mut small_arr = [0u8; HEADER_LENGTH - 1];
 
-        let res: Result<Header> = Cursor::new(&empty_arr[..]).read();
+        let res: Result<Header> = Cursor::new(&empty_arr[..]).unwrap().read();
         assert!(matches!(res, Err(Error::EndOfBuffer)));
 
-        let res: Result<Header> = Cursor::new(&small_arr[..]).read();
+        let res: Result<Header> = Cursor::new(&small_arr[..]).unwrap().read();
         assert!(matches!(res, Err(Error::EndOfBuffer)));
 
         let header = Header::default();

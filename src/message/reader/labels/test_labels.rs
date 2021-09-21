@@ -1,6 +1,6 @@
 use super::*;
 use crate::{
-    bytes::Reader,
+    bytes::{CSize, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
     names::{InlineName, Name},
     Error,
@@ -49,7 +49,7 @@ const IBM_NS: [u8; 191] = [
 #[test]
 fn test_basic_flow() {
     let packet = b"\x03sub\x07example\x03com\x00";
-    let dn: InlineName = read_domain_name(&mut Cursor::new(&packet[..])).unwrap();
+    let dn: InlineName = read_domain_name(&mut Cursor::new(&packet[..]).unwrap()).unwrap();
 
     assert_eq!(dn.as_str(), "sub.example.com.");
 }
@@ -57,7 +57,7 @@ fn test_basic_flow() {
 #[test]
 fn test_basic_flow_string() {
     let packet = b"\x03sub\x07example\x03com\x00";
-    let dn: Name = read_domain_name(&mut Cursor::new(&packet[..])).unwrap();
+    let dn: Name = read_domain_name(&mut Cursor::new(&packet[..]).unwrap()).unwrap();
 
     assert_eq!(dn.as_str(), "sub.example.com.");
 }
@@ -66,7 +66,7 @@ fn test_basic_flow_string() {
 fn test_root_domain_name() {
     let packet = b"\x00";
 
-    let dn: InlineName = read_domain_name(&mut Cursor::new(&packet[..])).unwrap();
+    let dn: InlineName = read_domain_name(&mut Cursor::new(&packet[..]).unwrap()).unwrap();
 
     assert_eq!(dn.as_str(), ".");
 }
@@ -75,7 +75,7 @@ fn test_root_domain_name() {
 fn test_root_domain_name_string() {
     let packet = b"\x00";
 
-    let dn: Name = read_domain_name(&mut Cursor::new(&packet[..])).unwrap();
+    let dn: Name = read_domain_name(&mut Cursor::new(&packet[..]).unwrap()).unwrap();
 
     assert_eq!(dn.as_str(), ".");
 }
@@ -84,7 +84,8 @@ fn test_root_domain_name_string() {
 fn test_basic_flow_with_pointers() {
     let packet = b"\x03com\x00\x07example\xC0\x00\x03sub\xC0\x05";
 
-    let dn: InlineName = read_domain_name(&mut Cursor::with_pos(&packet[..], 15)).unwrap();
+    let dn: InlineName =
+        read_domain_name(&mut Cursor::with_pos(&packet[..], CSize(15)).unwrap()).unwrap();
 
     assert_eq!(dn.as_str(), "sub.example.com.");
 }
@@ -94,7 +95,7 @@ fn test_invalid_pointer() {
     let packet = b"\x03com\x00\x07example\xC0\x13\x03sub\xC0\x05";
 
     assert!(matches!(
-        read_domain_name::<InlineName>(&mut Cursor::with_pos(&packet[..], 5)),
+        read_domain_name::<InlineName>(&mut Cursor::with_pos(&packet[..], CSize(5)).unwrap()),
         Err(Error::DomainNameBadPointer { pointer: p, max_offset: o }) if p == 0x13 && o == 15
     ));
 }
@@ -104,7 +105,7 @@ fn test_pointer_loop() {
     let packet = b"\x03com\x00\x07example\xC0\x0F\x03sub\xC0\x05";
 
     assert!(matches!(
-        read_domain_name::<InlineName>(&mut Cursor::with_pos(&packet[..], 15)),
+        read_domain_name::<InlineName>(&mut Cursor::with_pos(&packet[..], CSize(15)).unwrap()),
         Err(Error::DomainNameTooMuchPointers)
     ));
 }
@@ -114,7 +115,7 @@ fn test_invalid_label_type() {
     let packet = b"\x03com\x00\x07example\xC0\x0F\x03sub\xA0\x05";
 
     assert!(matches!(
-        read_domain_name::<InlineName>(&mut Cursor::with_pos(&packet[..], 15)),
+        read_domain_name::<InlineName>(&mut Cursor::with_pos(&packet[..], CSize(15)).unwrap()),
         Err(Error::DomainNameBadLabelType(l)) if l == 0xA0
     ));
 }
@@ -132,8 +133,10 @@ fn test_too_much_pointers() {
     }
 
     {
-        let dn: InlineName =
-            read_domain_name(&mut Cursor::with_pos(packet.as_ref(), packet.len() - 2)).unwrap();
+        let dn: InlineName = read_domain_name(
+            &mut Cursor::with_pos(packet.as_ref(), CSize((packet.len() - 2) as u16)).unwrap(),
+        )
+        .unwrap();
         assert_eq!(dn.as_str(), "example.com.");
     }
 
@@ -142,10 +145,9 @@ fn test_too_much_pointers() {
         packet.push((start + 2 * (DOMAIN_NAME_MAX_POINTERS - 1)) as u8);
 
         assert!(matches!(
-            read_domain_name::<InlineName>(&mut Cursor::with_pos(
-                packet.as_ref(),
-                packet.len() - 2
-            )),
+            read_domain_name::<InlineName>(
+                &mut Cursor::with_pos(packet.as_ref(), CSize((packet.len() - 2) as u16)).unwrap()
+            ),
             Err(Error::DomainNameTooMuchPointers)
         ));
     }
@@ -154,7 +156,7 @@ fn test_too_much_pointers() {
 #[test]
 fn test_cursor_read() {
     let packet = b"\x03sub\x07example\x03com\x00";
-    let mut cursor = Cursor::new(&packet[..]);
+    let mut cursor = Cursor::new(&packet[..]).unwrap();
     let dn: InlineName = cursor.read().unwrap();
 
     assert_eq!(dn.as_str(), "sub.example.com.");
@@ -162,7 +164,7 @@ fn test_cursor_read() {
 
 #[test]
 fn test_labels() {
-    let expectations: &[(usize, &[&[u8]])] = &[
+    let expectations: &[(u16, &[&[u8]])] = &[
         (12, &[b"ibm", b"com"]),
         (37, &[b"usc2", b"akam", b"net"]),
         (64, &[b"asia3", b"akam", b"net"]),
@@ -175,8 +177,8 @@ fn test_labels() {
     ];
 
     for t in expectations {
-        let cursor = Cursor::new(&IBM_NS[..]);
-        let mut labels = Labels::new(cursor.clone_with_pos(t.0));
+        let cursor = Cursor::new(&IBM_NS[..]).unwrap();
+        let mut labels = Labels::new(cursor.clone_with_pos(CSize(t.0)));
         let ex = t.1;
         for exl in ex {
             let l = labels.next().unwrap().unwrap();
@@ -188,7 +190,7 @@ fn test_labels() {
 
 #[test]
 fn test_read_compressed_name() {
-    let expectations: &[(usize, &str, usize)] = &[
+    let expectations: &[(u16, &str, u16)] = &[
         (12, "ibm.com.", 21),
         (37, "usc2.akam.net.", 52),
         (64, "asia3.akam.net.", 72),
@@ -201,16 +203,16 @@ fn test_read_compressed_name() {
     ];
 
     for t in expectations {
-        let mut cursor = Cursor::with_pos(&IBM_NS[..], t.0);
+        let mut cursor = Cursor::with_pos(&IBM_NS[..], CSize(t.0)).unwrap();
         let dn: Name = read_domain_name(&mut cursor).unwrap();
         assert_eq!(dn.as_str(), t.1);
-        assert_eq!(cursor.pos(), t.2);
+        assert_eq!(cursor.pos().0, t.2);
     }
 }
 
 #[test]
 fn test_skip_compressed_name() {
-    let expectations: &[(usize, usize)] = &[
+    let expectations: &[(u16, u16)] = &[
         (12, 21),
         (37, 52),
         (64, 72),
@@ -223,8 +225,8 @@ fn test_skip_compressed_name() {
     ];
 
     for t in expectations {
-        let mut cursor = Cursor::with_pos(&IBM_NS[..], t.0);
+        let mut cursor = Cursor::with_pos(&IBM_NS[..], CSize(t.0)).unwrap();
         skip_domain_name(&mut cursor).expect("skip_dn failed");
-        assert_eq!(cursor.pos(), t.1);
+        assert_eq!(cursor.pos().0, t.1);
     }
 }

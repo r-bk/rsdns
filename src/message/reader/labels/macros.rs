@@ -4,32 +4,32 @@ macro_rules! labels_loop {
             let pos = $cursor.pos();
             let label = $cursor.u8()?;
             if label == 0 {
-                if $max_pos == 0 {
+                if $max_pos.0 == 0 {
                     $max_pos = $cursor.pos();
                 }
                 $done = true;
                 $f!();
             } else if is_length(label) {
-                let bytes = $cursor.slice(label as usize)?;
+                let bytes = $cursor.slice(CSize(label as u16))?;
                 $l!(bytes, pos, $dn);
             } else if is_pointer(label) {
                 let o2 = $cursor.u8()?;
-                let offset = pointer_to_offset(label, o2);
+                let offset = CSize(pointer_to_offset(label, o2));
 
-                if $max_pos == 0 {
+                if $max_pos.0 == 0 {
                     $max_pos = $cursor.pos();
                 }
-                if offset as usize >= $max_pos - 2 {
+                if offset.0 >= $max_pos.0 - 2 {
                     return Err(Error::DomainNameBadPointer {
-                        pointer: offset as usize,
-                        max_offset: $max_pos,
+                        pointer: offset.0 as usize,
+                        max_offset: $max_pos.0 as usize,
                     });
                 }
                 $n_pointers += 1;
                 if $n_pointers > DOMAIN_NAME_MAX_POINTERS {
                     return Err(Error::DomainNameTooMuchPointers);
                 }
-                $cursor.set_pos(offset as usize);
+                $cursor.set_pos(offset);
             } else {
                 return Err(Error::DomainNameBadLabelType(label));
             }

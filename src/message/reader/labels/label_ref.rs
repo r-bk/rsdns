@@ -1,3 +1,5 @@
+use crate::bytes::CSize;
+
 /// An encoded domain name label returned from [`Labels`] iterator.
 ///
 /// `LabelRef` doesn't own the label bytes, but rather points into a message buffer.
@@ -6,7 +8,7 @@
 #[derive(Debug, Clone)]
 pub struct LabelRef<'a> {
     pub(crate) bytes: &'a [u8],
-    pub(crate) pos: usize,
+    pub(crate) pos: CSize,
 }
 
 impl<'a> LabelRef<'a> {

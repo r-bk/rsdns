@@ -1,5 +1,5 @@
 use crate::{
-    bytes::{Cursor, Reader, RrDataReader},
+    bytes::{CSize, Cursor, Reader, RrDataReader},
     constants::Type,
     Result,
 };
@@ -17,7 +17,7 @@ pub struct Aaaa {
 rr_data!(Aaaa);
 
 impl RrDataReader<Aaaa> for Cursor<'_> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<Aaaa> {
+    fn read_rr_data(&mut self, rd_len: CSize) -> Result<Aaaa> {
         self.window(rd_len)?;
         let rr = Ok(Aaaa {
             address: self.read()?,

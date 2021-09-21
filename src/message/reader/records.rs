@@ -1,5 +1,5 @@
 use crate::{
-    bytes::{Cursor, Reader, RrDataReader},
+    bytes::{CSize, Cursor, Reader, RrDataReader},
     constants::{Class, RecordsSection, Type},
     message::{reader::SectionTracker, ClassValue, Header, TypeValue},
     records::{data::RecordData, ResourceRecord},
@@ -119,7 +119,7 @@ impl<'a> Records<'a> {
                 let rtype: TypeValue = self.cursor.u16_be()?.into();
                 let rclass: ClassValue = self.cursor.u16_be()?.into();
                 let ttl = self.cursor.u32_be()?;
-                let rdlen = self.cursor.u16_be()? as usize;
+                let rdlen = CSize(self.cursor.u16_be()?);
 
                 let rclass = match Class::try_from(rclass) {
                     Ok(rc) => rc,

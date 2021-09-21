@@ -1,5 +1,5 @@
 use crate::{
-    bytes::{Cursor, Reader},
+    bytes::{CSize, Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
     names::{self, DName},
     Error, Result,
@@ -22,7 +22,7 @@ const LENGTH_MASK: u8 = 0b0011_1111;
 pub struct Labels<'a> {
     cursor: Cursor<'a>,
     n_pointers: usize,
-    max_pos: usize,
+    max_pos: CSize,
     done: bool,
 }
 
@@ -33,14 +33,14 @@ impl<'a> Labels<'a> {
         Self {
             cursor: c,
             n_pointers: 0,
-            max_pos: 0,
+            max_pos: CSize(0),
             done: false,
         }
     }
 
     #[inline]
-    pub(crate) fn max_pos(&self) -> usize {
-        self.max_pos
+    pub(crate) fn max_pos(&self) -> u16 {
+        self.max_pos.0
     }
 
     #[inline]
@@ -116,7 +116,7 @@ impl<'a> Iterator for Labels<'a> {
 pub(crate) fn read_domain_name<N: DName>(c: &mut Cursor<'_>) -> Result<N> {
     let mut dn = N::default();
     let mut cursor = c.clone();
-    let mut max_pos = 0;
+    let mut max_pos = CSize(0);
     let mut n_pointers = 0;
     #[allow(unused_assignments)]
     let mut done = false;
@@ -143,7 +143,7 @@ pub(crate) fn read_domain_name<N: DName>(c: &mut Cursor<'_>) -> Result<N> {
 pub(crate) fn skip_domain_name(c: &mut Cursor<'_>) -> Result<usize> {
     let start = c.pos();
     let mut cursor = c.clone();
-    let mut max_pos = 0;
+    let mut max_pos = CSize(0);
     let mut n_pointers = 0;
     #[allow(unused_assignments)]
     let mut done = false;
@@ -161,7 +161,7 @@ pub(crate) fn skip_domain_name(c: &mut Cursor<'_>) -> Result<usize> {
     let _ = done; // make clippy happy
 
     c.set_pos(max_pos);
-    Ok(c.pos() - start)
+    Ok((c.pos().0 - start.0) as usize)
 }
 
 #[inline]
@@ -198,14 +198,14 @@ impl Cursor<'_> {
     #[inline]
     pub fn skip_question(&mut self) -> Result<()> {
         skip_domain_name(self)?;
-        self.skip(4) // qtype(2) + qclass(2)
+        self.skip(CSize(4)) // qtype(2) + qclass(2)
     }
 
     #[inline]
     pub fn skip_rr(&mut self) -> Result<()> {
         skip_domain_name(self)?;
-        self.skip(8)?; // Type(2) + Class(2) + TTL(4)
+        self.skip(CSize(8))?; // Type(2) + Class(2) + TTL(4)
         let rd_len = self.u16_be()?;
-        self.skip(rd_len as usize)
+        self.skip(CSize(rd_len))
     }
 }

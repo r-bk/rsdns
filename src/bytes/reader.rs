@@ -1,4 +1,7 @@
-use crate::{bytes::Cursor, Result};
+use crate::{
+    bytes::{CSize, Cursor},
+    Result,
+};
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 pub trait Reader<T> {
@@ -6,7 +9,7 @@ pub trait Reader<T> {
 }
 
 pub trait RrDataReader<T> {
-    fn read_rr_data(&mut self, rd_len: usize) -> Result<T>;
+    fn read_rr_data(&mut self, rd_len: CSize) -> Result<T>;
 }
 
 impl Reader<Ipv4Addr> for Cursor<'_> {
@@ -31,7 +34,7 @@ mod tests {
     #[test]
     fn test_read_ipv4() {
         let buf = [192, 168, 2, 1];
-        let mut cursor = Cursor::new(&buf);
+        let mut cursor = Cursor::new(&buf).unwrap();
         let ipv4: Ipv4Addr = cursor.read().expect("failed to read ipv4");
         assert_eq!(
             ipv4,

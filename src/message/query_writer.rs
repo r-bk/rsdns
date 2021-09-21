@@ -67,7 +67,7 @@ mod tests {
         let msg_id = qw.message_id();
         drop(qw);
 
-        let mut c = Cursor::new(&query[..size]);
+        let mut c = Cursor::new(&query[..size]).unwrap();
 
         let size = c.u16_be().unwrap();
         let header: Header = c.read().unwrap();
