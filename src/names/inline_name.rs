@@ -1,4 +1,9 @@
-use crate::{constants::DOMAIN_NAME_MAX_LENGTH, names::Name, Error, Result};
+use crate::{
+    bytes::{Cursor, Reader},
+    constants::DOMAIN_NAME_MAX_LENGTH,
+    names::Name,
+    Error, Result,
+};
 use arrayvec::ArrayString;
 use std::{
     cmp::Ordering,
@@ -427,6 +432,11 @@ impl super::private::DNameBase for InlineName {
     #[inline(always)]
     fn set_root(&mut self) {
         self.set_root()
+    }
+
+    #[inline(always)]
+    fn from_cursor(c: &mut Cursor<'_>) -> Result<Self> {
+        c.read()
     }
 }
 

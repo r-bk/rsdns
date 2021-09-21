@@ -4,10 +4,10 @@ use std::{
 };
 
 pub(super) mod private {
-    use crate::Result;
+    use crate::{bytes::Cursor, Result};
 
     /// An interface of a domain name.
-    pub trait DNameBase {
+    pub trait DNameBase: Sized {
         /// Returns the domain name as string slice.
         fn as_str(&self) -> &str;
 
@@ -31,6 +31,9 @@ pub(super) mod private {
 
         /// Sets the domain name to denote the root DNS zone `.`.
         fn set_root(&mut self);
+
+        /// Reads a domain name from a cursor.
+        fn from_cursor(c: &mut Cursor<'_>) -> Result<Self>;
     }
 }
 
