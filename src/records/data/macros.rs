@@ -21,6 +21,11 @@ macro_rules! rr_data {
                     _ => Err(crate::Error::InternalError("record data conversion failed")),
                 }
             }
+
+            #[inline]
+            fn from_cursor(c: &mut Cursor<'_>, rdlen: usize) -> crate::Result<Self> {
+                c.read_rr_data(rdlen)
+            }
         }
 
         impl crate::records::data::RData for $RR {

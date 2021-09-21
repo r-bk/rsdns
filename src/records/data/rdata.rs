@@ -2,10 +2,14 @@ use crate::constants::Type;
 use std::{fmt::Debug, hash::Hash};
 
 pub(super) mod private {
-    use crate::{errors::Result, records::data::RecordData};
+    use crate::{bytes::Cursor, errors::Result, records::data::RecordData};
 
     pub trait RDataBase {
         fn from(rd: RecordData) -> Result<Self>
+        where
+            Self: Sized;
+
+        fn from_cursor(c: &mut Cursor<'_>, rdlen: usize) -> Result<Self>
         where
             Self: Sized;
     }
