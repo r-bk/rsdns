@@ -90,6 +90,7 @@ use crate::{
 /// See [`Records`] for an example of using the iterator approach.
 ///
 /// See [`RecordsReader`] for an example of using the non-iterator approach.
+#[derive(Debug)]
 pub struct MessageReader<'a> {
     buf: &'a [u8],
     header: Header,
