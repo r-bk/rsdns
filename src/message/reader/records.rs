@@ -33,18 +33,33 @@ use std::convert::TryFrom;
 ///     records::data::RecordData,
 /// };
 ///
-/// fn print_addresses(buf: &[u8]) -> rsdns::Result<()> {
+/// fn print_answers(buf: &[u8]) -> rsdns::Result<()> {
 ///     let mr = MessageReader::new(buf)?;
+///
+///     let header = mr.header();
+///
+///     println!("ID: {}", header.id);
+///     println!("Type: {}", header.flags.message_type());
+///     println!("Questions: {} Answers: {}", header.qd_count, header.an_count);
+///
+///     let q = mr.question()?;
+///     println!("Question: {} {} {}", q.qname, q.qtype, q.qclass);
 ///
 ///     for result in mr.records() {
 ///         let (section, record) = result?;
 ///
 ///         if section != RecordsSection::Answer {
-///             // skip addresses in sections after Answer
+///             // Answer is the first section; skip the rest
 ///             break;
 ///         }
 ///
 ///         match record.rdata {
+///             RecordData::Cname(ref rdata) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; Cname: {}",
+///                     record.name, record.rclass, record.ttl, rdata.cname
+///                 );
+///             }
 ///             RecordData::A(ref rdata) => {
 ///                 println!(
 ///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
@@ -57,7 +72,7 @@ use std::convert::TryFrom;
 ///                     record.name, record.rclass, record.ttl, rdata.address
 ///                 );
 ///             }
-///             _ => continue,
+///             _ => println!("{:?}", record),
 ///         }
 ///     }
 ///

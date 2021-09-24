@@ -1,4 +1,7 @@
 //! Message reading primitives.
+//!
+//! This module is dedicated to efficient parsing of DNS messages.
+//! For more details see [`MessageReader`], which is the main struct to be used for this purpose.
 
 mod message_reader;
 pub use message_reader::*;
