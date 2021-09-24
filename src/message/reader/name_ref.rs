@@ -84,11 +84,29 @@ impl TryFrom<NameRef<'_>> for Name {
     }
 }
 
+impl TryFrom<&NameRef<'_>> for Name {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(value: &NameRef<'_>) -> Result<Self> {
+        read_domain_name(&mut value.cursor.clone())
+    }
+}
+
 impl TryFrom<NameRef<'_>> for InlineName {
     type Error = Error;
 
     #[inline]
     fn try_from(mut value: NameRef<'_>) -> Result<Self> {
         read_domain_name(&mut value.cursor)
+    }
+}
+
+impl TryFrom<&NameRef<'_>> for InlineName {
+    type Error = Error;
+
+    #[inline]
+    fn try_from(value: &NameRef<'_>) -> Result<Self> {
+        read_domain_name(&mut value.cursor.clone())
     }
 }
