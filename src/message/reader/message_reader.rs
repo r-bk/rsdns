@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader},
     constants::{RecordsSection, HEADER_LENGTH},
     message::{
-        reader::{Questions, Records},
+        reader::{QuestionRef, Questions, Records},
         Header, Question,
     },
     Error, Result,
@@ -105,6 +105,17 @@ impl<'a> MessageReader<'a> {
             return res;
         }
         Err(Error::MessageWithoutQuestion)
+    }
+
+    /// Returns the first question in the questions section as `QuestionRef`.
+    ///
+    /// Usually a DNS message contains a single question.
+    pub fn question_ref(&self) -> Result<QuestionRef<'a>> {
+        if self.header.qd_count == 0 {
+            return Err(Error::MessageWithoutQuestion);
+        }
+        let mut cursor = Cursor::with_pos(self.buf, HEADER_LENGTH);
+        cursor.read()
     }
 
     /// Returns an iterator over the questions section of the message.
