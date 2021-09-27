@@ -102,12 +102,14 @@ impl<'a> MessageReader<'a> {
     pub fn new(buf: &'a [u8]) -> Result<Self> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
-        let offsets = Self::find_section_offsets(cursor, &header)?;
-        Ok(MessageReader {
+        let mut mr = MessageReader {
             buf,
             header,
-            offsets,
-        })
+            offsets: [0, 0, 0],
+        };
+        // pre-calculate the Answers offset for backward compatibility
+        mr.section_offset(RecordsSection::Answer)?;
+        Ok(mr)
     }
 
     /// Returns the parsed header.
@@ -146,9 +148,10 @@ impl<'a> MessageReader<'a> {
     }
 
     /// Returns an iterator over the resource record sections of the message.
+    #[inline]
     pub fn records(&self) -> Records {
         Records::new(
-            Cursor::with_pos(self.buf, self.section_offset(RecordsSection::Answer)),
+            Cursor::with_pos(self.buf, self.offsets[RecordsSection::Answer as usize]),
             &self.header,
         )
     }
@@ -156,49 +159,59 @@ impl<'a> MessageReader<'a> {
     /// Returns a records reader for all records sections.
     #[inline]
     pub fn records_reader(&self) -> RecordsReader {
-        RecordsReader::new(
-            Cursor::with_pos(self.buf, self.section_offset(RecordsSection::Answer)),
-            &self.header,
-        )
+        let offset = self.offsets[RecordsSection::Answer as usize];
+        RecordsReader::new(Cursor::with_pos(self.buf, offset), &self.header)
     }
 
     /// Returns a records reader for a specific records section.
     #[inline]
-    pub fn records_reader_for(&self, section: RecordsSection) -> RecordsReader {
-        RecordsReader::with_section(
-            Cursor::with_pos(self.buf, self.section_offset(section)),
+    pub fn records_reader_for(&mut self, section: RecordsSection) -> Result<RecordsReader> {
+        let offset = self.section_offset(section)?;
+        Ok(RecordsReader::with_section(
+            Cursor::with_pos(self.buf, offset),
             &self.header,
             section,
-        )
+        ))
     }
 
-    fn find_section_offsets(mut cursor: Cursor, header: &Header) -> Result<[usize; 3]> {
+    fn section_offset(&mut self, section: RecordsSection) -> Result<usize> {
         use RecordsSection::*;
 
-        let mut ans = [0, 0, 0];
-
-        // skip Question section
-        for _ in 0..header.qd_count {
-            cursor.skip_question()?;
+        let existing_value = self.offsets[section as usize];
+        if existing_value != 0 {
+            return Ok(existing_value);
         }
-        ans[Answer as usize] = cursor.pos();
 
-        // skip Answer section
-        for _ in 0..header.an_count {
-            cursor.skip_rr()?;
+        match section {
+            Answer => {
+                let mut c = Cursor::with_pos(self.buf, HEADER_LENGTH);
+                for _ in 0..self.header.qd_count {
+                    c.skip_question()?;
+                }
+                let offset = c.pos();
+                self.offsets[Answer as usize] = offset;
+                Ok(offset)
+            }
+            Authority => {
+                let answer_offset = self.section_offset(Answer)?;
+                let mut c = Cursor::with_pos(self.buf, answer_offset);
+                for _ in 0..self.header.an_count {
+                    c.skip_rr()?;
+                }
+                let offset = c.pos();
+                self.offsets[Authority as usize] = offset;
+                Ok(offset)
+            }
+            Additional => {
+                let authority_offset = self.section_offset(Authority)?;
+                let mut c = Cursor::with_pos(self.buf, authority_offset);
+                for _ in 0..self.header.ns_count {
+                    c.skip_rr()?;
+                }
+                let offset = c.pos();
+                self.offsets[Additional as usize] = offset;
+                Ok(offset)
+            }
         }
-        ans[Authority as usize] = cursor.pos();
-
-        // skip Authority section
-        for _ in 0..header.ns_count {
-            cursor.skip_rr()?;
-        }
-        ans[Additional as usize] = cursor.pos();
-
-        Ok(ans)
-    }
-
-    fn section_offset(&self, section: RecordsSection) -> usize {
-        self.offsets[section as usize]
     }
 }

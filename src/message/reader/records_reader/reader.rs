@@ -73,7 +73,7 @@ use crate::{
 /// };
 ///
 /// fn print_answer_addresses(msg: &[u8]) -> Result<()> {
-///     let mr = MessageReader::new(msg)?;
+///     let mut mr = MessageReader::new(msg)?;
 ///
 ///     let rcode = mr.header().flags.response_code();
 ///     if rcode != RCode::NoError {
@@ -84,7 +84,7 @@ use crate::{
 ///         return Err(Error::MessageTruncated);
 ///     }
 ///
-///     let mut rr = mr.records_reader_for(RecordsSection::Answer);
+///     let mut rr = mr.records_reader_for(RecordsSection::Answer)?;
 ///
 ///     while rr.has_records() {
 ///         let header = rr.header::<Name>()?;
