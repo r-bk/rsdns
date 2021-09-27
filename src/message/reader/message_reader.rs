@@ -99,6 +99,7 @@ pub struct MessageReader<'a> {
 
 impl<'a> MessageReader<'a> {
     /// Creates a reader for a message contained in `buf`.
+    #[inline]
     pub fn new(buf: &'a [u8]) -> Result<Self> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
@@ -113,6 +114,7 @@ impl<'a> MessageReader<'a> {
     }
 
     /// Returns the parsed header.
+    #[inline]
     pub fn header(&self) -> &Header {
         &self.header
     }
@@ -120,6 +122,7 @@ impl<'a> MessageReader<'a> {
     /// Returns the first question in the questions section.
     ///
     /// Usually a DNS message contains a single question.
+    #[inline]
     pub fn question(&self) -> Result<Question> {
         let mut questions = self.questions();
         if let Some(res) = questions.next() {
@@ -131,6 +134,7 @@ impl<'a> MessageReader<'a> {
     /// Returns the first question in the questions section as `QuestionRef`.
     ///
     /// Usually a DNS message contains a single question.
+    #[inline]
     pub fn question_ref(&self) -> Result<QuestionRef<'a>> {
         if self.header.qd_count == 0 {
             return Err(Error::MessageWithoutQuestion);
@@ -140,6 +144,7 @@ impl<'a> MessageReader<'a> {
     }
 
     /// Returns an iterator over the questions section of the message.
+    #[inline]
     pub fn questions(&self) -> Questions {
         Questions::new(
             Cursor::with_pos(self.buf, HEADER_LENGTH),
