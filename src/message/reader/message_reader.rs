@@ -7,6 +7,7 @@ use crate::{
     },
     Error, Result,
 };
+use std::cell::RefCell;
 
 /// A DNS message reader.
 ///
@@ -94,7 +95,7 @@ use crate::{
 pub struct MessageReader<'a> {
     buf: &'a [u8],
     header: Header,
-    offsets: [usize; 3],
+    offsets: RefCell<[usize; 3]>,
 }
 
 impl<'a> MessageReader<'a> {
@@ -103,10 +104,10 @@ impl<'a> MessageReader<'a> {
     pub fn new(buf: &'a [u8]) -> Result<Self> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
-        let mut mr = MessageReader {
+        let mr = MessageReader {
             buf,
             header,
-            offsets: [0, 0, 0],
+            offsets: RefCell::new([0, 0, 0]),
         };
         // pre-calculate the Answers offset for backward compatibility
         mr.section_offset(RecordsSection::Answer)?;
@@ -155,8 +156,9 @@ impl<'a> MessageReader<'a> {
     /// Returns an iterator over the resource record sections of the message.
     #[inline]
     pub fn records(&self) -> Records {
+        let offsets = self.offsets.borrow();
         Records::new(
-            Cursor::with_pos(self.buf, self.offsets[RecordsSection::Answer as usize]),
+            Cursor::with_pos(self.buf, offsets[RecordsSection::Answer as usize]),
             &self.header,
         )
     }
@@ -164,13 +166,14 @@ impl<'a> MessageReader<'a> {
     /// Returns a records reader for all records sections.
     #[inline]
     pub fn records_reader(&self) -> RecordsReader {
-        let offset = self.offsets[RecordsSection::Answer as usize];
+        let offsets = self.offsets.borrow();
+        let offset = offsets[RecordsSection::Answer as usize];
         RecordsReader::new(Cursor::with_pos(self.buf, offset), &self.header)
     }
 
     /// Returns a records reader for a specific records section.
     #[inline]
-    pub fn records_reader_for(&mut self, section: RecordsSection) -> Result<RecordsReader> {
+    pub fn records_reader_for(&self, section: RecordsSection) -> Result<RecordsReader> {
         let offset = self.section_offset(section)?;
         Ok(RecordsReader::with_section(
             Cursor::with_pos(self.buf, offset),
@@ -179,12 +182,15 @@ impl<'a> MessageReader<'a> {
         ))
     }
 
-    fn section_offset(&mut self, section: RecordsSection) -> Result<usize> {
+    fn section_offset(&self, section: RecordsSection) -> Result<usize> {
         use RecordsSection::*;
 
-        let existing_value = self.offsets[section as usize];
-        if existing_value != 0 {
-            return Ok(existing_value);
+        {
+            let offsets = self.offsets.borrow();
+            let existing_value = offsets[section as usize];
+            if existing_value != 0 {
+                return Ok(existing_value);
+            }
         }
 
         match section {
@@ -194,7 +200,8 @@ impl<'a> MessageReader<'a> {
                     c.skip_question()?;
                 }
                 let offset = c.pos();
-                self.offsets[Answer as usize] = offset;
+                let mut offsets = self.offsets.borrow_mut();
+                offsets[Answer as usize] = offset;
                 Ok(offset)
             }
             Authority => {
@@ -204,7 +211,8 @@ impl<'a> MessageReader<'a> {
                     c.skip_rr()?;
                 }
                 let offset = c.pos();
-                self.offsets[Authority as usize] = offset;
+                let mut offsets = self.offsets.borrow_mut();
+                offsets[Authority as usize] = offset;
                 Ok(offset)
             }
             Additional => {
@@ -214,7 +222,8 @@ impl<'a> MessageReader<'a> {
                     c.skip_rr()?;
                 }
                 let offset = c.pos();
-                self.offsets[Additional as usize] = offset;
+                let mut offsets = self.offsets.borrow_mut();
+                offsets[Additional as usize] = offset;
                 Ok(offset)
             }
         }

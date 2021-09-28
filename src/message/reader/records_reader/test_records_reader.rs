@@ -133,7 +133,7 @@ fn test_whole_message() {
 
 #[test]
 fn test_answer_section() {
-    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
+    let mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
     let mut rr = mr
         .records_reader_for(RecordsSection::Answer)
         .expect("failed to create RecordsReader");
@@ -189,7 +189,7 @@ fn test_answer_section() {
 
 #[test]
 fn test_data_bytes() {
-    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
+    let mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
     let mut rr = mr
         .records_reader_for(RecordsSection::Additional)
         .expect("failed to create RecordsReader");
