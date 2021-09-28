@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+### Added
+- add `NameRef` - for efficient comparison of encoded domain names
+- add `RecordsReader` - a flexible and more efficient reader of resource records
+
+### Changed
+- implement the `Debug` trait on `MessageReader`
+- make all public methods of `MessageReader` to be `inline`
+- reimplement `RecordSet::from_msg` with `RecordsReader`.
+  Benchmarks show the new implementation is `~35%` faster.
+
+
 ## [0.5.0] - 2021-09-10
 ### Changed
 - define *rsdns* as *DNS Client* instead of *DNS Stub Resolver*.
