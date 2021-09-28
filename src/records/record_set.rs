@@ -1,11 +1,11 @@
 use crate::{
     constants::{Class, RCode, RecordsSection, Type},
-    message::{reader::MessageReader, MessageType},
-    names::Name,
-    records::{
-        data::{RData, RecordData},
-        ResourceRecord,
+    message::{
+        reader::{MessageReader, NameRef, RecordHeaderRef, RecordsReader},
+        MessageType,
     },
+    names::Name,
+    records::data::RData,
     Error, Result,
 };
 use std::convert::TryFrom;
@@ -67,28 +67,23 @@ impl<D: RData> RecordSet<D> {
             return Err(Error::MessageTruncated);
         }
 
-        let question = mr.question()?;
-        let mut records = Self::read_answer_records(&mr)?;
+        let question = mr.question_ref()?;
+        let mut headers = {
+            let rr = mr.records_reader_for(RecordsSection::Answer)?;
+            Self::read_answer_headers(rr)?
+        };
 
         let rclass = Class::try_from(question.qclass)?;
-        let mut name = Name::from(&question.qname);
+        let mut name = question.qname;
+
+        let rr = mr.records_reader();
 
         let mut rrset = loop {
-            match Self::extract_rrset(&mut records, &name, rclass)? {
+            match Self::extract_rrset(&rr, &mut headers, &name, rclass)? {
                 Some(rrset) => break rrset,
                 None => {
-                    if let Some(cname_rec) = Self::extract_cname(&mut records, &name, rclass) {
-                        match cname_rec.rdata {
-                            RecordData::Cname(s) => {
-                                name = s.cname;
-                            }
-                            _ => {
-                                // should not get here
-                                return Err(Error::InternalError(
-                                    "unexpected RecordData discriminant: Cname expected",
-                                ));
-                            }
-                        }
+                    if let Some(n) = Self::extract_cname(&rr, &mut headers, &name, rclass)? {
+                        name = n;
                     } else {
                         return Err(Error::NoAnswer);
                     }
@@ -96,13 +91,15 @@ impl<D: RData> RecordSet<D> {
             }
         };
 
-        rrset.name = name;
+        rrset.name = Name::try_from(name)?;
         Ok(rrset)
     }
 
-    fn extract_rrset(
-        records: &mut Vec<Option<ResourceRecord>>,
-        name: &Name,
+    #[inline(always)]
+    fn extract_rrset<'a>(
+        rr: &RecordsReader<'a>,
+        headers: &mut Vec<Option<RecordHeaderRef<'a>>>,
+        name: &NameRef<'a>,
         rclass: Class,
     ) -> Result<Option<RecordSet<D>>> {
         let mut rrset = RecordSet {
@@ -113,12 +110,12 @@ impl<D: RData> RecordSet<D> {
         };
 
         #[allow(clippy::manual_flatten)]
-        for o in records.iter_mut() {
-            if let Some(r) = o {
-                if r.name == *name && r.rtype == D::RTYPE && r.rclass == rclass {
-                    rrset.ttl = rrset.ttl.min(r.ttl);
-                    let rec = o.take().unwrap(); // o.is_some() == true, so no panic here
-                    rrset.rdata.push(D::from(rec.rdata)?);
+        for o in headers.iter_mut() {
+            if let Some(h) = o {
+                if h.name().eq(name)? && h.rtype() == D::RTYPE && h.rclass() == rclass {
+                    rrset.ttl = rrset.ttl.min(h.ttl());
+                    rrset.rdata.push(rr.data_at::<D>(h.marker())?);
+                    o.take();
                 }
             }
         }
@@ -130,33 +127,34 @@ impl<D: RData> RecordSet<D> {
         }
     }
 
-    fn extract_cname(
-        records: &mut Vec<Option<ResourceRecord>>,
-        name: &Name,
+    #[inline(always)]
+    fn extract_cname<'a>(
+        rr: &RecordsReader<'a>,
+        headers: &mut Vec<Option<RecordHeaderRef<'a>>>,
+        name: &NameRef<'a>,
         rclass: Class,
-    ) -> Option<ResourceRecord> {
+    ) -> Result<Option<NameRef<'a>>> {
         #[allow(clippy::manual_flatten)]
-        for o in records.iter_mut() {
-            if let Some(r) = o {
-                if r.name == name && r.rtype == Type::Cname && r.rclass == rclass {
-                    return o.take();
+        for o in headers.iter_mut() {
+            if let Some(h) = o {
+                if h.name().eq(name)? && h.rtype() == Type::Cname && h.rclass() == rclass {
+                    let n = rr.name_ref_at(h.marker());
+                    o.take();
+                    return Ok(Some(n));
                 }
             }
         }
-        None
+        Ok(None)
     }
 
-    fn read_answer_records(mr: &MessageReader) -> Result<Vec<Option<ResourceRecord>>> {
-        let mut records = Vec::new();
-        for res in mr.records() {
-            let (section, record) = res?;
-            if section == RecordsSection::Answer {
-                records.push(Some(record));
-            } else {
-                // Answer is the first section. Skip the rest.
-                break;
-            }
+    #[inline(always)]
+    fn read_answer_headers(mut rr: RecordsReader) -> Result<Vec<Option<RecordHeaderRef>>> {
+        let mut headers = Vec::with_capacity(rr.count());
+        while rr.has_records() {
+            let header = rr.header_ref()?;
+            rr.skip_data(header.marker())?;
+            headers.push(Some(header));
         }
-        Ok(records)
+        Ok(headers)
     }
 }

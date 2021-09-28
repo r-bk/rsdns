@@ -119,7 +119,7 @@ pub struct RecordsReader<'a> {
 
 impl<'a> RecordsReader<'a> {
     #[inline(always)]
-    pub(crate) fn new(cursor: Cursor<'a>, header: &Header) -> RecordsReader<'a> {
+    pub(crate) fn new<'c>(cursor: Cursor<'c>, header: &Header) -> RecordsReader<'c> {
         RecordsReader {
             cursor,
             section_tracker: SectionTracker::new(header),
@@ -128,11 +128,11 @@ impl<'a> RecordsReader<'a> {
     }
 
     #[inline(always)]
-    pub(crate) fn with_section(
-        cursor: Cursor<'a>,
+    pub(crate) fn with_section<'c>(
+        cursor: Cursor<'c>,
         header: &Header,
         section: RecordsSection,
-    ) -> RecordsReader<'a> {
+    ) -> RecordsReader<'c> {
         RecordsReader {
             cursor,
             section_tracker: SectionTracker::with_section(header, section),
@@ -354,6 +354,12 @@ impl<'a> RecordsReader<'a> {
     pub fn data_at<D: RData>(&self, marker: &RecordMarker) -> Result<D> {
         let mut cursor = self.cursor.clone_with_pos(marker.rdata_pos());
         D::from_cursor(&mut cursor, marker.rdlen as usize)
+    }
+
+    /// Returns the data of a record at specified offset as [`NameRef`].
+    #[inline]
+    pub fn name_ref_at(&self, marker: &RecordMarker) -> NameRef<'a> {
+        NameRef::new(self.cursor.clone_with_pos(marker.rdata_pos()))
     }
 
     #[inline(always)]

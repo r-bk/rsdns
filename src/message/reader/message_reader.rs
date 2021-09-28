@@ -101,7 +101,7 @@ pub struct MessageReader<'a> {
 impl<'a> MessageReader<'a> {
     /// Creates a reader for a message contained in `buf`.
     #[inline]
-    pub fn new(buf: &'a [u8]) -> Result<Self> {
+    pub fn new(buf: &[u8]) -> Result<MessageReader> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
         let mr = MessageReader {
