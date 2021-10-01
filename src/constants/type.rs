@@ -44,6 +44,8 @@ pub enum Type {
     /// a host address (IPv6)
     /// [RFC 3596 section 2.1](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.1)
     Aaaa = 28,
+    /// EDNS(0) OPT pseudo-record [RFC 6891](https://www.rfc-editor.org/rfc/rfc6891.html#section-6)
+    Opt = 41,
     /// a request for a transfer of an entire zone
     Axfr = 252,
     /// a request for mailbox-related records (MB, MG or MR)
@@ -57,7 +59,7 @@ pub enum Type {
 impl Type {
     /// Array of all discriminants in this enum.
     #[cfg(test)]
-    pub const VALUES: [Type; 21] = [
+    pub const VALUES: [Type; 22] = [
         Type::A,
         Type::Ns,
         Type::Md,
@@ -75,6 +77,7 @@ impl Type {
         Type::Mx,
         Type::Txt,
         Type::Aaaa,
+        Type::Opt,
         Type::Axfr,
         Type::Mailb,
         Type::Maila,
@@ -102,6 +105,7 @@ impl Type {
             Type::Mx => "MX",
             Type::Txt => "TXT",
             Type::Aaaa => "AAAA",
+            Type::Opt => "OPT",
             Type::Axfr => "AXFR",
             Type::Mailb => "MAILB",
             Type::Maila => "MAILA",
@@ -128,6 +132,7 @@ impl Type {
             15 => Type::Mx,
             16 => Type::Txt,
             28 => Type::Aaaa,
+            41 => Type::Opt,
             252 => Type::Axfr,
             253 => Type::Mailb,
             254 => Type::Maila,
@@ -179,6 +184,7 @@ impl FromStr for Type {
             "MX" => Type::Mx,
             "TXT" => Type::Txt,
             "AAAA" => Type::Aaaa,
+            "OPT" => Type::Opt,
             "AXFR" => Type::Axfr,
             "MAILB" => Type::Mailb,
             "MAILA" => Type::Maila,
@@ -235,6 +241,7 @@ mod tests {
                 Type::Mx => true,
                 Type::Txt => true,
                 Type::Aaaa => true,
+                Type::Opt => true,
                 Type::Axfr => true,
                 Type::Mailb => true,
                 Type::Maila => true,

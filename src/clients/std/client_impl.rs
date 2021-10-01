@@ -1,9 +1,9 @@
 use crate::{
-    clients::config::{ClientConfig, ProtocolStrategy, Recursion},
-    constants::{Class, Type},
+    clients::config::{ClientConfig, EDns, ProtocolStrategy, Recursion},
+    constants::{Class, Type, DNS_MESSAGE_BUFFER_MIN_LENGTH},
     errors::{Error, Result},
     message::{reader::MessageReader, Flags, QueryWriter},
-    records::{data::RData, RecordSet},
+    records::{data::RData, Opt, RecordSet},
 };
 use std::{
     cell::RefCell,
@@ -62,6 +62,9 @@ impl ClientImpl {
         qclass: Class,
         buf: &mut [u8],
     ) -> Result<usize> {
+        if buf.len() < DNS_MESSAGE_BUFFER_MIN_LENGTH {
+            return Err(Error::BufferTooShort(DNS_MESSAGE_BUFFER_MIN_LENGTH));
+        }
         let now = Instant::now();
         let mut ctx = ClientCtx {
             qname,
@@ -193,6 +196,17 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
     }
 
     fn prepare_message(&mut self) -> Result<()> {
+        let opt = match self.config.edns_ {
+            EDns::On {
+                version,
+                udp_payload_size,
+            } => {
+                let ups = (udp_payload_size as usize).min(self.buf.len());
+                Some(Opt::new(version, ups as u16))
+            }
+            EDns::Off => None,
+        };
+
         unsafe {
             self.msg.set_len(self.msg.capacity());
         }
@@ -201,7 +215,7 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
         let mut qw = QueryWriter::new(&mut self.msg);
 
         self.msg_id = qw.message_id();
-        let msg_len = qw.write(self.qname, self.qtype, self.qclass, recursion)?;
+        let msg_len = qw.write(self.qname, self.qtype, self.qclass, recursion, opt)?;
 
         unsafe {
             self.msg.set_len(msg_len);

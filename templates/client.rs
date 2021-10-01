@@ -50,6 +50,12 @@ impl Client {
     ///
     /// This method doesn't allocate.
     ///
+    /// # Buffer size and EDNS
+    ///
+    /// The minimum size of `buf` is 512 bytes.
+    /// When EDNS is enabled, the UDP payload size sent in the `OPT` record is the minimum between
+    /// `udp_payload_size` configured in [`ClientConfig::edns`] and the size of `buf`.
+    ///
     /// [`message::reader`]: crate::message::reader
     #[inline(always)]
     pub {{ as }} fn query_raw(&mut self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {

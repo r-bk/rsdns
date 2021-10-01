@@ -52,6 +52,23 @@ impl RCodeValue {
             _ => "UNKNOWN_RCODE",
         }
     }
+
+    /// Creates an extended `RCODE` value.
+    ///
+    /// An extended `RCODE` value is a 12-bit `RCODE`, whose low 4 bits are taken from the message
+    /// header, and high 8 bits are taken from the `OPT` pseudo-record.
+    ///
+    /// # Parameters
+    ///
+    /// - `base` - the base `RCODE` value, as returned from [`Flags::response_code`]
+    /// - `extension` - the extension value, as returned from [`Opt::rcode_extension`]
+    ///
+    /// [`Flags::response_code`]: crate::message::Flags::response_code
+    /// [`Opt::rcode_extension`]: crate::records::Opt::rcode_extension
+    #[inline]
+    pub fn extended(base: RCodeValue, extension: u8) -> RCodeValue {
+        RCodeValue((base.0 & 0xF) | ((extension as u16) << 4))
+    }
 }
 
 impl From<u16> for RCodeValue {

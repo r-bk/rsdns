@@ -19,18 +19,22 @@ pub enum RCode {
     NotImp = 4,
     /// Refused - the name server refuses to perform the specified operation for policy reasons.
     Refused = 5,
+    /// Bad version
+    /// [RFC 2671 section 4.6](https://www.rfc-editor.org/rfc/rfc2671.html#section-4.6)
+    BadVers = 16,
 }
 
 impl RCode {
     /// Array of all discriminants in this enum.
     #[cfg(test)]
-    pub const VALUES: [RCode; 6] = [
+    pub const VALUES: [RCode; 7] = [
         RCode::NoError,
         RCode::FormErr,
         RCode::ServFail,
         RCode::NxDomain,
         RCode::NotImp,
         RCode::Refused,
+        RCode::BadVers,
     ];
 
     /// Converts an rcode to a static string.
@@ -42,6 +46,7 @@ impl RCode {
             RCode::NxDomain => "NXDOMAIN",
             RCode::NotImp => "NOTIMP",
             RCode::Refused => "REFUSED",
+            RCode::BadVers => "BADVERS",
         }
     }
 
@@ -53,6 +58,7 @@ impl RCode {
             3 => RCode::NxDomain,
             4 => RCode::NotImp,
             5 => RCode::Refused,
+            16 => RCode::BadVers,
             _ => return Err(Error::UnknownRCode(value.into())),
         };
 
@@ -94,6 +100,7 @@ mod tests {
                 RCode::NxDomain => true,
                 RCode::NotImp => true,
                 RCode::Refused => true,
+                RCode::BadVers => true,
             };
 
             if found {

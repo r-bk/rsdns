@@ -2,10 +2,10 @@ use crate::{
     constants::{Class, RCode, RecordsSection, Type},
     message::{
         reader::{MessageReader, NameRef, RecordHeaderRef},
-        MessageType,
+        MessageType, RCodeValue,
     },
     names::Name,
-    records::data::RData,
+    records::{data::RData, Opt},
     Error, Result,
 };
 
@@ -58,16 +58,23 @@ impl<D: RData> RecordSet<D> {
             return Err(Error::BadMessageType(flags.message_type()));
         }
 
-        if flags.response_code() != RCode::NoError {
-            return Err(Error::BadResponseCode(flags.response_code()));
-        }
-
         if flags.truncated() {
             return Err(Error::MessageTruncated);
         }
 
         let question = mr.the_question_ref()?;
         let mut headers = Self::read_answer_headers(&mut mr)?;
+        let opt = Self::read_opt(&mut mr)?;
+
+        let response_code = if let Some(ref o) = opt {
+            RCodeValue::extended(header.flags.response_code(), o.rcode_extension())
+        } else {
+            header.flags.response_code()
+        };
+
+        if response_code != RCode::NoError {
+            return Err(Error::BadResponseCode(response_code));
+        }
 
         let rclass = Class::try_from(question.qclass)?;
         let mut name = question.qname;
@@ -152,5 +159,20 @@ impl<D: RData> RecordSet<D> {
             headers.push(Some(header));
         }
         Ok(headers)
+    }
+
+    #[inline(always)]
+    fn read_opt(mr: &mut MessageReader) -> Result<Option<Opt>> {
+        let mut opt = None;
+        while mr.has_records() {
+            let marker = mr.record_marker()?;
+            if marker.rtype == Type::Opt {
+                opt = Some(mr.opt_record(&marker)?);
+                break;
+            } else {
+                mr.skip_record_data(&marker)?;
+            }
+        }
+        Ok(opt)
     }
 }

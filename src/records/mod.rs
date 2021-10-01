@@ -2,6 +2,9 @@
 
 pub mod data;
 
+mod opt;
+pub use opt::*;
+
 mod record;
 pub use record::*;
 

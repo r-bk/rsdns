@@ -54,6 +54,11 @@ impl<'a> WCursor<'a> {
     }
 
     #[inline]
+    pub fn u32_be(&mut self, val: u32) -> Result<()> {
+        w_be!(self, u32, val)
+    }
+
+    #[inline]
     pub unsafe fn u16_be_unchecked(&mut self, val: u16) {
         wu_be!(self, u16, val)
     }

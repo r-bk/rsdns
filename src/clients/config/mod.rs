@@ -1,5 +1,8 @@
 //! Client configuration.
 
+mod edns;
+pub use edns::*;
+
 mod protocol_strategy;
 pub use protocol_strategy::*;
 

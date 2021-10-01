@@ -1,8 +1,8 @@
 use crate::{
-    clients::{config::{ProtocolStrategy, Recursion, ClientConfig}},
-    constants::{Type, Class},
+    clients::config::{ProtocolStrategy, Recursion, ClientConfig, EDns},
+    constants::{Type, Class, DNS_MESSAGE_BUFFER_MIN_LENGTH},
     message::{reader::MessageReader, Flags, QueryWriter},
-    records::{data::RData, RecordSet},
+    records::{data::RData, RecordSet, Opt},
     Error, Result,
 };
 use std::cell::RefCell;
@@ -63,6 +63,9 @@ impl ClientImpl {
     }
 
     pub async fn query_raw(&self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
+        if buf.len() < DNS_MESSAGE_BUFFER_MIN_LENGTH {
+            return Err(Error::BufferTooShort(DNS_MESSAGE_BUFFER_MIN_LENGTH));
+        }
         let mut ctx = ClientCtx {
             qname,
             qtype,
@@ -220,11 +223,21 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
     }
 
     fn prepare_message(&mut self) -> Result<()> {
+        let opt = match self.config.edns_ {
+            EDns::On {
+                version,
+                udp_payload_size
+            } => {
+                let ups = (udp_payload_size as usize).min(self.buf.len());
+                Some(Opt::new(version, ups as u16))
+            },
+            EDns::Off => None,
+        };
         unsafe { self.msg.set_len(self.msg.capacity()); }
         let mut qw = QueryWriter::new(&mut self.msg);
         self.msg_id = qw.message_id();
         let msg_len = qw.write(self.qname, self.qtype, self.qclass,
-                               self.config.recursion_ == Recursion::On)?;
+                               self.config.recursion_ == Recursion::On, opt)?;
         unsafe { self.msg.set_len(msg_len); }
         Ok(())
     }

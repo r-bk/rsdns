@@ -1,6 +1,6 @@
 //! Defines configuration for clients.
 use crate::{
-    clients::{ProtocolStrategy, Recursion},
+    clients::{EDns, ProtocolStrategy, Recursion},
     constants::{DNS_MESSAGE_BUFFER_MIN_LENGTH, DNS_MESSAGE_MAX_LENGTH},
     Error, Result,
 };
@@ -27,6 +27,7 @@ pub struct ClientConfig {
     pub(crate) protocol_strategy_: ProtocolStrategy,
     pub(crate) recursion_: Recursion,
     pub(crate) buffer_size_: usize,
+    pub(crate) edns_: EDns,
 }
 
 impl ClientConfig {
@@ -303,6 +304,22 @@ impl ClientConfig {
         if !self.has_nameserver() {
             return Err(Error::NoNameservers);
         }
+
+        if let EDns::On {
+            version: _,
+            udp_payload_size,
+        } = self.edns_
+        {
+            if (udp_payload_size as usize) < DNS_MESSAGE_BUFFER_MIN_LENGTH {
+                return Err(Error::BadParam("EDNS udp_payload_size min value is 512"));
+            }
+            if self.buffer_size_ > 0 && (udp_payload_size as usize) > self.buffer_size_ {
+                return Err(Error::BadParam(
+                    "EDNS udp_payload_size exceeds internal buffer size",
+                ));
+            }
+        }
+
         Ok(())
     }
 
@@ -369,6 +386,30 @@ impl ClientConfig {
         self
     }
 
+    /// Returns the EDNS configuration.
+    ///
+    /// Specifies if to send the `OPT` pseudo-record in the query.
+    /// When enabled, an `OPT` pseudo-record is sent with specified parameters.
+    ///
+    /// See [`Client::query_raw`] for more information.
+    ///
+    /// Default: `EDns::On { version: 0, udp_payload_size: 1232 }`
+    ///
+    /// [`Client::query_raw`]: crate::clients::tokio::Client::query_raw
+    pub fn edns(&self) -> EDns {
+        self.edns_
+    }
+
+    /// Sets the EDNS configuration.
+    ///
+    /// See [`edns`] for more information.
+    ///
+    /// [`edns`]: Self::edns
+    pub fn set_edns(mut self, edns: EDns) -> Self {
+        self.edns_ = edns;
+        self
+    }
+
     fn ipv4_unspecified() -> SocketAddr {
         SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0))
     }
@@ -390,6 +431,10 @@ impl Default for ClientConfig {
             protocol_strategy_: ProtocolStrategy::Udp,
             recursion_: Recursion::On,
             buffer_size_: DNS_MESSAGE_MAX_LENGTH,
+            edns_: EDns::On {
+                version: 0,
+                udp_payload_size: 1232,
+            },
         }
     }
 }

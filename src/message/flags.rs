@@ -265,6 +265,10 @@ mod tests {
     #[test]
     fn test_response_code() {
         for rcode in RCode::VALUES {
+            if rcode as u16 > 15 {
+                continue;
+            }
+
             let f = Flags { bits: rcode as u16 };
             assert_eq!(f.response_code(), rcode);
 

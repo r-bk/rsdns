@@ -97,9 +97,9 @@ impl<'a> Records<'a> {
                 };
 
                 let rtype = match Type::try_from(rtype) {
-                    Ok(rt) => rt,
+                    Ok(rt) if rt != Type::Opt => rt,
                     _ => {
-                        /* unsupported RTYPE */
+                        // unsupported RTYPE or OPT. OPT record is supported in MessageReader only
                         self.cursor.skip(rdlen)?;
                         self.section_tracker
                             .section_read(section, self.cursor.pos());
@@ -125,7 +125,7 @@ impl<'a> Records<'a> {
                     Type::Mx => rrr!(self, Mx, domain_name_pos, rclass, ttl, rdlen),
                     Type::Txt => rrr!(self, Txt, domain_name_pos, rclass, ttl, rdlen),
                     Type::Aaaa => rrr!(self, Aaaa, domain_name_pos, rclass, ttl, rdlen),
-                    Type::Axfr | Type::Mailb | Type::Maila | Type::Any => {
+                    Type::Axfr | Type::Mailb | Type::Maila | Type::Any | Type::Opt => {
                         return Err(Error::UnexpectedType(rtype));
                     }
                 };

@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::{RecordsSection, HEADER_LENGTH},
+    constants::{RecordsSection, Type, HEADER_LENGTH},
     message::{
         reader::{
             NameRef, QuestionRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset,
@@ -9,7 +9,7 @@ use crate::{
         ClassValue, Header, Question, TypeValue,
     },
     names::DName,
-    records::data::RData,
+    records::{data::RData, Opt},
     Error, Result,
 };
 
@@ -127,6 +127,7 @@ use crate::{
 /// 4. [`record_header`] and [`record_header_ref`] `(G1)`
 /// 5. [`record_data`] and [`record_data_bytes`] `(G2)`
 /// 6. [`skip_record_data`] `(G2)`
+/// 7. [`opt_record`]
 ///
 /// Reading a resource record is a two-step process. Firstly, the record header must be read using
 /// any method in group `G1`. Secondly, (immediately after) the record data must be read using any
@@ -143,6 +144,7 @@ use crate::{
 /// [`record_data`]: MessageReader::record_data
 /// [`record_data_bytes`]: MessageReader::record_data_bytes
 /// [`skip_record_data`]: MessageReader::skip_record_data
+/// [`opt_record`]: MessageReader::opt_record
 ///
 /// ## Marker, Header and HeaderRef
 ///
@@ -159,6 +161,13 @@ use crate::{
 /// Ideally these three types would be implemented in a single type `RecordHeader` with a generic
 /// type parameter for the domain name. However, as of now, Rust doesn't allow having both
 /// [`NameRef`] and [`DName`] hidden behind the same trait.
+///
+///
+/// # EDNS OPT pseudo-record
+///
+/// The EDNS `OPT` pseudo-record is handled slightly differently than other record types.
+/// It has a dedicated method [`opt_record`] which completes reading the record data, and returns
+/// the [`Opt`] struct which holds `OPT` values from both record header and record data parts.
 ///
 ///
 /// # Reader Exhaustion and Error State
@@ -669,6 +678,37 @@ impl<'s, 'a: 's> MessageReader<'a> {
             self.done = true;
         }
         res
+    }
+
+    /// Reads the `OPT` pseudo-record and advances the reader to the next record.
+    ///
+    /// # Panics
+    ///
+    /// This method uses debug assertions to verify that:
+    ///
+    /// - the `marker` matches the reader's buffer pointer
+    /// - the record type of the marker is [`Opt`](Type::Opt)
+    #[inline]
+    pub fn opt_record(&mut self, marker: &RecordMarker) -> Result<Opt> {
+        if self.done {
+            return Err(Error::ReaderDone);
+        }
+        debug_assert!(self.cursor.pos() == marker.rdata_pos());
+        debug_assert!(marker.rtype == Type::Opt);
+        let res = self.opt_record_impl(marker);
+        if res.is_ok() {
+            self.section_tracker
+                .section_read(marker.section, self.cursor.pos());
+        } else {
+            self.done = true;
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn opt_record_impl(&mut self, marker: &RecordMarker) -> Result<Opt> {
+        self.cursor.skip(marker.rdlen as usize)?;
+        Ok(Opt::from_msg(marker.rclass.0, marker.ttl))
     }
 
     /// Reads the data of a record at specified marker and returns it as a byte slice.
