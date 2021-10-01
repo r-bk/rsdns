@@ -54,9 +54,10 @@ use crate::{
 ///
 /// # Random Access
 ///
-/// `RecordsReader` has two additional methods [`RecordsReader::data_at`] and
-/// [`RecordsReader::data_bytes_at`]. These methods allow random access to record data, assuming
-/// the record markers are first traversed and remembered.
+/// `RecordsReader` has additional methods [`RecordsReader::data_at`],
+/// [`RecordsReader::data_bytes_at`] and [`RecordsReader::name_ref_at`].
+/// These methods allow random access to record data, assuming the record markers are first
+/// traversed and stored for later processing.
 ///
 /// Note that these methods are immutable, they do not change the internal buffer pointer of
 /// the reader.
@@ -356,7 +357,10 @@ impl<'a> RecordsReader<'a> {
         D::from_cursor(&mut cursor, marker.rdlen as usize)
     }
 
-    /// Returns the data of a record at specified offset as [`NameRef`].
+    /// Returns the data of a record at specified marker as [`NameRef`].
+    ///
+    /// This method is handy with records that have a single domain name in the
+    /// data section, e.g. `CNAME`, `NS`, `PTR` etc.
     #[inline]
     pub fn name_ref_at(&self, marker: &RecordMarker) -> NameRef<'a> {
         NameRef::new(self.cursor.clone_with_pos(marker.rdata_pos()))
