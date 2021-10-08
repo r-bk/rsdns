@@ -94,11 +94,11 @@ const M0: [u8; 494] = [
 
 #[test]
 fn test_whole_message() {
-    let mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
-    let question = mr.question_ref().expect("question_ref failed");
+    let mi = MessageIterator::new(&M0[..]).expect("failed to create MessageIterator");
+    let question = mi.question_ref().expect("question_ref failed");
 
     let mut headers = Vec::new();
-    let mut rr = mr.records_reader();
+    let mut rr = mi.records_reader();
     assert_eq!(rr.count(), 24);
     while rr.has_records() {
         let header = rr.header_ref().expect("header_ref failed");
@@ -133,8 +133,8 @@ fn test_whole_message() {
 
 #[test]
 fn test_answer_section() {
-    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
-    let mut rr = mr
+    let mut mi = MessageIterator::new(&M0[..]).expect("failed to create MessageIterator");
+    let mut rr = mi
         .records_reader_for(RecordsSection::Answer)
         .expect("failed to create RecordsReader");
     let mut records = Vec::new();
@@ -189,8 +189,8 @@ fn test_answer_section() {
 
 #[test]
 fn test_data_bytes() {
-    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
-    let mut rr = mr
+    let mut mi = MessageIterator::new(&M0[..]).expect("failed to create MessageIterator");
+    let mut rr = mi
         .records_reader_for(RecordsSection::Additional)
         .expect("failed to create RecordsReader");
 

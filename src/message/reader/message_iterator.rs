@@ -10,23 +10,23 @@ use crate::{
 
 /// A DNS message reader.
 ///
-/// `MessageReader` is the main utility for parsing messages. It allows parsing all of the DNS
+/// `MessageIterator` is the main utility for parsing messages. It allows parsing all of the DNS
 /// message components, the header, the questions section and resource records sections -
 /// answer, authority and additional.
 ///
 /// # Header
 ///
-/// The header of a DNS message is parsed in the constructor [`MessageReader::new`] and can be
-/// obtained with the [`MessageReader::header`] method. An error during header parsing fails the
+/// The header of a DNS message is parsed in the constructor [`MessageIterator::new`] and can be
+/// obtained with the [`MessageIterator::header`] method. An error during header parsing fails the
 /// creation of a message reader.
 ///
 /// # Questions
 ///
 /// DNS message format allows encoding more than one Question in the same message. However,
 /// it isn't really possible to ask more than one question in the same request.
-/// Hence a message usually contains only a single question. `MessageReader` returns an iterator
-/// over the questions section via the [`MessageReader::questions`] method.
-/// Additionally, a helper method [`MessageReader::question`] exists which returns just the first
+/// Hence a message usually contains only a single question. `MessageIterator` returns an iterator
+/// over the questions section via the [`MessageIterator::questions`] method.
+/// Additionally, a helper method [`MessageIterator::question`] exists which returns just the first
 /// (and usually the only) question.
 ///
 /// Note that struct [`Question`] owns the domain name, i.e. domain name
@@ -34,7 +34,7 @@ use crate::{
 /// most efficient way of comparing the domain name in the question to domain names in the
 /// resource records sections. When DNS [message compression] is in use, most of
 /// records in the answers section will usually point to the domain name in the question.
-/// For this `MessageReader` has the [`MessageReader::question_ref`] method that returns the
+/// For this `MessageIterator` has the [`MessageIterator::question_ref`] method that returns the
 /// first question as struct [`QuestionRef`]. The difference is that `QuestionRef` doesn't own the
 /// domain name bytes, but rather points back to the encoded domain name in the message buffer.
 /// This allows efficient comparison of domain names encoded in the **same** DNS message, assuming
@@ -43,14 +43,14 @@ use crate::{
 ///
 /// # Records
 ///
-/// `MessageReader` provides two ways for parsing the resource records:
-/// 1. The [`MessageReader::records`] method which returns an iterator over all records sections.
-/// 2. The [`MessageReader::records_reader`] method which returns a non-iterator records reader.
+/// `MessageIterator` provides two ways for parsing the resource records:
+/// 1. The [`MessageIterator::records`] method which returns an iterator over all records sections.
+/// 2. The [`MessageIterator::records_reader`] method which returns a non-iterator records reader.
 ///
 /// ## The `records` method
 ///
-/// The [`MessageReader::records`] method returns an iterator [`Records`] to iterate over `Answer`,
-/// `Authority` and `Additional` sections of a message.
+/// The [`MessageIterator::records`] method returns an iterator [`Records`] to iterate over
+/// `Answer`, `Authority` and `Additional` sections of a message.
 /// This is the simplest form of traversing the records, as `Records`
 /// implements the `Iterator` trait, and, as such, supports Rust's [`for`] loop.
 ///
@@ -65,9 +65,9 @@ use crate::{
 ///
 /// ## The `records_reader` method
 ///
-/// The [`MessageReader::records_reader`] method returns struct [`RecordsReader`], which is another
-/// type that allows traversal of records in a message. It tries to do so without the drawbacks
-/// associated with [`Records`] mentioned above.
+/// The [`MessageIterator::records_reader`] method returns struct [`RecordsReader`], which is
+/// another type that allows traversal of records in a message. It tries to do so without the
+/// drawbacks associated with [`Records`] mentioned above.
 ///
 /// `RecordsReader` is not a Rust `Iterator`. It is not bound to a single
 /// type of item on every iteration. Hence, record data can be obtained from it directly,
@@ -76,7 +76,7 @@ use crate::{
 /// to handle unknown record types as defined in [RFC 3597 section 5].
 ///
 /// Additionally, `RecordsReader` can be bound to a single message section using the
-/// [`MessageReader::records_reader_for`] method. There is no such alternative with the `Records`
+/// [`MessageIterator::records_reader_for`] method. There is no such alternative with the `Records`
 /// iterator.
 ///
 /// [`records::data`]: crate::records::data
@@ -91,26 +91,26 @@ use crate::{
 ///
 /// See [`RecordsReader`] for an example of using the non-iterator approach.
 #[derive(Debug)]
-pub struct MessageReader<'a> {
+pub struct MessageIterator<'a> {
     buf: &'a [u8],
     header: Header,
     offsets: [usize; 3],
 }
 
-impl<'s, 'a: 's> MessageReader<'a> {
+impl<'s, 'a: 's> MessageIterator<'a> {
     /// Creates a reader for a message contained in `buf`.
     #[inline]
-    pub fn new(buf: &[u8]) -> Result<MessageReader> {
+    pub fn new(buf: &[u8]) -> Result<MessageIterator> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
-        let mut mr = MessageReader {
+        let mut mi = MessageIterator {
             buf,
             header,
             offsets: [0, 0, 0],
         };
         // pre-calculate the Answers offset for backward compatibility
-        mr.section_offset(RecordsSection::Answer)?;
-        Ok(mr)
+        mi.section_offset(RecordsSection::Answer)?;
+        Ok(mi)
     }
 
     /// Returns the parsed header.

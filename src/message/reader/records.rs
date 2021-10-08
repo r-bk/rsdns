@@ -29,23 +29,23 @@ use std::convert::TryFrom;
 /// ```rust
 /// use rsdns::{
 ///     constants::RecordsSection,
-///     message::reader::MessageReader,
+///     message::reader::MessageIterator,
 ///     records::data::RecordData,
 /// };
 ///
 /// fn print_answers(buf: &[u8]) -> rsdns::Result<()> {
-///     let mr = MessageReader::new(buf)?;
+///     let mi = MessageIterator::new(buf)?;
 ///
-///     let header = mr.header();
+///     let header = mi.header();
 ///
 ///     println!("ID: {}", header.id);
 ///     println!("Type: {}", header.flags.message_type());
 ///     println!("Questions: {} Answers: {}", header.qd_count, header.an_count);
 ///
-///     let q = mr.question()?;
+///     let q = mi.question()?;
 ///     println!("Question: {} {} {}", q.qname, q.qtype, q.qclass);
 ///
-///     for result in mr.records() {
+///     for result in mi.records() {
 ///         let (section, record) = result?;
 ///
 ///         if section != RecordsSection::Answer {

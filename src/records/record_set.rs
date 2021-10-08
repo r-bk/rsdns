@@ -1,7 +1,7 @@
 use crate::{
     constants::{Class, RCode, RecordsSection, Type},
     message::{
-        reader::{MessageReader, NameRef, RecordHeaderRef, RecordsReader},
+        reader::{MessageIterator, NameRef, RecordHeaderRef, RecordsReader},
         MessageType,
     },
     names::Name,
@@ -51,9 +51,9 @@ impl<D: RData> RecordSet<D> {
     ///
     /// [`CNAME`]: crate::constants::Type::Cname
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
-        let mut mr = MessageReader::new(msg)?;
+        let mut mi = MessageIterator::new(msg)?;
 
-        let flags = mr.header().flags;
+        let flags = mi.header().flags;
 
         if flags.message_type() != MessageType::Response {
             return Err(Error::BadMessageType(flags.message_type()));
@@ -67,16 +67,16 @@ impl<D: RData> RecordSet<D> {
             return Err(Error::MessageTruncated);
         }
 
-        let question = mr.question_ref()?;
+        let question = mi.question_ref()?;
         let mut headers = {
-            let rr = mr.records_reader_for(RecordsSection::Answer)?;
+            let rr = mi.records_reader_for(RecordsSection::Answer)?;
             Self::read_answer_headers(rr)?
         };
 
         let rclass = Class::try_from(question.qclass)?;
         let mut name = question.qname;
 
-        let rr = mr.records_reader();
+        let rr = mi.records_reader();
 
         let mut rrset = loop {
             match Self::extract_rrset(&rr, &mut headers, &name, rclass)? {

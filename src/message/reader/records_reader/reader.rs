@@ -68,25 +68,25 @@ use crate::{
 /// ```rust
 /// use rsdns::{
 ///     constants::{RecordsSection, Type, RCode},
-///     message::reader::MessageReader,
+///     message::reader::MessageIterator,
 ///     names::Name,
 ///     records::data::{A, Aaaa},
 ///     Error, Result,
 /// };
 ///
 /// fn print_answer_addresses(msg: &[u8]) -> Result<()> {
-///     let mut mr = MessageReader::new(msg)?;
+///     let mut mi = MessageIterator::new(msg)?;
 ///
-///     let rcode = mr.header().flags.response_code();
+///     let rcode = mi.header().flags.response_code();
 ///     if rcode != RCode::NoError {
 ///         return Err(Error::BadResponseCode(rcode));
 ///     }
 ///
-///     if mr.header().flags.truncated() {
+///     if mi.header().flags.truncated() {
 ///         return Err(Error::MessageTruncated);
 ///     }
 ///
-///     let mut rr = mr.records_reader_for(RecordsSection::Answer)?;
+///     let mut rr = mi.records_reader_for(RecordsSection::Answer)?;
 ///
 ///     while rr.has_records() {
 ///         let header = rr.header::<Name>()?;

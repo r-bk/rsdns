@@ -18,14 +18,14 @@ use crate::{
 ///
 /// ```rust
 /// # use rsdns::{
-/// #     message::reader::MessageReader,
+/// #     message::reader::MessageIterator,
 /// #     Result,
 /// # };
 /// #
 /// # fn print_questions(buf: &[u8]) -> Result<()> {
-/// let mut message_reader = MessageReader::new(buf)?;
+/// let mut mi = MessageIterator::new(buf)?;
 ///
-/// for result in message_reader.questions() {
+/// for result in mi.questions() {
 ///     let question = result?;
 ///     println!("{} {} {}", question.qname, question.qtype, question.qclass);
 /// }

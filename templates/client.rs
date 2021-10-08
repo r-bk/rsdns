@@ -54,11 +54,11 @@ impl Client {
     /// This method gives the control over buffer management to the caller.
     /// The response message is written into `buf` and its length is returned in the result.
     ///
-    /// The received response can be parsed using [`MessageReader`].
+    /// The received response can be parsed using [`MessageIterator`].
     ///
     /// This method doesn't allocate.
     ///
-    /// [`MessageReader`]: crate::message::reader::MessageReader
+    /// [`MessageIterator`]: crate::message::reader::MessageIterator
     #[inline(always)]
     pub {{ as }} fn query_raw(&mut self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
         self.internal.query_raw(qname, qtype, qclass, buf){{ aw }}
