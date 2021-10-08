@@ -51,7 +51,7 @@ impl<D: RData> RecordSet<D> {
     ///
     /// [`CNAME`]: crate::constants::Type::Cname
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
-        let mr = MessageReader::new(msg)?;
+        let mut mr = MessageReader::new(msg)?;
 
         let flags = mr.header().flags;
 

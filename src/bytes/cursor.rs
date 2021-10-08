@@ -7,7 +7,7 @@ pub struct Cursor<'a> {
     orig: Option<&'a [u8]>,
 }
 
-impl<'a> Cursor<'a> {
+impl<'s, 'a: 's> Cursor<'a> {
     #[inline]
     pub const fn new(buf: &'a [u8]) -> Cursor<'a> {
         Cursor {
@@ -27,7 +27,7 @@ impl<'a> Cursor<'a> {
     }
 
     #[inline]
-    pub fn clone_with_pos(&self, pos: usize) -> Cursor<'a> {
+    pub fn clone_with_pos(&'s self, pos: usize) -> Cursor<'a> {
         Cursor {
             buf: self.buf,
             pos,
@@ -129,7 +129,7 @@ impl<'a> Cursor<'a> {
         }
     }
 
-    pub fn slice(&mut self, size: usize) -> Result<&'a [u8]> {
+    pub fn slice(&'s mut self, size: usize) -> Result<&'a [u8]> {
         if self.len() >= size {
             let pos = self.pos;
             self.pos += size;

@@ -118,7 +118,7 @@ pub struct RecordsReader<'a> {
     done: bool,
 }
 
-impl<'a> RecordsReader<'a> {
+impl<'s, 'a: 's> RecordsReader<'a> {
     #[inline(always)]
     pub(crate) fn new<'c>(cursor: Cursor<'c>, header: &Header) -> RecordsReader<'c> {
         RecordsReader {
@@ -208,7 +208,7 @@ impl<'a> RecordsReader<'a> {
 
     /// Reads the header of the current resource record as [`RecordHeaderRef`].
     #[inline]
-    pub fn header_ref(&mut self) -> Result<RecordHeaderRef<'a>> {
+    pub fn header_ref(&'s mut self) -> Result<RecordHeaderRef<'a>> {
         if self.done {
             return Err(Error::ReaderDone);
         }
@@ -220,7 +220,7 @@ impl<'a> RecordsReader<'a> {
     }
 
     #[inline(always)]
-    fn header_ref_impl(&mut self) -> Result<RecordHeaderRef<'a>> {
+    fn header_ref_impl(&'s mut self) -> Result<RecordHeaderRef<'a>> {
         let pos = self.cursor.pos();
         let section = self.calc_section()?;
         let name_ref = NameRef::new(self.cursor.clone());
@@ -286,7 +286,7 @@ impl<'a> RecordsReader<'a> {
     ///
     /// [RFC 3597 section 5]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
     #[inline]
-    pub fn data_bytes(&mut self, marker: &RecordMarker) -> Result<&'a [u8]> {
+    pub fn data_bytes(&'s mut self, marker: &RecordMarker) -> Result<&'a [u8]> {
         debug_assert!(self.cursor.pos() == marker.rdata_pos());
         if self.done {
             return Err(Error::ReaderDone);
@@ -336,7 +336,7 @@ impl<'a> RecordsReader<'a> {
     /// Note that this method is immutable and doesn't change the reader's buffer pointer.
     /// Nor it is affected by an error state of the reader.
     #[inline]
-    pub fn data_bytes_at(&self, marker: &RecordMarker) -> Result<&'a [u8]> {
+    pub fn data_bytes_at(&'s self, marker: &RecordMarker) -> Result<&'a [u8]> {
         let mut cursor = self.cursor.clone_with_pos(marker.rdata_pos());
         cursor.slice(marker.rdlen as usize)
     }
@@ -362,7 +362,7 @@ impl<'a> RecordsReader<'a> {
     /// This method is handy with records that have a single domain name in the
     /// data section, e.g. `CNAME`, `NS`, `PTR` etc.
     #[inline]
-    pub fn name_ref_at(&self, marker: &RecordMarker) -> NameRef<'a> {
+    pub fn name_ref_at(&'s self, marker: &RecordMarker) -> NameRef<'a> {
         NameRef::new(self.cursor.clone_with_pos(marker.rdata_pos()))
     }
 

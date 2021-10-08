@@ -97,7 +97,7 @@ pub struct MessageReader<'a> {
     offsets: [usize; 3],
 }
 
-impl<'a> MessageReader<'a> {
+impl<'s, 'a: 's> MessageReader<'a> {
     /// Creates a reader for a message contained in `buf`.
     #[inline]
     pub fn new(buf: &[u8]) -> Result<MessageReader> {
@@ -170,7 +170,7 @@ impl<'a> MessageReader<'a> {
 
     /// Returns a records reader for a specific records section.
     #[inline]
-    pub fn records_reader_for(&mut self, section: RecordsSection) -> Result<RecordsReader> {
+    pub fn records_reader_for(&'s mut self, section: RecordsSection) -> Result<RecordsReader<'a>> {
         let offset = self.section_offset(section)?;
         Ok(RecordsReader::with_section(
             Cursor::with_pos(self.buf, offset),
