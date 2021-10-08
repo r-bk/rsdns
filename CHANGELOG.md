@@ -5,6 +5,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.7.0]
+
+This is a very small release done in preparation for changing the `MessageReader`
+API in a future release. Specifically, current `RecordsReader` is going to become,
+after some modifications, the future `MessageReader`.
+
+To reduce the impact on user applications, this release renames `MessageReader` to
+`MessageIterator`. `MessageIterator` will continue with the iterator-based approach
+for reading message parts, i.e. `MessageIterator::questions` and `MessageIterator::records`.
+However, in a following release, `MessageIterator::records_reader` and
+`MessageIterator::records_reader_for` methods will be removed in favor of using
+the revamped `MessageReader`.
+
+
+### Changed
+
+- refactor `MessageReader` to stop using `RefCell` for section offsets.
+- rename `MessageReader` to `MessageIterator` in preparation for transforming
+  `RecordsReader` into a full-fledged message reader
+
+
 ## [0.6.0] - 2021-10-01
 ### Added
 - add `NameRef` - for efficient comparison of encoded domain names
