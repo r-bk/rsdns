@@ -12,6 +12,7 @@ use crate::{
     Error, Result,
 };
 
+#[derive(Debug)]
 /// A flexible reader of resource records.
 ///
 /// `RecordsReader` provides a flexible API for traversing the resource records of a DNS message.
@@ -30,12 +31,12 @@ use crate::{
 /// before the next record can be read. Every call to a method in group (2) must be preceded by
 /// a call to a method from group (1).
 ///
-/// To check if there are more records to read, the following methods are exposed:
-/// [`RecordsReader::has_records`] and [`RecordsReader::count`].
+/// The methods [`RecordsReader::has_records`] and [`RecordsReader::count`] exist
+/// to check if there are more records to read.
 ///
 /// When all records have been read and the reader is exhausted, an attempt to read another record
 /// fails with [`Error::ReaderDone`]. If an error occurs during parsing of a record header or
-/// data, the reader enters an `error state` and behaves as if it is exhausted.
+/// data, the reader enters an error state and behaves as if it is exhausted.
 ///
 /// # `Marker`, `Header` and `HeaderRef`
 ///
@@ -111,7 +112,6 @@ use crate::{
 ///     Ok(())
 /// }
 /// ```
-#[derive(Debug)]
 pub struct RecordsReader<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,

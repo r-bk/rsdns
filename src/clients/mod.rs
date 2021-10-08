@@ -6,7 +6,7 @@
 //! Each runtime has its own submodule named after the runtime: [`tokio`], [`async_std`] and
 //! [`smol`]. The synchronous client is implemented in the [`std`] submodule.
 //!
-//! All clients expose exactly the same API. The set of functions is the same, while in
+//! All clients have exactly the same API. The set of functions is the same, while in
 //! asynchronous clients the functions are `async`.
 //!
 //! Usually an application will use only one of the clients. Hence, none of them is enabled by

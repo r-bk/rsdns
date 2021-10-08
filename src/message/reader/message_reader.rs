@@ -24,7 +24,7 @@ use crate::{
 ///
 /// DNS message format allows encoding more than one Question in the same message. However,
 /// it isn't really possible to ask more than one question in the same request.
-/// Hence a message usually contains only a single question. `MessageReader` exposes an iterator
+/// Hence a message usually contains only a single question. `MessageReader` returns an iterator
 /// over the questions section via the [`MessageReader::questions`] method.
 /// Additionally, a helper method [`MessageReader::question`] exists which returns just the first
 /// (and usually the only) question.
@@ -34,7 +34,7 @@ use crate::{
 /// most efficient way of comparing the domain name in the question to domain names in the
 /// resource records sections. When DNS [message compression] is in use, most of
 /// records in the answers section will usually point to the domain name in the question.
-/// For this `MessageReader` exposes the [`MessageReader::question_ref`] method that returns the
+/// For this `MessageReader` has the [`MessageReader::question_ref`] method that returns the
 /// first question as struct [`QuestionRef`]. The difference is that `QuestionRef` doesn't own the
 /// domain name bytes, but rather points back to the encoded domain name in the message buffer.
 /// This allows efficient comparison of domain names encoded in the **same** DNS message, assuming
