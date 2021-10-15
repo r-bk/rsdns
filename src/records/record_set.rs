@@ -1,14 +1,9 @@
 use crate::{
-    constants::{Class, RCode, RecordsSection, Type},
-    message::{
-        reader::{MessageIterator, NameRef, RecordHeaderRef, RecordsReader},
-        MessageType,
-    },
+    constants::{Class, Type},
     names::Name,
     records::data::RData,
-    Error, Result,
+    Result,
 };
-use std::convert::TryFrom;
 
 /// A set of similar records.
 ///
@@ -41,6 +36,13 @@ impl<D: RData> RecordSet<D> {
 
     /// Parses a [`RecordSet`] from a response message.
     ///
+    /// This function is unimplemented until new MessageReader API is finalized.
+    pub fn from_msg(_msg: &[u8]) -> Result<Self> {
+        unimplemented!()
+    }
+
+    /// Parses a [`RecordSet`] from a response message.
+    ///
     /// This method performs *CNAME flattening*, which is the process of traversing a *chain* of
     /// CNAME records until requested record set is found.
     ///
@@ -50,6 +52,7 @@ impl<D: RData> RecordSet<D> {
     /// which is reflected in the returned record set's [`name`](RecordSet::name) attribute.
     ///
     /// [`CNAME`]: crate::constants::Type::Cname
+    #[cfg(waiting_for_new_message_reader)]
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
         let mut mi = MessageIterator::new(msg)?;
 
@@ -95,6 +98,7 @@ impl<D: RData> RecordSet<D> {
         Ok(rrset)
     }
 
+    #[cfg(waiting_for_new_message_reader)]
     #[inline(always)]
     fn extract_rrset<'a>(
         rr: &RecordsReader<'a>,
@@ -127,6 +131,7 @@ impl<D: RData> RecordSet<D> {
         }
     }
 
+    #[cfg(waiting_for_new_message_reader)]
     #[inline(always)]
     fn extract_cname<'a>(
         rr: &RecordsReader<'a>,
@@ -147,6 +152,7 @@ impl<D: RData> RecordSet<D> {
         Ok(None)
     }
 
+    #[cfg(waiting_for_new_message_reader)]
     #[inline(always)]
     fn read_answer_headers(mut rr: RecordsReader) -> Result<Vec<Option<RecordHeaderRef>>> {
         let mut headers = Vec::with_capacity(rr.count());
