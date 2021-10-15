@@ -1,7 +1,10 @@
 //! Message reading primitives.
 //!
-//! This module is dedicated to efficient parsing of DNS messages.
-//! For more details see [`MessageIterator`], which is the main struct to be used for this purpose.
+//! There are two main primitives to read a DNS message:
+//! 1. [`MessageReader`] has a wide variety of methods that can be tailored to a very efficient
+//!    message decoding.
+//! 2. [`MessageIterator`] is made for convenience.
+//!    It allows parsing a message in way of a Rust `Iterator`.
 
 mod message_iterator;
 pub use message_iterator::*;

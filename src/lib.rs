@@ -30,13 +30,13 @@
 //! The *message parsing* part is the core of *rsdns*. It is generic and is suitable for any type
 //! of client that you may choose. It can be used even without an *rsdns* client at all,
 //! if you have DNS messages obtained by other means. This part is always present and cannot
-//! be disabled. See [`MessageIterator`] for more details.
+//! be disabled. See the [`message::reader`] module for more details.
 //!
 //! The *clients* part is comprised of four independent implementations
 //! of the client API. Usually an application will use only one of those.
 //! See the [`clients`] module for more information.
 //!
-//! [`MessageIterator`]: message::reader::MessageIterator
+//! [`MessageReader`]: message::reader::MessageReader
 
 //! ## Crate Features
 //!
