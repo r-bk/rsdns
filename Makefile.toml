@@ -5,6 +5,11 @@ CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
 command = "cargo"
 args = ["clippy", "--all-features"]
 
+[tasks.clippy-beta]
+toolchain = "beta"
+command = "cargo"
+args = ["clippy", "--all-features"]
+
 [tasks.clippy-no-default]
 command = "cargo"
 args = ["clippy", "--no-default-features"]
