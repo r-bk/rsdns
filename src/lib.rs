@@ -38,9 +38,9 @@
 //!
 //! [`MessageIterator`]: message::reader::MessageIterator
 
-//! ## Cargo Features
+//! ## Crate Features
 //!
-//! *rsdns* has several cargo features which conditionally enable different functionalities:
+//! *rsdns* has several crate features which enable different functionalities:
 //!
 //! 1. `net-tokio` - enables the [`clients::tokio`] module
 //! 2. `net-async-std` - enables the [`clients::async_std`] module
