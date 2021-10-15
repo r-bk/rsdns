@@ -23,14 +23,14 @@ fn format_file(path: &std::path::Path) {
         .arg(path_str)
         .output()
         .expect("failed to launch rustfmt");
-    if !output.status.success() {
-        panic!(
-            "failed to format {}\nstdout: {}\nstderr: {}",
-            path_str,
-            std::str::from_utf8(&output.stdout).unwrap(),
-            std::str::from_utf8(&output.stderr).unwrap(),
-        );
-    }
+
+    assert!(
+        output.status.success(),
+        "failed to format {}\nstdout: {}\nstderr: {}",
+        path_str,
+        std::str::from_utf8(&output.stdout).unwrap(),
+        std::str::from_utf8(&output.stderr).unwrap(),
+    );
 }
 
 fn write_file(tera: &Tera, context: &Context, file_name: &str, crate_name: &str) {
