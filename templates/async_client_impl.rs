@@ -186,7 +186,7 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
 
     async fn udp_receive_loop(&mut self) -> Result<(usize, Flags)> {
         loop {
-            let size = self.sock.recv(&mut self.buf).await?;
+            let size = self.sock.recv(self.buf).await?;
 
             let response = &self.buf[..size];
             let mi = match MessageIterator::new(response) {

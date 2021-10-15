@@ -149,7 +149,7 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
         loop {
             Self::set_timeout_udp(self.sock, self.query_left()?)?;
 
-            let size = self.sock.recv(&mut self.buf)?;
+            let size = self.sock.recv(self.buf)?;
 
             let response = &self.buf[..size];
             let mi = match MessageIterator::new(response) {
