@@ -1,11 +1,12 @@
 use crate::{
-    bytes::Cursor,
-    constants::RecordsSection,
+    bytes::{Cursor, Reader},
+    constants::{RecordsSection, HEADER_LENGTH},
     message::{
         reader::{
-            NameRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset, SectionTracker,
+            NameRef, QuestionRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset,
+            SectionTracker,
         },
-        ClassValue, TypeValue,
+        ClassValue, Header, Question, TypeValue,
     },
     names::DName,
     records::data::RData,
@@ -13,129 +14,466 @@ use crate::{
 };
 
 #[derive(Debug)]
-/// A flexible reader of resource records.
-/*
+/// A fast and flexible message reader.
 ///
-/// `RecordsReader` provides a flexible API for traversing the resource records of a DNS message.
-/// It doesn't implement the `Iterator` trait, so it doesn't support the Rust `for` loop.
-/// However, as it is not bound to a single type of item, it provides great flexibility in
-/// parsing the resource records.
+/// `MessageReader` provides a flexible API for traversing a DNS message.
+/// It doesn't implement the `Iterator` trait, and, consequently, it doesn't support the Rust `for`
+/// loop. However, because it is not bound to a single type of item, it provides more flexibility
+/// than an iterator-based reader. For instance, it allows reading the record data into dedicated
+/// Rust types, without enclosing them in an artificial enum (which is usually done for returning
+/// multiple types of elements from an `Iterator`).
 ///
-/// The API of `RecordsReader` is roughly divided into two parts:
+/// The API of `MessageReader` is roughly divided into three parts:
+///   1. A method to read the message header
+///   2. Methods to read the Questions section
+///   3. Methods to read the resource records (Answers, Authority and Additional sections)
 ///
-/// 1. Methods to read a record header: [`RecordsReader::marker`], [`RecordsReader::header`] and
-///    [`RecordsReader::header_ref`].
-/// 2. Methods to read record data: [`RecordsReader::data`], [`RecordsReader::data_bytes`] and
-///    [`RecordsReader::skip_data`].
+/// DNS message sections do not have a constant size. Thus, in order to position a `MessageReader`
+/// at a specific element of a message, all previous elements must be read first.
 ///
-/// Every call to a method in group (1) must be followed by a call to a method from group (2),
-/// before the next record can be read. Every call to a method in group (2) must be preceded by
-/// a call to a method from group (1).
 ///
-/// The methods [`RecordsReader::has_records`] and [`RecordsReader::count`] exist
-/// to check if there are more records to read.
+/// # Message Header
 ///
-/// When all records have been read and the reader is exhausted, an attempt to read another record
-/// fails with [`Error::ReaderDone`]. If an error occurs during parsing of a record header or
-/// data, the reader enters an error state and behaves as if it is exhausted.
+/// The message header is read using the [`header()`] method.
 ///
-/// # `Marker`, `Header` and `HeaderRef`
+/// The header contains information about the layout of the sections that follow.
+/// It must be read immediately after creation of a `MessageReader`. Without this
+/// information `MessageReader` is unaware of the amount of elements in each of the message
+/// sections, and behaves as if there are zero elements in all sections.
+///
+/// [`header()`]: MessageReader::header
+///
+///
+/// # Questions
+///
+/// The methods to read the Questions section are:
+///
+/// 1. [`has_questions()`]
+/// 2. [`questions_count()`]
+/// 3. [`question()`] and [`question_ref()`]
+/// 4. [`the_question()`] and [`the_question_ref()`]
+/// 5. [`skip_questions()`]
+///
+/// The Questions section is the first section immediately following the header. The DNS protocol
+/// allows more than one question to be encoded in a message. However, this is not used in practice,
+/// and usually every message contains a single question only.
+///
+/// DNS question is represented in *rsdns* by the types [`Question`] and [`QuestionRef`].
+///
+/// The functions [`question()`] and [`question_ref()`] read and return the next question, and
+/// are intended to be used as follows:
+///
+/// ```rust
+/// # use rsdns::{message::reader::MessageReader, Result};
+/// # fn print_questions(msg: &[u8]) -> Result<()> {
+/// let mut mr = MessageReader::new(msg)?;
+/// mr.header()?;
+/// while mr.has_questions() {
+///     let q = mr.question()?; // or mr.question_ref()
+///     // use q ...
+/// # drop(q);
+/// }
+/// #
+/// # Ok(())
+/// # }
+/// ```
+///
+/// The functions [`the_question()`] and [`the_question_ref()`] are useful when exactly one
+/// question is expected in the message. They return [`Error::BadQuestionsCount`] if the number
+/// of questions is anything other than `1`.
+///
+/// ```rust
+/// # use rsdns::{message::reader::MessageReader, Result};
+/// # fn print_questions(msg: &[u8]) -> Result<()> {
+/// let mut mr = MessageReader::new(msg)?;
+/// mr.header()?;
+/// let q = mr.the_question()?; // or mr.the_question_ref()
+/// // use q ...
+/// # drop(q);
+/// # Ok(())
+/// # }
+/// ```
+///
+/// Finally, if questions are not of any interest, the whole section may be skipped using the
+/// [`skip_questions()`] method:
+///
+/// ```rust
+/// # use rsdns::{message::reader::MessageReader, Result};
+/// # fn print_questions(msg: &[u8]) -> Result<()> {
+/// let mut mr = MessageReader::new(msg)?;
+/// mr.header()?;
+/// mr.skip_questions()?;
+/// // the reader is positioned to decode the resource records...
+/// # Ok(())
+/// # }
+/// ```
+///
+/// [`has_questions()`]: MessageReader::has_questions
+/// [`questions_count()`]: MessageReader::questions_count
+/// [`question()`]: MessageReader::question
+/// [`question_ref()`]: MessageReader::question_ref
+/// [`the_question()`]: MessageReader::the_question
+/// [`the_question_ref()`]: MessageReader::the_question_ref
+/// [`skip_questions()`]: MessageReader::skip_questions
+///
+///
+/// # Resource Records
+///
+/// The methods to read the resource record sections (Answers, Authority and Additional) are:
+///
+/// 1. [`has_records()`]
+/// 2. [`records_count()`]
+/// 3. [`record_marker()`] `(G1)`
+/// 4. [`record_header()`] and [`record_header_ref()`] `(G1)`
+/// 5. [`record_data()`] and [`record_data_bytes()`] `(G2)`
+/// 6. [`skip_record_data()`] `(G2)`
+///
+/// Reading a resource record is a two-step process. Firstly, the record header must be read using
+/// any method in group `G1`. Secondly, (immediately after) the record data must be read using any
+/// method in group `G2`. Every call to a method in `G1` must be followed by a call to a method in
+/// `G2`. Every call to a method in `G2` must be preceded by a call to a method from `G1`.
+///
+/// [`has_records()`]: MessageReader::has_records
+/// [`records_count()`]: MessageReader::records_count
+/// [`record_marker()`]: MessageReader::record_marker
+/// [`record_header()`]: MessageReader::record_header
+/// [`record_header_ref()`]: MessageReader::record_header_ref
+/// [`record_data()`]: MessageReader::record_data
+/// [`record_data_bytes()`]: MessageReader::record_data_bytes
+/// [`skip_record_data()`]: MessageReader::skip_record_data
+///
+/// ## Marker, Header and HeaderRef
 ///
 /// The types [`RecordMarker`], [`RecordHeader`] and [`RecordHeaderRef`] are used to parse a record
-/// header. The marker holds all record header fields except for the domain name. This information
+/// header. The marker holds all record header fields except the domain name. This information
 /// is required to correctly parse both the domain name and the record data that follows the header.
-/// The `RecordHeader` and `RecordHeaderRef` types add the domain name to the `RecordMarker`.
-/// The difference is the type used for the domain name. `RecordHeader` owns the domain name bytes
-/// by using a type implementing the `DName` trait. `RecordHeaderRef` doesn't own the domain name
-/// bytes, and points back to the encoded domain name in the message buffer. This allows efficient
-/// comparison of the domain name to a domain name of another record or the question.
+/// The `RecordHeader` and `RecordHeaderRef` types add the domain name to `RecordMarker`. The
+/// difference between them is similar to the difference between [`Question`] and [`QuestionRef`].
+/// `RecordHeader` owns the domain name bytes by using a type implementing the [`DName`] trait.
+/// `RecordHeaderRef` doesn't own the domain name bytes, and points back to the encoded domain name
+/// in the message buffer. This allows efficient comparison of the domain name to a domain name of
+/// another record or the question.
 ///
 /// Ideally these three types would be implemented in a single type `RecordHeader` with a generic
-/// type parameter for the domain name. However, as of now, Rust doesn't allow having both `NameRef`
-/// and `DName` hidden behind the same trait.
+/// type parameter for the domain name. However, as of now, Rust doesn't allow having both
+/// [`NameRef`] and [`DName`] hidden behind the same trait.
+///
+///
+/// # Reader Exhaustion and Error State
+///
+/// When all records have been read and the reader is exhausted, an attempt to read another record
+/// fails with [`Error::ReaderDone`].
+///
+/// If an error occurs during parsing of any element, the reader enters an error state and behaves
+/// as if it is exhausted.
+///
 ///
 /// # Random Access
 ///
-/// `RecordsReader` has additional methods [`RecordsReader::data_at`],
-/// [`RecordsReader::data_bytes_at`] and [`RecordsReader::name_ref_at`].
+/// Random access methods are:
+///
+/// 1. [`record_data_at()`]
+/// 2. [`record_data_bytes_at()`]
+/// 3. [`name_ref_at()`]
+///
 /// These methods allow random access to record data, assuming the record markers are first
 /// traversed and stored for later processing.
 ///
 /// Note that these methods are immutable, they do not change the internal buffer pointer of
 /// the reader.
 ///
+/// [`record_data_at()`]: MessageReader::record_data_at
+/// [`record_data_bytes_at()`]: MessageReader::record_data_bytes_at
+/// [`name_ref_at()`]: MessageReader::name_ref_at
+///
+///
+/// # Seeking
+///
+/// Seeking is possible using the [`seek()`] method.
+///
+/// When `MessageReader` traverses a message and reaches the first record of any of the records
+/// sections, it internally stores the offset of the record. This allows seeking to the beginning
+/// of an already known section in constant time.
+///
+/// Additionally, a seek to an unknown section position is possible immediately after the header is
+/// read. In this case the reader will decode all the elements until it is positioned at the first
+/// record of the requested section.
+///
+/// [`seek()`]: MessageReader::seek
+///
+///
 /// # Examples
 ///
 /// ```rust
 /// use rsdns::{
 ///     constants::{RecordsSection, Type, RCode},
-///     message::reader::MessageIterator,
+///     message::reader::MessageReader,
 ///     names::Name,
 ///     records::data::{A, Aaaa},
 ///     Error, Result,
 /// };
 ///
 /// fn print_answer_addresses(msg: &[u8]) -> Result<()> {
-///     let mut mi = MessageIterator::new(msg)?;
+///     let mut mr = MessageReader::new(msg)?;
+///     let header = mr.header()?;
 ///
-///     let rcode = mi.header().flags.response_code();
+///     let rcode = header.flags.response_code();
 ///     if rcode != RCode::NoError {
 ///         return Err(Error::BadResponseCode(rcode));
 ///     }
 ///
-///     if mi.header().flags.truncated() {
+///     if header.flags.truncated() {
 ///         return Err(Error::MessageTruncated);
 ///     }
 ///
-///     let mut rr = mi.records_reader_for(RecordsSection::Answer)?;
+///     mr.seek(RecordsSection::Answer)?;
 ///
-///     while rr.has_records() {
-///         let header = rr.header::<Name>()?;
+///     while mr.has_records() {
+///         let rh = mr.record_header::<Name>()?;
+///         if rh.marker().section() != RecordsSection::Answer {
+///             // Answers is the first section. The rest was not required.
+///             break;
+///         }
 ///
-///         if header.rtype() == Type::A {
-///             let rdata = rr.data::<A>(header.marker())?;
+///         if rh.rtype() == Type::A {
+///             let rdata = mr.record_data::<A>(rh.marker())?;
 ///             println!(
 ///                 "Name: {}; Class: {}; TTL: {}; ipv4: {}",
-///                 header.name(), header.rclass(), header.ttl(), rdata.address
+///                 rh.name(), rh.rclass(), rh.ttl(), rdata.address
 ///             );
-///         } else if header.rtype() == Type::Aaaa {
-///             let rdata = rr.data::<Aaaa>(header.marker())?;
+///         } else if rh.rtype() == Type::Aaaa {
+///             let rdata = mr.record_data::<Aaaa>(rh.marker())?;
 ///             println!(
 ///                 "Name: {}; Class: {}; TTL: {}; ipv6: {}",
-///                 header.name(), header.rclass(), header.ttl(), rdata.address
+///                 rh.name(), rh.rclass(), rh.ttl(), rdata.address
 ///             );
 ///         } else {
 ///             // every record must be read fully: header + data
-///             rr.skip_data(header.marker())?;
+///             mr.skip_record_data(rh.marker())?;
 ///         }
 ///     }
 ///
 ///     Ok(())
 /// }
+/// #
+/// # // A cnn.com
+/// # #[rustfmt::skip]
+/// # const M0: [u8; 89] = [
+/// #    0xe4, 0xe9, 0x81, 0x80, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, // |............| 0
+/// #    0x03, 0x63, 0x6e, 0x6e, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, // |.cnn.com....| 12
+/// #    0x01, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x22, 0x00, // |..........".| 24
+/// #    0x04, 0x97, 0x65, 0x01, 0x43, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, // |..e.C.......| 36
+/// #    0x00, 0x00, 0x22, 0x00, 0x04, 0x97, 0x65, 0xc1, 0x43, 0xc0, 0x0c, 0x00, // |.."...e.C...| 48
+/// #    0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x22, 0x00, 0x04, 0x97, 0x65, 0x41, // |......"...eA| 60
+/// #    0x43, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x22, 0x00, // |C.........".| 72
+/// #    0x04, 0x97, 0x65, 0x81, 0x43, /*                                     */ // |..e.C| 84
+/// # ];
+/// # print_answer_addresses(&M0[..]).unwrap();
 /// ```
- */
-pub struct RecordsReader<'a> {
+pub struct MessageReader<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,
     done: bool,
 }
 
-impl<'s, 'a: 's> RecordsReader<'a> {
+impl<'s, 'a: 's> MessageReader<'a> {
+    /// Creates a `MessageReader` for a given message.
+    ///
+    /// This method only minimally initializes the `MessageReader's` state. The message header must
+    /// be read immediately after creation of the reader in order to finalize its initialization
+    /// and properly read the rest of the message.
+    ///
+    /// # Returns
+    ///
+    /// - [`Error::MessageTooLong`] - if message size exceeds 65535 bytes.
+    #[inline]
+    pub fn new(msg: &'a [u8]) -> Result<MessageReader<'a>> {
+        if msg.len() > u16::MAX as usize {
+            return Err(Error::MessageTooLong(msg.len()));
+        }
+        Ok(MessageReader {
+            cursor: Cursor::new(msg),
+            section_tracker: Default::default(),
+            done: false,
+        })
+    }
+
+    /// Reads the message header.
+    ///
+    /// This is the first method that must be called after creation of a `MessageReader`.
+    /// It reads the message header and initializes internal counters to properly
+    /// read the rest of the message.
+    #[inline]
+    pub fn header(&mut self) -> Result<Header> {
+        let res = self.header_impl();
+        if res.is_err() {
+            self.done = true;
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn header_impl(&mut self) -> Result<Header> {
+        let header = self.cursor.read()?;
+        self.section_tracker.set(&header);
+        Ok(header)
+    }
+
+    /// Positions the message reader to the first record of a specific section.
+    ///
+    /// Seeking is possible only in one of the two scenarios:
+    ///
+    /// 1. The message reader was just created and the header was read.
+    ///    In this case the reader will skip all message data until it positions itself at the
+    ///    first record of the requested section.
+    /// 2. The message was read up to (and including) the last record of the first non-empty section
+    ///    preceding the requested one, or any record beyond that.
+    ///
+    /// As a message is traversed, the reader remembers offsets of its sections. So, when a
+    /// message was entirely traversed, it is possible to seek to any section.
+    ///
+    /// Note that if the requested section is empty, the first record to be read after seek may
+    /// belong to a consecutive section, or no records may be left at all.
+    pub fn seek(&mut self, section: RecordsSection) -> Result<()> {
+        if self.done {
+            return Err(Error::ReaderDone);
+        }
+
+        if let Some(offset) = self.section_tracker.section_offset(section) {
+            self.cursor.set_pos(offset);
+            self.section_tracker.seek(section);
+            return Ok(());
+        }
+
+        if self.cursor.pos() != HEADER_LENGTH {
+            return Err(Error::RecordsSectionOffsetUnknown(section));
+        }
+
+        let res = self.seek_impl(section);
+        if res.is_err() {
+            self.done = true;
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn seek_impl(&mut self, section: RecordsSection) -> Result<()> {
+        self.skip_questions_impl()?;
+        match section {
+            RecordsSection::Answer => Ok(()),
+            RecordsSection::Authority => self.skip_section_impl(RecordsSection::Answer),
+            RecordsSection::Additional => {
+                self.skip_section_impl(RecordsSection::Answer)?;
+                self.skip_section_impl(RecordsSection::Authority)
+            }
+        }
+    }
+
+    #[inline(always)]
+    fn skip_section_impl(&mut self, section: RecordsSection) -> Result<()> {
+        while self.section_tracker.records_left_in(section) > 0 {
+            let marker = self.marker_impl()?;
+            self.skip_record_data_impl(&marker)?;
+        }
+        Ok(())
+    }
+
+    /// Checks if there are more questions to read.
+    ///
+    /// This is a convenience method. It is equivalent to [`questions_count()`]` > 0`.
+    ///
+    /// [`questions_count()`]: Self::questions_count
+    #[inline]
+    pub fn has_questions(&self) -> bool {
+        self.questions_count() > 0
+    }
+
+    /// Returns the number of unread questions.
+    ///
+    /// Returns `0` if the reader is in error state.
+    #[inline]
+    pub fn questions_count(&self) -> usize {
+        if !self.done {
+            self.section_tracker.questions_left()
+        } else {
+            0
+        }
+    }
+
+    /// Reads the next question.
+    #[inline]
+    pub fn question(&mut self) -> Result<Question> {
+        question!(self, question_check_no_questions)
+    }
+
+    /// Reads the next question as [`QuestionRef`].
+    #[inline]
+    pub fn question_ref(&'s mut self) -> Result<QuestionRef<'a>> {
+        question!(self, question_check_no_questions)
+    }
+
+    /// Reads the first and only question.
+    ///
+    /// This method is equivalent to [`question()`], except that it returns
+    /// [`Error::BadQuestionsCount`] if the number of questions is not `1`.
+    ///
+    /// [`question()`]: MessageReader::question
+    #[inline]
+    pub fn the_question(&mut self) -> Result<Question> {
+        question!(self, question_check_single_question)
+    }
+
+    /// Reads the first and only question as [`QuestionRef`].
+    ///
+    /// This method is equivalent to [`question_ref()`], except that it returns
+    /// [`Error::BadQuestionsCount`] if the number of questions is not `1`.
+    ///
+    /// [`question_ref()`]: MessageReader::question_ref
+    #[inline]
+    pub fn the_question_ref(&'s mut self) -> Result<QuestionRef<'a>> {
+        question!(self, question_check_single_question)
+    }
+
+    /// Skips the questions section.
+    ///
+    /// This is a convenience method to advance the reader to the end of the questions section.
+    ///
+    /// Note that this method may be called only immediately after the header is read.
+    pub fn skip_questions(&mut self) -> Result<()> {
+        if self.done {
+            return Err(Error::ReaderDone);
+        }
+        let res = self.skip_questions_impl();
+        if res.is_err() {
+            self.done = true;
+        }
+        res
+    }
+
+    #[inline(always)]
+    fn skip_questions_impl(&mut self) -> Result<()> {
+        while self.section_tracker.questions_left() > 0 {
+            self.cursor.skip_question()?;
+            self.section_tracker.question_read(self.cursor.pos());
+        }
+        Ok(())
+    }
+
     /// Checks if there are more records to read.
     ///
-    /// This is a convenience method. It is equivalent to [`count()`]` > 0`.
+    /// This is a convenience method. It is equivalent to [`records_count()`]` > 0`.
     ///
-    /// [`count()`]: Self::count
+    /// [`records_count()`]: Self::records_count
     #[inline]
     pub fn has_records(&self) -> bool {
-        self.count() > 0
+        self.records_count() > 0
     }
 
     /// Returns the number of unread records.
     ///
     /// Returns `0` if the reader is in error state.
     #[inline]
-    pub fn count(&self) -> usize {
+    pub fn records_count(&self) -> usize {
         if !self.done {
             self.section_tracker.records_left()
         } else {
@@ -145,7 +483,7 @@ impl<'s, 'a: 's> RecordsReader<'a> {
 
     /// Returns the marker of the current resource record.
     #[inline]
-    pub fn marker(&mut self) -> Result<RecordMarker> {
+    pub fn record_marker(&mut self) -> Result<RecordMarker> {
         if self.done {
             return Err(Error::ReaderDone);
         }
@@ -158,8 +496,8 @@ impl<'s, 'a: 's> RecordsReader<'a> {
 
     #[inline(always)]
     fn marker_impl(&mut self) -> Result<RecordMarker> {
-        let section = self.calc_section()?;
         let pos = self.cursor.pos();
+        let section = self.calc_section()?;
         self.cursor.skip_domain_name()?;
         self.raw_marker_impl(pos, section)
     }
@@ -188,11 +526,11 @@ impl<'s, 'a: 's> RecordsReader<'a> {
 
     /// Reads the header of the current resource record as [`RecordHeaderRef`].
     #[inline]
-    pub fn header_ref(&'s mut self) -> Result<RecordHeaderRef<'a>> {
+    pub fn record_header_ref(&'s mut self) -> Result<RecordHeaderRef<'a>> {
         if self.done {
             return Err(Error::ReaderDone);
         }
-        let res = self.header_ref_impl();
+        let res = self.record_header_ref_impl();
         if res.is_err() {
             self.done = true;
         }
@@ -200,7 +538,7 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     }
 
     #[inline(always)]
-    fn header_ref_impl(&'s mut self) -> Result<RecordHeaderRef<'a>> {
+    fn record_header_ref_impl(&'s mut self) -> Result<RecordHeaderRef<'a>> {
         let pos = self.cursor.pos();
         let section = self.calc_section()?;
         let name_ref = NameRef::new(self.cursor.clone());
@@ -214,11 +552,11 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     /// This method is generic over the domain name type `N` used for the name of the record.
     /// This allows parsing the header without memory allocations, if appropriate type is used.
     #[inline]
-    pub fn header<N: DName>(&mut self) -> Result<RecordHeader<N>> {
+    pub fn record_header<N: DName>(&mut self) -> Result<RecordHeader<N>> {
         if self.done {
             return Err(Error::ReaderDone);
         }
-        let res = self.header_impl::<N>();
+        let res = self.record_header_impl::<N>();
         if res.is_err() {
             self.done = true;
         }
@@ -226,7 +564,7 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     }
 
     #[inline(always)]
-    fn header_impl<N: DName>(&mut self) -> Result<RecordHeader<N>> {
+    fn record_header_impl<N: DName>(&mut self) -> Result<RecordHeader<N>> {
         let pos = self.cursor.pos();
         let section = self.calc_section()?;
         let name = N::from_cursor(&mut self.cursor)?;
@@ -238,17 +576,23 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     ///
     /// # Panics
     ///
-    /// This method uses debug assertions to verify that the `marker` matches the reader's buffer
+    /// This method uses debug assertions to verify that `marker` matches the reader's buffer
     /// pointer.
     #[inline]
-    pub fn skip_data(&mut self, marker: &RecordMarker) -> Result<()> {
+    pub fn skip_record_data(&mut self, marker: &RecordMarker) -> Result<()> {
         debug_assert!(self.cursor.pos() == marker.rdata_pos());
         if self.done {
             return Err(Error::ReaderDone);
         }
+        self.skip_record_data_impl(marker)
+    }
+
+    #[inline(always)]
+    fn skip_record_data_impl(&mut self, marker: &RecordMarker) -> Result<()> {
         let res = self.cursor.skip(marker.rdlen as usize);
         if res.is_ok() {
-            self.section_tracker.section_read(marker.section);
+            self.section_tracker
+                .section_read(marker.section, self.cursor.pos());
         } else {
             self.done = true;
         }
@@ -261,19 +605,20 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     ///
     /// # Panics
     ///
-    /// This method uses debug assertions to verify that the `marker` matches the reader's buffer
+    /// This method uses debug assertions to verify that `marker` matches the reader's buffer
     /// pointer.
     ///
     /// [RFC 3597 section 5]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
     #[inline]
-    pub fn data_bytes(&'s mut self, marker: &RecordMarker) -> Result<&'a [u8]> {
+    pub fn record_data_bytes(&'s mut self, marker: &RecordMarker) -> Result<&'a [u8]> {
         debug_assert!(self.cursor.pos() == marker.rdata_pos());
         if self.done {
             return Err(Error::ReaderDone);
         }
         let res = self.cursor.slice(marker.rdlen as usize);
         if res.is_ok() {
-            self.section_tracker.section_read(marker.section);
+            self.section_tracker
+                .section_read(marker.section, self.cursor.pos());
         } else {
             self.done = true;
         }
@@ -288,17 +633,18 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     ///
     /// # Panics
     ///
-    /// This method uses debug assertions to verify that the `marker` matches the reader's buffer
+    /// This method uses debug assertions to verify that `marker` matches the reader's buffer
     /// pointer.
     #[inline]
-    pub fn data<D: RData>(&mut self, marker: &RecordMarker) -> Result<D> {
+    pub fn record_data<D: RData>(&mut self, marker: &RecordMarker) -> Result<D> {
         debug_assert!(self.cursor.pos() == marker.rdata_pos());
         if self.done {
             return Err(Error::ReaderDone);
         }
         let res = D::from_cursor(&mut self.cursor, marker.rdlen as usize);
         if res.is_ok() {
-            self.section_tracker.section_read(marker.section);
+            self.section_tracker
+                .section_read(marker.section, self.cursor.pos());
         } else {
             self.done = true;
         }
@@ -310,13 +656,13 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     /// This method allows random access to the encoded records of a DNS message.
     /// It is intended to be used in cases when record headers are read in one loop,
     /// while record data is later (possibly selectively) read in another loop. If data is read
-    /// together with the header, use [`RecordsReader::data_bytes`] instead, which is more
+    /// together with the header, use [`MessageReader::record_data_bytes`] instead, which is more
     /// efficient.
     ///
     /// Note that this method is immutable and doesn't change the reader's buffer pointer.
     /// Nor it is affected by an error state of the reader.
     #[inline]
-    pub fn data_bytes_at(&'s self, marker: &RecordMarker) -> Result<&'a [u8]> {
+    pub fn record_data_bytes_at(&'s self, marker: &RecordMarker) -> Result<&'a [u8]> {
         let mut cursor = self.cursor.clone_with_pos(marker.rdata_pos());
         cursor.slice(marker.rdlen as usize)
     }
@@ -326,13 +672,13 @@ impl<'s, 'a: 's> RecordsReader<'a> {
     /// This method allows random access to the encoded records of a DNS message.
     /// It is intended to be used in cases when record headers are read in one loop,
     /// while record data is later (possibly selectively) read in another loop. If data is read
-    /// together with the header, use [`RecordsReader::data`] instead, which is more
+    /// together with the header, use [`MessageReader::record_data`] instead, which is more
     /// efficient.
     ///
     /// Note that this method is immutable and doesn't change the reader's buffer pointer.
     /// Nor it is affected by an error state of the reader.
     #[inline]
-    pub fn data_at<D: RData>(&self, marker: &RecordMarker) -> Result<D> {
+    pub fn record_data_at<D: RData>(&self, marker: &RecordMarker) -> Result<D> {
         let mut cursor = self.cursor.clone_with_pos(marker.rdata_pos());
         D::from_cursor(&mut cursor, marker.rdlen as usize)
     }
@@ -348,6 +694,8 @@ impl<'s, 'a: 's> RecordsReader<'a> {
 
     #[inline(always)]
     fn calc_section(&mut self) -> Result<RecordsSection> {
-        self.section_tracker.next_section().ok_or(Error::ReaderDone)
+        self.section_tracker
+            .next_section(self.cursor.pos())
+            .ok_or(Error::ReaderDone)
     }
 }

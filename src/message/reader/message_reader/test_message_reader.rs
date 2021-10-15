@@ -92,22 +92,56 @@ const M0: [u8; 494] = [
     0x00, 0x01, /*                                                       */ // |..| 492
 ];
 
+// ; <<>> ch4 0.7.0 <<>> --read cnn.ch4
+// ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 30724
+// ;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 0
+//
+// ;; QUESTION SECTION:
+// ;cnn.com.                      IN     A
+//
+// ;; ANSWER SECTION:
+// cnn.com.                51     IN     A      151.101.129.67
+// cnn.com.                51     IN     A      151.101.65.67
+// cnn.com.                51     IN     A      151.101.1.67
+// cnn.com.                51     IN     A      151.101.193.67
+//
+// ;; Query time: 358.084µs
+// ;; SERVER: 127.0.0.53:53
+// ;; MSG SIZE rcvd: 89
+#[rustfmt::skip]
+const M1: [u8; 89] = [
+    0x78, 0x04, 0x81, 0x80, 0x00, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, // |x...........| 0
+    0x03, 0x63, 0x6e, 0x6e, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, // |.cnn.com....| 12
+    0x01, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x33, 0x00, // |..........3.| 24
+    0x04, 0x97, 0x65, 0x81, 0x43, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, // |..e.C.......| 36
+    0x00, 0x00, 0x33, 0x00, 0x04, 0x97, 0x65, 0x41, 0x43, 0xc0, 0x0c, 0x00, // |..3...eAC...| 48
+    0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x33, 0x00, 0x04, 0x97, 0x65, 0x01, // |......3...e.| 60
+    0x43, 0xc0, 0x0c, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x33, 0x00, // |C.........3.| 72
+    0x04, 0x97, 0x65, 0xc1, 0x43, /*                                     */ // |..e.C| 84
+];
+
 #[test]
 fn test_whole_message() {
-    let mi = MessageIterator::new(&M0[..]).expect("failed to create MessageIterator");
-    let question = mi.question_ref().expect("question_ref failed");
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
+    let header = mr.header().expect("failed to read the header");
+    assert_eq!(header.id, 0x833);
+
+    let question = mr.the_question_ref().expect("the_question_ref failed");
+    assert_eq!(question.qtype, Type::A);
+    assert_eq!(question.qclass, Class::In);
 
     let mut headers = Vec::new();
-    let mut rr = mi.records_reader();
-    assert_eq!(rr.count(), 24);
-    while rr.has_records() {
-        let header = rr.header_ref().expect("header_ref failed");
-        rr.skip_data(header.marker()).expect("skip_data failed");
+
+    assert_eq!(mr.records_count(), 24);
+    while mr.has_records() {
+        let header = mr.record_header_ref().expect("record_header_ref failed");
+        mr.skip_record_data(header.marker())
+            .expect("skip_record_data failed");
 
         match header.section() {
             RecordsSection::Answer => assert!(question.qname.eq(header.name()).expect("eq failed")),
             RecordsSection::Additional => {
-                assert!(question.qname.ne(header.name()).expect("eq failed"))
+                assert!(question.qname.ne(header.name()).expect("ne failed"))
             }
             _ => {}
         }
@@ -127,27 +161,32 @@ fn test_whole_message() {
         let name: Name = h.name().try_into().expect("name_ref::try_into failed");
         assert_eq!(name.as_str(), "bbc.com.");
 
-        rr.data_at::<Ns>(h.marker()).expect("data_at failed");
+        mr.record_data_at::<Ns>(h.marker())
+            .expect("record_data_at failed");
     }
 }
 
 #[test]
 fn test_answer_section() {
-    let mut mi = MessageIterator::new(&M0[..]).expect("failed to create MessageIterator");
-    let mut rr = mi
-        .records_reader_for(RecordsSection::Answer)
-        .expect("failed to create RecordsReader");
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Answer).expect("seek failed");
+
     let mut records = Vec::new();
     let mut headers = Vec::new();
-    let mut count = 4;
 
     loop {
-        if !rr.has_records() {
+        if !mr.has_records() {
             break;
         }
-        assert_eq!(count, rr.count());
 
-        let header = rr.header::<InlineName>().expect("failed to read header");
+        let header = mr
+            .record_header::<InlineName>()
+            .expect("failed to read record header");
+
+        if header.section() != RecordsSection::Answer {
+            break;
+        }
 
         assert_eq!(header.name().as_str(), "bbc.com.");
         assert_eq!(header.rtype(), Type::A);
@@ -156,10 +195,11 @@ fn test_answer_section() {
         assert_eq!(header.ttl(), 300);
         assert_eq!(header.rdlen(), 4);
 
-        records.push(rr.data::<A>(header.marker()).expect("failed to read data"));
+        records.push(
+            mr.record_data::<A>(header.marker())
+                .expect("failed to read record data"),
+        );
         headers.push(header);
-
-        count -= 1;
     }
 
     assert_eq!(headers.len(), 4);
@@ -183,27 +223,34 @@ fn test_answer_section() {
     );
 
     for (h, d) in headers.iter().zip(records.iter()) {
-        assert_eq!(*d, rr.data_at::<A>(h.marker()).expect("data_at failed"));
+        assert_eq!(
+            *d,
+            mr.record_data_at::<A>(h.marker())
+                .expect("record_data_at failed")
+        );
     }
 }
 
 #[test]
 fn test_data_bytes() {
-    let mut mi = MessageIterator::new(&M0[..]).expect("failed to create MessageIterator");
-    let mut rr = mi
-        .records_reader_for(RecordsSection::Additional)
-        .expect("failed to create RecordsReader");
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Additional).expect("seek failed");
 
     let mut markers = Vec::new();
     let mut data = Vec::new();
 
-    while rr.has_records() {
-        let marker = rr.marker().expect("marker failed");
+    while mr.has_records() {
+        let marker = mr.record_marker().expect("record_marker failed");
         if marker.rtype() == Type::Aaaa {
-            data.push(rr.data_bytes(&marker).expect("data_bytes failed"));
+            data.push(
+                mr.record_data_bytes(&marker)
+                    .expect("record_data_bytes failed"),
+            );
             markers.push(marker);
         } else {
-            rr.skip_data(&marker).expect("skip_data failed");
+            mr.skip_record_data(&marker)
+                .expect("skip_record_data failed");
         }
     }
 
@@ -220,6 +267,148 @@ fn test_data_bytes() {
     }
 
     for (d, m) in data.iter().zip(markers.iter()) {
-        assert_eq!(&rr.data_bytes_at(m).expect("data_bytes_at failed"), d);
+        assert_eq!(
+            &mr.record_data_bytes_at(m)
+                .expect("record_data_bytes_at failed"),
+            d
+        );
     }
+}
+
+#[test]
+fn test_seek() {
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReder");
+    mr.header().expect("failed to read the header");
+    mr.skip_questions().expect("skip_questions failed");
+
+    // read the whole message to discover all section offsets
+    while mr.has_records() {
+        let marker = mr.record_marker().expect("marker failed");
+        mr.skip_record_data(&marker)
+            .expect("skip_record_data failed");
+    }
+
+    mr.seek(RecordsSection::Answer)
+        .expect("seek(Answer) failed");
+    assert_eq!(mr.records_count(), 24);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "bbc.com.");
+    let a_record = mr.record_data::<A>(record_header.marker()).unwrap();
+    assert_eq!(
+        a_record.address,
+        Ipv4Addr::from_str("151.101.128.81").unwrap()
+    );
+
+    mr.seek(RecordsSection::Authority)
+        .expect("seek(Authority) failed");
+    assert_eq!(mr.records_count(), 20);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "bbc.com.");
+    let ns_record = mr.record_data::<Ns>(record_header.marker()).unwrap();
+    assert_eq!(ns_record.nsdname.as_str(), "ddns1.bbc.com.");
+
+    mr.seek(RecordsSection::Additional)
+        .expect("seek(Additional) failed");
+    assert_eq!(mr.records_count(), 12);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "dns0.bbc.co.uk.");
+    let a_record = mr.record_data::<A>(record_header.marker()).unwrap();
+    assert_eq!(a_record.address, Ipv4Addr::from_str("198.51.44.9").unwrap());
+}
+
+#[test]
+fn test_answers_offset_is_known_after_skip_questions() {
+    let mut mr = MessageReader::new(&M1[..]).expect("failed to create MessageReder");
+    mr.header().expect("failed to read the header");
+    mr.skip_questions().expect("skip_questions failed");
+    mr.seek(RecordsSection::Answer).expect("seek failed");
+    assert_eq!(mr.records_count(), 4);
+}
+
+#[test]
+fn test_seek_empty_section() {
+    let mut mr = MessageReader::new(&M1[..]).expect("failed to create MessageReder");
+    mr.header().expect("failed to read the header");
+    mr.skip_questions().expect("skip_questions failed");
+
+    // read the whole message to discover all section offsets
+    while mr.has_records() {
+        let marker = mr.record_marker().expect("marker failed");
+        mr.skip_record_data(&marker)
+            .expect("skip_record_data failed");
+    }
+
+    mr.seek(RecordsSection::Answer).expect("seek failed");
+    assert_eq!(mr.records_count(), 4);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "cnn.com.");
+    assert_eq!(record_header.marker.section, RecordsSection::Answer);
+    assert_eq!(record_header.marker.rtype, Type::A);
+    assert_eq!(record_header.marker.rclass, Class::In);
+    assert_eq!(record_header.marker.ttl, 51);
+    let a_record = mr.record_data::<A>(record_header.marker()).unwrap();
+    assert_eq!(
+        a_record.address,
+        Ipv4Addr::from_str("151.101.129.67").unwrap()
+    );
+
+    mr.seek(RecordsSection::Authority)
+        .expect("seek(Authority) failed");
+    assert_eq!(mr.records_count(), 0);
+
+    mr.seek(RecordsSection::Additional)
+        .expect("seek(Additional) failed");
+    assert_eq!(mr.records_count(), 0);
+}
+
+#[test]
+fn test_seek_answer() {
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReder");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Answer)
+        .expect("seek(Answer) failed");
+
+    assert_eq!(mr.records_count(), 24);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "bbc.com.");
+    let a_record = mr.record_data::<A>(record_header.marker()).unwrap();
+    assert_eq!(
+        a_record.address,
+        Ipv4Addr::from_str("151.101.128.81").unwrap()
+    );
+}
+
+#[test]
+fn test_seek_authority() {
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReder");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Authority)
+        .expect("seek(Authority) failed");
+
+    assert_eq!(mr.records_count(), 20);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "bbc.com.");
+    let ns_record = mr.record_data::<Ns>(record_header.marker()).unwrap();
+    assert_eq!(ns_record.nsdname.as_str(), "ddns1.bbc.com.");
+}
+
+#[test]
+fn test_seek_additional() {
+    let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReder");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Additional)
+        .expect("seek(Additional) failed");
+
+    assert_eq!(mr.records_count(), 12);
+
+    let record_header = mr.record_header::<Name>().unwrap();
+    assert_eq!(record_header.name.as_str(), "dns0.bbc.co.uk.");
+    let a_record = mr.record_data::<A>(record_header.marker()).unwrap();
+    assert_eq!(a_record.address, Ipv4Addr::from_str("198.51.44.9").unwrap());
 }

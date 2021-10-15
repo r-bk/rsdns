@@ -9,13 +9,13 @@ const TYPE_TO_RDATA_OFFSET: usize = 10;
 /// A resource record marker.
 ///
 /// `RecordMarker` holds all the information about resource record except its data and the domain
-/// name. It is used in [`RecordsReader`] to obtain additional information about a record, e.g. its
+/// name. It is used in [`MessageReader`] to obtain additional information about a record, e.g. its
 /// data.
 ///
 /// Note that comparison of record markers is defined only between two markers obtained from
 /// the **same** DNS message.
 ///
-/// [`RecordsReader`]: super::RecordsReader
+/// [`MessageReader`]: super::MessageReader
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct RecordMarker {
     pub(crate) offset: RecordOffset,

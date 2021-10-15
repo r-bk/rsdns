@@ -74,7 +74,7 @@ impl<'a> Records<'a> {
 
     fn read_impl(&mut self) -> Result<Option<(RecordsSection, ResourceRecord)>> {
         loop {
-            let section = self.section_tracker.next_section();
+            let section = self.section_tracker.next_section(self.cursor.pos());
 
             if let Some(section) = section {
                 let domain_name_pos = self.cursor.pos();
@@ -90,7 +90,8 @@ impl<'a> Records<'a> {
                     _ => {
                         /* unsupported RCLASS */
                         self.cursor.skip(rdlen)?;
-                        self.section_tracker.section_read(section);
+                        self.section_tracker
+                            .section_read(section, self.cursor.pos());
                         continue;
                     }
                 };
@@ -100,7 +101,8 @@ impl<'a> Records<'a> {
                     _ => {
                         /* unsupported RTYPE */
                         self.cursor.skip(rdlen)?;
-                        self.section_tracker.section_read(section);
+                        self.section_tracker
+                            .section_read(section, self.cursor.pos());
                         continue;
                     }
                 };
@@ -128,7 +130,8 @@ impl<'a> Records<'a> {
                     }
                 };
 
-                self.section_tracker.section_read(section);
+                self.section_tracker
+                    .section_read(section, self.cursor.pos());
                 break Ok(Some((section, rec)));
             } else {
                 break Ok(None);

@@ -17,6 +17,13 @@ pub enum RecordsSection {
 }
 
 impl RecordsSection {
+    /// All sections as a sorted const array.
+    pub const VALUES: [RecordsSection; 3] = [
+        RecordsSection::Answer,
+        RecordsSection::Authority,
+        RecordsSection::Additional,
+    ];
+
     /// Converts `RecordsSection` to a static string.
     pub fn to_str(self) -> &'static str {
         match self {

@@ -2,7 +2,8 @@
 
 use crate::{
     constants::{
-        Class, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
+        Class, RecordsSection, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH,
+        DOMAIN_NAME_MAX_POINTERS,
     },
     message::{ClassValue, MessageType, OpCodeValue, RCodeValue, TypeValue},
 };
@@ -89,6 +90,12 @@ pub enum Error {
 
     #[error("message is truncated")]
     MessageTruncated,
+
+    #[error("message size exceeds 65535 bytes: {0}")]
+    MessageTooLong(usize),
+
+    #[error("section '{0}' offset is unknown")]
+    RecordsSectionOffsetUnknown(RecordsSection),
 
     #[error("message contains no records that answer the query")]
     NoAnswer,
