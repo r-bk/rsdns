@@ -78,8 +78,8 @@ pub enum Error {
     #[error("buffer is not large enough: {0} bytes required")]
     BufferTooShort(usize),
 
-    #[error("malformed message: question is missing")]
-    MessageWithoutQuestion,
+    #[error("unexpected questions count {0}")]
+    BadQuestionsCount(usize),
 
     #[error("message type {0} is incompatible in this context")]
     BadMessageType(MessageType),

@@ -128,7 +128,7 @@ impl<'s, 'a: 's> MessageIterator<'a> {
         if let Some(res) = questions.next() {
             return res;
         }
-        Err(Error::MessageWithoutQuestion)
+        Err(Error::BadQuestionsCount(0))
     }
 
     /// Returns the first question in the questions section as `QuestionRef`.
@@ -137,7 +137,7 @@ impl<'s, 'a: 's> MessageIterator<'a> {
     #[inline]
     pub fn question_ref(&self) -> Result<QuestionRef<'a>> {
         if self.header.qd_count == 0 {
-            return Err(Error::MessageWithoutQuestion);
+            return Err(Error::BadQuestionsCount(0));
         }
         let mut cursor = Cursor::with_pos(self.buf, HEADER_LENGTH);
         cursor.read()
