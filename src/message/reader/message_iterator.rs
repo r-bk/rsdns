@@ -2,94 +2,82 @@ use crate::{
     bytes::{Cursor, Reader},
     constants::{RecordsSection, HEADER_LENGTH},
     message::{
-        reader::{QuestionRef, Questions, Records, RecordsReader},
+        reader::{Questions, Records},
         Header, Question,
     },
     Error, Result,
 };
 
-/// A DNS message reader.
+/// An iterator-based message reader.
 ///
-/// `MessageIterator` is the main utility for parsing messages. It allows parsing all of the DNS
-/// message components, the header, the questions section and resource records sections -
-/// answer, authority and additional.
+/// `MessageIterator` is a utility for parsing DNS messages. It allows parsing all of the DNS
+/// message components, the header, the questions section and resource records sections.
 ///
-/// # Header
+/// `MessageIterator` implements an `Iterator`-based approach for parsing a message. The methods
+/// [`MessageIterator::questions`] and [`MessageIterator::records`] return types which implement
+/// the `Iterator` trait. This makes the API convenient to use with the Rust's `for` loop. However,
+/// convenience comes with a price of slightly slower performance. `Iterator` requires definition
+/// of a single item type. Thus, to support different resource record types in a single item type,
+/// the [`RecordData`] enum is defined. Consequently, accessing the record data requires enum
+/// destructuring.
 ///
-/// The header of a DNS message is parsed in the constructor [`MessageIterator::new`] and can be
-/// obtained with the [`MessageIterator::header`] method. An error during header parsing fails the
-/// creation of a message reader.
-///
-/// # Questions
-///
-/// DNS message format allows encoding more than one Question in the same message. However,
-/// it isn't really possible to ask more than one question in the same request.
-/// Hence a message usually contains only a single question. `MessageIterator` returns an iterator
-/// over the questions section via the [`MessageIterator::questions`] method.
-/// Additionally, a helper method [`MessageIterator::question`] exists which returns just the first
-/// (and usually the only) question.
-///
-/// Note that struct [`Question`] owns the domain name, i.e. domain name
-/// is decoded from the DNS message and copied into a sequential buffer. This is not always the
-/// most efficient way of comparing the domain name in the question to domain names in the
-/// resource records sections. When DNS [message compression] is in use, most of
-/// records in the answers section will usually point to the domain name in the question.
-/// For this `MessageIterator` has the [`MessageIterator::question_ref`] method that returns the
-/// first question as struct [`QuestionRef`]. The difference is that `QuestionRef` doesn't own the
-/// domain name bytes, but rather points back to the encoded domain name in the message buffer.
-/// This allows efficient comparison of domain names encoded in the **same** DNS message, assuming
-/// DNS message compression is in use (which is usually the case with most DNS recursors and proxy
-/// servers).
-///
-/// # Records
-///
-/// `MessageIterator` provides two ways for parsing the resource records:
-/// 1. The [`MessageIterator::records`] method which returns an iterator over all records sections.
-/// 2. The [`MessageIterator::records_reader`] method which returns a non-iterator records reader.
-///
-/// ## The `records` method
-///
-/// The [`MessageIterator::records`] method returns an iterator [`Records`] to iterate over
-/// `Answer`, `Authority` and `Additional` sections of a message.
-/// This is the simplest form of traversing the records, as `Records`
-/// implements the `Iterator` trait, and, as such, supports Rust's [`for`] loop.
-///
-/// The downside of `Records` is that, as a Rust iterator, it must have a single item type to
-/// yield in the loop. Thus, all supported data types in the [`records::data`] module are
-/// grouped into the [`RecordData`] enum, which is used in the item type of the iterator.
-/// This creates a need to destructure the enum to obtain the actual resource record data, which
-/// may be less aesthetic, especially when many different data types are involved.
-///
-/// Also, note that `Records` implicitly skips resource records whose type is not yet
-/// part of the `RecordData` enum.
-///
-/// ## The `records_reader` method
-///
-/// The [`MessageIterator::records_reader`] method returns struct [`RecordsReader`], which is
-/// another type that allows traversal of records in a message. It tries to do so without the
-/// drawbacks associated with [`Records`] mentioned above.
-///
-/// `RecordsReader` is not a Rust `Iterator`. It is not bound to a single
-/// type of item on every iteration. Hence, record data can be obtained from it directly,
-/// without artificial enum enclosing. Moreover, record types still not supported by *rsdns*
-/// can be read as byte slices. So, no record is implicitly skipped. This allows an application
-/// to handle unknown record types as defined in [RFC 3597 section 5].
-///
-/// Additionally, `RecordsReader` can be bound to a single message section using the
-/// [`MessageIterator::records_reader_for`] method. There is no such alternative with the `Records`
-/// iterator.
-///
-/// [`records::data`]: crate::records::data
-/// [`for`]: https://doc.rust-lang.org/reference/expressions/loop-expr.html#iterator-loops
 /// [`RecordData`]: crate::records::data::RecordData
-/// [message compression]: https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.4
-/// [RFC 3597 section 5]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 ///
 /// # Examples
 ///
-/// See [`Records`] for an example of using the iterator approach.
+/// ```rust
+/// use rsdns::{
+///     constants::RecordsSection,
+///     message::reader::MessageIterator,
+///     records::data::RecordData,
+/// };
 ///
-/// See [`RecordsReader`] for an example of using the non-iterator approach.
+/// fn print_answers(buf: &[u8]) -> rsdns::Result<()> {
+///     let mi = MessageIterator::new(buf)?;
+///
+///     let header = mi.header();
+///
+///     println!("ID: {}", header.id);
+///     println!("Type: {}", header.flags.message_type());
+///     println!("Questions: {} Answers: {}", header.qd_count, header.an_count);
+///
+///     let q = mi.question()?;
+///     println!("Question: {} {} {}", q.qname, q.qtype, q.qclass);
+///
+///     for result in mi.records() {
+///         let (section, record) = result?;
+///
+///         if section != RecordsSection::Answer {
+///             // Answer is the first section; skip the rest
+///             break;
+///         }
+///
+///         match record.rdata {
+///             RecordData::Cname(ref rdata) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; Cname: {}",
+///                     record.name, record.rclass, record.ttl, rdata.cname
+///                 );
+///             }
+///             RecordData::A(ref rdata) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
+///                     record.name, record.rclass, record.ttl, rdata.address
+///                 );
+///             }
+///             RecordData::Aaaa(ref rdata) => {
+///                 println!(
+///                     "Name: {}; Class: {}; TTL: {}; ipv6: {}",
+///                     record.name, record.rclass, record.ttl, rdata.address
+///                 );
+///             }
+///             _ => println!("{:?}", record),
+///         }
+///     }
+///
+///     Ok(())
+/// }
+/// ```
 #[derive(Debug)]
 pub struct MessageIterator<'a> {
     buf: &'a [u8],
@@ -131,18 +119,6 @@ impl<'s, 'a: 's> MessageIterator<'a> {
         Err(Error::BadQuestionsCount(0))
     }
 
-    /// Returns the first question in the questions section as `QuestionRef`.
-    ///
-    /// Usually a DNS message contains a single question.
-    #[inline]
-    pub fn question_ref(&self) -> Result<QuestionRef<'a>> {
-        if self.header.qd_count == 0 {
-            return Err(Error::BadQuestionsCount(0));
-        }
-        let mut cursor = Cursor::with_pos(self.buf, HEADER_LENGTH);
-        cursor.read()
-    }
-
     /// Returns an iterator over the questions section of the message.
     #[inline]
     pub fn questions(&self) -> Questions {
@@ -159,24 +135,6 @@ impl<'s, 'a: 's> MessageIterator<'a> {
             Cursor::with_pos(self.buf, self.offsets[RecordsSection::Answer as usize]),
             &self.header,
         )
-    }
-
-    /// Returns a records reader for all records sections.
-    #[inline]
-    pub fn records_reader(&self) -> RecordsReader {
-        let offset = self.offsets[RecordsSection::Answer as usize];
-        RecordsReader::new(Cursor::with_pos(self.buf, offset), &self.header)
-    }
-
-    /// Returns a records reader for a specific records section.
-    #[inline]
-    pub fn records_reader_for(&'s mut self, section: RecordsSection) -> Result<RecordsReader<'a>> {
-        let offset = self.section_offset(section)?;
-        Ok(RecordsReader::with_section(
-            Cursor::with_pos(self.buf, offset),
-            &self.header,
-            section,
-        ))
     }
 
     fn section_offset(&mut self, section: RecordsSection) -> Result<usize> {

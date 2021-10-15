@@ -5,7 +5,7 @@ use crate::{
         reader::{
             NameRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset, SectionTracker,
         },
-        ClassValue, Header, TypeValue,
+        ClassValue, TypeValue,
     },
     names::DName,
     records::data::RData,
@@ -14,6 +14,7 @@ use crate::{
 
 #[derive(Debug)]
 /// A flexible reader of resource records.
+/*
 ///
 /// `RecordsReader` provides a flexible API for traversing the resource records of a DNS message.
 /// It doesn't implement the `Iterator` trait, so it doesn't support the Rust `for` loop.
@@ -112,6 +113,7 @@ use crate::{
 ///     Ok(())
 /// }
 /// ```
+ */
 pub struct RecordsReader<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,
@@ -119,28 +121,6 @@ pub struct RecordsReader<'a> {
 }
 
 impl<'s, 'a: 's> RecordsReader<'a> {
-    #[inline(always)]
-    pub(crate) fn new<'c>(cursor: Cursor<'c>, header: &Header) -> RecordsReader<'c> {
-        RecordsReader {
-            cursor,
-            section_tracker: SectionTracker::new(header),
-            done: false,
-        }
-    }
-
-    #[inline(always)]
-    pub(crate) fn with_section<'c>(
-        cursor: Cursor<'c>,
-        header: &Header,
-        section: RecordsSection,
-    ) -> RecordsReader<'c> {
-        RecordsReader {
-            cursor,
-            section_tracker: SectionTracker::with_section(header, section),
-            done: false,
-        }
-    }
-
     /// Checks if there are more records to read.
     ///
     /// This is a convenience method. It is equivalent to [`count()`]` > 0`.

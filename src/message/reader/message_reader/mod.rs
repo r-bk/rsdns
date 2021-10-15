@@ -13,5 +13,6 @@ pub use record_header_ref::*;
 mod reader;
 pub use reader::*;
 
+#[cfg(waiting_for_reimplemented_message_reader)]
 #[cfg(test)]
 mod test_records_reader;

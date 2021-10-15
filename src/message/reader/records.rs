@@ -26,60 +26,9 @@ use std::convert::TryFrom;
 ///
 /// # Examples
 ///
-/// ```rust
-/// use rsdns::{
-///     constants::RecordsSection,
-///     message::reader::MessageIterator,
-///     records::data::RecordData,
-/// };
+/// See [`MessageIterator`] for an example.
 ///
-/// fn print_answers(buf: &[u8]) -> rsdns::Result<()> {
-///     let mi = MessageIterator::new(buf)?;
-///
-///     let header = mi.header();
-///
-///     println!("ID: {}", header.id);
-///     println!("Type: {}", header.flags.message_type());
-///     println!("Questions: {} Answers: {}", header.qd_count, header.an_count);
-///
-///     let q = mi.question()?;
-///     println!("Question: {} {} {}", q.qname, q.qtype, q.qclass);
-///
-///     for result in mi.records() {
-///         let (section, record) = result?;
-///
-///         if section != RecordsSection::Answer {
-///             // Answer is the first section; skip the rest
-///             break;
-///         }
-///
-///         match record.rdata {
-///             RecordData::Cname(ref rdata) => {
-///                 println!(
-///                     "Name: {}; Class: {}; TTL: {}; Cname: {}",
-///                     record.name, record.rclass, record.ttl, rdata.cname
-///                 );
-///             }
-///             RecordData::A(ref rdata) => {
-///                 println!(
-///                     "Name: {}; Class: {}; TTL: {}; ipv4: {}",
-///                     record.name, record.rclass, record.ttl, rdata.address
-///                 );
-///             }
-///             RecordData::Aaaa(ref rdata) => {
-///                 println!(
-///                     "Name: {}; Class: {}; TTL: {}; ipv6: {}",
-///                     record.name, record.rclass, record.ttl, rdata.address
-///                 );
-///             }
-///             _ => println!("{:?}", record),
-///         }
-///     }
-///
-///     Ok(())
-/// }
-///
-/// ```
+/// [`MessageIterator`]: crate::message::reader::MessageIterator
 pub struct Records<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,
