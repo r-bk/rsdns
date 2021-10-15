@@ -248,7 +248,7 @@ impl<'s, 'a: 's> RecordsReader<'a> {
         }
         let res = self.cursor.skip(marker.rdlen as usize);
         if res.is_ok() {
-            self.section_tracker.section_read(marker.section)?;
+            self.section_tracker.section_read(marker.section);
         } else {
             self.done = true;
         }
@@ -273,7 +273,7 @@ impl<'s, 'a: 's> RecordsReader<'a> {
         }
         let res = self.cursor.slice(marker.rdlen as usize);
         if res.is_ok() {
-            self.section_tracker.section_read(marker.section)?;
+            self.section_tracker.section_read(marker.section);
         } else {
             self.done = true;
         }
@@ -298,7 +298,7 @@ impl<'s, 'a: 's> RecordsReader<'a> {
         }
         let res = D::from_cursor(&mut self.cursor, marker.rdlen as usize);
         if res.is_ok() {
-            self.section_tracker.section_read(marker.section)?;
+            self.section_tracker.section_read(marker.section);
         } else {
             self.done = true;
         }

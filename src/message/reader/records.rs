@@ -90,7 +90,7 @@ impl<'a> Records<'a> {
                     _ => {
                         /* unsupported RCLASS */
                         self.cursor.skip(rdlen)?;
-                        self.section_tracker.section_read(section)?;
+                        self.section_tracker.section_read(section);
                         continue;
                     }
                 };
@@ -100,7 +100,7 @@ impl<'a> Records<'a> {
                     _ => {
                         /* unsupported RTYPE */
                         self.cursor.skip(rdlen)?;
-                        self.section_tracker.section_read(section)?;
+                        self.section_tracker.section_read(section);
                         continue;
                     }
                 };
@@ -128,7 +128,7 @@ impl<'a> Records<'a> {
                     }
                 };
 
-                self.section_tracker.section_read(section)?;
+                self.section_tracker.section_read(section);
                 break Ok(Some((section, rec)));
             } else {
                 break Ok(None);

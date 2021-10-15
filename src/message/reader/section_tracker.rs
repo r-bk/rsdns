@@ -1,4 +1,4 @@
-use crate::{constants::RecordsSection, message::Header, Result};
+use crate::{constants::RecordsSection, message::Header};
 
 #[derive(Debug, Clone, Default)]
 pub struct SectionTracker {
@@ -48,13 +48,12 @@ impl SectionTracker {
         }
     }
 
-    pub fn section_read(&mut self, section: RecordsSection) -> Result<()> {
+    pub fn section_read(&mut self, section: RecordsSection) {
         match section {
             RecordsSection::Answer => self.an_read += 1,
             RecordsSection::Authority => self.ns_read += 1,
             RecordsSection::Additional => self.ar_read += 1,
         }
-        Ok(())
     }
 
     pub fn records_left(&self) -> usize {
