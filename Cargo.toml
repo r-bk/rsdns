@@ -2,13 +2,12 @@
 name = "rsdns"
 version = "0.7.0"
 authors = ["Rafael Buchbinder <rafi@rbk.io>"]
-edition = "2018"
+edition = "2021"
 description = "DNS Client Library"
 license = "MIT OR Apache-2.0"
 keywords = ["dns", "dig", "async", "resolver"]
 categories = ["asynchronous", "network-programming", "parser-implementations"]
 repository = "https://github.com/r-bk/rsdns"
-resolver = "2"
 
 [dependencies]
 thiserror = "1.0.26"
