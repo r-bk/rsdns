@@ -5,6 +5,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.8.0] - 2021-10-22
+
+This release completes the two-step transition from `RecordsReader` to the new
+`MessageReader`. Additionally, this release makes the transition to `Rust 2021`.
+
+### Added
+
+- `MessageReader` is the new and recommended primitive for parsing messages.
+  It is very customizable and fast.
+
+### Changed
+
+- `Error::MessageWithoutQuestion` was replaced with `Error::BadQuestionsCount`
+- following the transition to `Rust 2021` the minimum supported rust version was raised to `1.56`
+  (`MSRV 1.56`)
+
+### Removed
+
+- `RecordsReader` was removed in favor of the new `MessageReader`
+- `MessageIterator::question_ref`, `MessageIterator::records_reader` and
+  `MessageIterator::records_reader_for` were removed
+
 ## [0.7.0] - 2021-10-14
 
 This is a very small release done in preparation for changing the `MessageReader`
