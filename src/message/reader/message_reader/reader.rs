@@ -121,8 +121,8 @@ use crate::{
 ///
 /// The methods to read the resource record sections (Answers, Authority and Additional) are:
 ///
-/// 1. [`has_records()`]
-/// 2. [`records_count()`]
+/// 1. [`has_records()`] and [`has_records_in()`]
+/// 2. [`records_count()`] and [`records_count_in()`]
 /// 3. [`record_marker()`] `(G1)`
 /// 4. [`record_header()`] and [`record_header_ref()`] `(G1)`
 /// 5. [`record_data()`] and [`record_data_bytes()`] `(G2)`
@@ -134,7 +134,9 @@ use crate::{
 /// `G2`. Every call to a method in `G2` must be preceded by a call to a method from `G1`.
 ///
 /// [`has_records()`]: MessageReader::has_records
+/// [`has_records_in()`]: MessageReader::has_records_in
 /// [`records_count()`]: MessageReader::records_count
+/// [`records_count_in()`]: MessageReader::records_count_in
 /// [`record_marker()`]: MessageReader::record_marker
 /// [`record_header()`]: MessageReader::record_header
 /// [`record_header_ref()`]: MessageReader::record_header_ref
@@ -228,12 +230,8 @@ use crate::{
 ///
 ///     mr.seek(RecordsSection::Answer)?;
 ///
-///     while mr.has_records() {
+///     while mr.has_records_in(RecordsSection::Answer) {
 ///         let rh = mr.record_header::<Name>()?;
-///         if rh.marker().section() != RecordsSection::Answer {
-///             // Answers is the first section. The rest was not required.
-///             break;
-///         }
 ///
 ///         if rh.rtype() == Type::A {
 ///             let rdata = mr.record_data::<A>(rh.marker())?;
@@ -469,6 +467,16 @@ impl<'s, 'a: 's> MessageReader<'a> {
         self.records_count() > 0
     }
 
+    /// Checks if there are more records to read in a specific section.
+    ///
+    /// This is a convenience method. It is equivalent to [`records_count_in()`]` > 0`.
+    ///
+    /// [`records_count_in()`]: Self::records_count_in
+    #[inline]
+    pub fn has_records_in(&self, section: RecordsSection) -> bool {
+        self.records_count_in(section) > 0
+    }
+
     /// Returns the number of unread records.
     ///
     /// Returns `0` if the reader is in error state.
@@ -476,6 +484,18 @@ impl<'s, 'a: 's> MessageReader<'a> {
     pub fn records_count(&self) -> usize {
         if !self.done {
             self.section_tracker.records_left()
+        } else {
+            0
+        }
+    }
+
+    /// Returns the number of unread records in a specific section.
+    ///
+    /// Returns `0` if the reader is in error state.
+    #[inline]
+    pub fn records_count_in(&self, section: RecordsSection) -> usize {
+        if !self.done {
+            self.section_tracker.records_left_in(section)
         } else {
             0
         }
