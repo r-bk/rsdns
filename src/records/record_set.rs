@@ -1,8 +1,12 @@
 use crate::{
-    constants::{Class, Type},
+    constants::{Class, RCode, Type},
+    message::{
+        reader::{MessageReader, NameRef, RecordHeaderRef},
+        MessageType,
+    },
     names::Name,
     records::data::RData,
-    Result,
+    Error, Result,
 };
 
 /// A set of similar records.
@@ -36,13 +40,6 @@ impl<D: RData> RecordSet<D> {
 
     /// Parses a [`RecordSet`] from a response message.
     ///
-    /// This function is unimplemented until new MessageReader API is finalized.
-    pub fn from_msg(_msg: &[u8]) -> Result<Self> {
-        unimplemented!()
-    }
-
-    /// Parses a [`RecordSet`] from a response message.
-    ///
     /// This method performs *CNAME flattening*, which is the process of traversing a *chain* of
     /// CNAME records until requested record set is found.
     ///
@@ -52,12 +49,11 @@ impl<D: RData> RecordSet<D> {
     /// which is reflected in the returned record set's [`name`](RecordSet::name) attribute.
     ///
     /// [`CNAME`]: crate::constants::Type::Cname
-    #[cfg(waiting_for_new_message_reader)]
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
-        let mut mi = MessageIterator::new(msg)?;
+        let mut mr = MessageReader::new(msg)?;
+        let header = mr.header()?;
 
-        let flags = mi.header().flags;
-
+        let flags = header.flags;
         if flags.message_type() != MessageType::Response {
             return Err(Error::BadMessageType(flags.message_type()));
         }
@@ -70,22 +66,17 @@ impl<D: RData> RecordSet<D> {
             return Err(Error::MessageTruncated);
         }
 
-        let question = mi.question_ref()?;
-        let mut headers = {
-            let rr = mi.records_reader_for(RecordsSection::Answer)?;
-            Self::read_answer_headers(rr)?
-        };
+        let question = mr.the_question_ref()?;
+        let mut headers = Self::read_answer_headers(&mut mr, header.an_count as usize)?;
 
         let rclass = Class::try_from(question.qclass)?;
         let mut name = question.qname;
 
-        let rr = mi.records_reader();
-
         let mut rrset = loop {
-            match Self::extract_rrset(&rr, &mut headers, &name, rclass)? {
+            match Self::extract_rrset(&mr, &mut headers, &name, rclass)? {
                 Some(rrset) => break rrset,
                 None => {
-                    if let Some(n) = Self::extract_cname(&rr, &mut headers, &name, rclass)? {
+                    if let Some(n) = Self::extract_cname(&mr, &mut headers, &name, rclass)? {
                         name = n;
                     } else {
                         return Err(Error::NoAnswer);
@@ -98,10 +89,9 @@ impl<D: RData> RecordSet<D> {
         Ok(rrset)
     }
 
-    #[cfg(waiting_for_new_message_reader)]
     #[inline(always)]
-    fn extract_rrset<'a>(
-        rr: &RecordsReader<'a>,
+    fn extract_rrset<'m, 'a: 'm>(
+        mr: &'m MessageReader<'a>,
         headers: &mut Vec<Option<RecordHeaderRef<'a>>>,
         name: &NameRef<'a>,
         rclass: Class,
@@ -118,7 +108,7 @@ impl<D: RData> RecordSet<D> {
             if let Some(h) = o {
                 if h.name().eq(name)? && h.rtype() == D::RTYPE && h.rclass() == rclass {
                     rrset.ttl = rrset.ttl.min(h.ttl());
-                    rrset.rdata.push(rr.data_at::<D>(h.marker())?);
+                    rrset.rdata.push(mr.record_data_at::<D>(h.marker())?);
                     o.take();
                 }
             }
@@ -131,10 +121,9 @@ impl<D: RData> RecordSet<D> {
         }
     }
 
-    #[cfg(waiting_for_new_message_reader)]
     #[inline(always)]
-    fn extract_cname<'a>(
-        rr: &RecordsReader<'a>,
+    fn extract_cname<'m, 'a: 'm>(
+        mr: &'m MessageReader<'a>,
         headers: &mut Vec<Option<RecordHeaderRef<'a>>>,
         name: &NameRef<'a>,
         rclass: Class,
@@ -143,7 +132,7 @@ impl<D: RData> RecordSet<D> {
         for o in headers.iter_mut() {
             if let Some(h) = o {
                 if h.name().eq(name)? && h.rtype() == Type::Cname && h.rclass() == rclass {
-                    let n = rr.name_ref_at(h.marker());
+                    let n = mr.name_ref_at(h.marker());
                     o.take();
                     return Ok(Some(n));
                 }
@@ -152,14 +141,17 @@ impl<D: RData> RecordSet<D> {
         Ok(None)
     }
 
-    #[cfg(waiting_for_new_message_reader)]
     #[inline(always)]
-    fn read_answer_headers(mut rr: RecordsReader) -> Result<Vec<Option<RecordHeaderRef>>> {
-        let mut headers = Vec::with_capacity(rr.count());
-        while rr.has_records() {
-            let header = rr.header_ref()?;
-            rr.skip_data(header.marker())?;
+    fn read_answer_headers<'m, 'a: 'm>(
+        mr: &'m mut MessageReader<'a>,
+        mut cnt: usize,
+    ) -> Result<Vec<Option<RecordHeaderRef<'a>>>> {
+        let mut headers = Vec::with_capacity(cnt);
+        while cnt > 0 {
+            let header = mr.record_header_ref()?;
+            mr.skip_record_data(header.marker())?;
             headers.push(Some(header));
+            cnt -= 1;
         }
         Ok(headers)
     }
