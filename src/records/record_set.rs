@@ -1,5 +1,5 @@
 use crate::{
-    constants::{Class, RCode, Type},
+    constants::{Class, RCode, RecordsSection, Type},
     message::{
         reader::{MessageReader, NameRef, RecordHeaderRef},
         MessageType,
@@ -67,7 +67,7 @@ impl<D: RData> RecordSet<D> {
         }
 
         let question = mr.the_question_ref()?;
-        let mut headers = Self::read_answer_headers(&mut mr, header.an_count as usize)?;
+        let mut headers = Self::read_answer_headers(&mut mr)?;
 
         let rclass = Class::try_from(question.qclass)?;
         let mut name = question.qname;
@@ -144,14 +144,12 @@ impl<D: RData> RecordSet<D> {
     #[inline(always)]
     fn read_answer_headers<'m, 'a: 'm>(
         mr: &'m mut MessageReader<'a>,
-        mut cnt: usize,
     ) -> Result<Vec<Option<RecordHeaderRef<'a>>>> {
-        let mut headers = Vec::with_capacity(cnt);
-        while cnt > 0 {
+        let mut headers = Vec::with_capacity(mr.records_count_in(RecordsSection::Answer));
+        while mr.has_records_in(RecordsSection::Answer) {
             let header = mr.record_header_ref()?;
             mr.skip_record_data(header.marker())?;
             headers.push(Some(header));
-            cnt -= 1;
         }
         Ok(headers)
     }
