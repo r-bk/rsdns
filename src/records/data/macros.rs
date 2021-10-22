@@ -15,14 +15,6 @@ macro_rules! rr_data {
 
         impl crate::records::data::private::RDataBase for $RR {
             #[inline]
-            fn from(rd: crate::records::data::RecordData) -> crate::Result<Self> {
-                match rd {
-                    crate::records::data::RecordData::$RR(d) => Ok(d),
-                    _ => Err(crate::Error::InternalError("record data conversion failed")),
-                }
-            }
-
-            #[inline]
             fn from_cursor(c: &mut Cursor<'_>, rdlen: usize) -> crate::Result<Self> {
                 c.read_rr_data(rdlen)
             }
