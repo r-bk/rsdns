@@ -24,6 +24,11 @@ impl WCursor<'_> {
             return Err(Error::DomainNameLabelIsEmpty);
         }
 
+        if name == b"." {
+            self.u8(0)?;
+            return Ok(1);
+        }
+
         let start = self.pos();
         let len = name.len();
 
@@ -76,6 +81,7 @@ mod tests {
             ("example.com.", b"\x07example\x03com\x00"),
             ("com", b"\x03com\x00"),
             ("com.", b"\x03com\x00"),
+            (".", b"\x00"),
         ];
 
         for ex in expectations {
