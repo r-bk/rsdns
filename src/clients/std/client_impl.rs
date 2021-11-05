@@ -198,10 +198,10 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
         }
 
         let recursion = self.config.recursion_ == Recursion::On;
-        let mut qw = QueryWriter::new(&mut self.msg, recursion);
+        let mut qw = QueryWriter::new(&mut self.msg);
 
         self.msg_id = qw.message_id();
-        let msg_len = qw.write(self.qname, self.qtype, self.qclass)?;
+        let msg_len = qw.write(self.qname, self.qtype, self.qclass, recursion)?;
 
         unsafe {
             self.msg.set_len(msg_len);

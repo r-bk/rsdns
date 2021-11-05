@@ -8,15 +8,13 @@ use crate::{
 pub struct QueryWriter<'a> {
     wcursor: WCursor<'a>,
     id: u16,
-    recursion_desired: bool,
 }
 
 impl<'a> QueryWriter<'a> {
-    pub fn new(buf: &'a mut [u8], recursion_desired: bool) -> Self {
+    pub fn new(buf: &'a mut [u8]) -> Self {
         QueryWriter {
             wcursor: WCursor::new(buf),
             id: rand::random::<u16>(),
-            recursion_desired,
         }
     }
 
@@ -25,10 +23,16 @@ impl<'a> QueryWriter<'a> {
         self.id
     }
 
-    pub fn write(&mut self, qname: &str, qtype: Type, qclass: Class) -> Result<usize> {
+    pub fn write(
+        &mut self,
+        qname: &str,
+        qtype: Type,
+        qclass: Class,
+        recursion_desired: bool,
+    ) -> Result<usize> {
         let header = Header {
             id: self.id,
-            flags: *Flags::new().set_recursion_desired(self.recursion_desired),
+            flags: *Flags::new().set_recursion_desired(recursion_desired),
             qd_count: 1,
             ..Default::default()
         };

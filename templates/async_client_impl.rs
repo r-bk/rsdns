@@ -221,12 +221,10 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
 
     fn prepare_message(&mut self) -> Result<()> {
         unsafe { self.msg.set_len(self.msg.capacity()); }
-        let mut qw = QueryWriter::new(
-            &mut self.msg,
-            self.config.recursion_ == Recursion::On,
-        );
+        let mut qw = QueryWriter::new(&mut self.msg);
         self.msg_id = qw.message_id();
-        let msg_len = qw.write(self.qname, self.qtype, self.qclass)?;
+        let msg_len = qw.write(self.qname, self.qtype, self.qclass,
+                               self.config.recursion_ == Recursion::On)?;
         unsafe { self.msg.set_len(msg_len); }
         Ok(())
     }
