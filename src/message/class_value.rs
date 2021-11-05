@@ -45,7 +45,7 @@ use std::{
 ///
 /// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
-pub struct ClassValue(u16);
+pub struct ClassValue(pub(crate) u16);
 
 impl ClassValue {
     /// Converts `self` to a string.

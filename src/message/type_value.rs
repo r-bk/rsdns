@@ -43,7 +43,7 @@ use std::{
 ///
 /// [RFC 3597]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug, Default)]
-pub struct TypeValue(u16);
+pub struct TypeValue(pub(crate) u16);
 
 impl TypeValue {
     /// Converts `self` to a string.

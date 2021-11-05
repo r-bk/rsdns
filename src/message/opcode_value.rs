@@ -31,7 +31,7 @@ use std::{
 ///
 /// [^rfc]: [RFC 1035 section 4.1.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1)
 #[derive(Copy, Clone, Debug, Default, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub struct OpCodeValue(u8);
+pub struct OpCodeValue(pub(crate) u8);
 
 impl OpCodeValue {
     /// Converts `self` to a string.
