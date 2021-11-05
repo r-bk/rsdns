@@ -1,7 +1,7 @@
 use crate::{
     clients::{config::{ProtocolStrategy, Recursion, ClientConfig}},
     constants::{Type, Class},
-    message::{reader::MessageIterator, Flags, QueryWriter},
+    message::{reader::MessageReader, Flags, QueryWriter},
     records::{data::RData, RecordSet},
     Error, Result,
 };
@@ -189,20 +189,24 @@ impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
             let size = self.sock.recv(self.buf).await?;
 
             let response = &self.buf[..size];
-            let mi = match MessageIterator::new(response) {
+            let mut mr = match MessageReader::new(response) {
                 Ok(mr) => mr,
                 Err(_) => continue,
             };
+            let header = match mr.header() {
+                Ok(h) => h,
+                Err(_) => continue,
+            };
 
-            if mi.header().id != self.msg_id {
+            if header.id != self.msg_id {
                 continue;
             }
 
-            for question in mi.questions().flatten() {
+            if let Ok(question) = mr.the_question() {
                 if question.qtype == self.qtype
-                        && question.qclass == self.qclass
-                        && question.qname == self.qname {
-                    return Ok((size, mi.header().flags));
+                    && question.qclass == self.qclass
+                    && question.qname == self.qname {
+                    return Ok((size, header.flags));
                 }
             }
         }
