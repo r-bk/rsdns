@@ -6,8 +6,7 @@ use std::{
 
 /// Record types.
 ///
-/// - [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
-/// - [RFC 3596 section 2.1](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.1) `(AAAA)`
+/// [RFC 1035 section 3.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.2.2)
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Type {
     /// a host address (IPv4)
@@ -43,6 +42,7 @@ pub enum Type {
     /// text strings
     Txt = 16,
     /// a host address (IPv6)
+    /// [RFC 3596 section 2.1](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.1)
     Aaaa = 28,
     /// a request for a transfer of an entire zone
     Axfr = 252,
