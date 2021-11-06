@@ -47,6 +47,11 @@ optional = true
 [build-dependencies]
 tera = { version = "~1.12.1", default-features = false }
 
+[dev-dependencies]
+async-std = { version = "^1", features = ["attributes"] }
+tokio = { version = "^1", features = ["macros"] }
+smol-potat = "1.1.2"
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
