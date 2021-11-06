@@ -6,6 +6,7 @@ use crate::{
     records::{data::RData, RecordSet},
 };
 use std::{
+    cell::RefCell,
     io::{ErrorKind, Read, Write},
     net::{TcpStream, UdpSocket},
     time::{Duration, Instant},
@@ -30,6 +31,7 @@ struct ClientCtx<'a, 'b, 'c, 'd> {
 pub(crate) struct ClientImpl {
     config: ClientConfig,
     socket: UdpSocket,
+    buf: RefCell<Vec<u8>>,
 }
 
 impl ClientImpl {
@@ -37,7 +39,16 @@ impl ClientImpl {
         let socket = UdpSocket::bind(config.bind_addr_)?;
         socket.connect(config.nameserver_)?;
 
-        Ok(Self { config, socket })
+        let buf = match config.buffer_size() {
+            0 => Vec::new(),
+            bs => Vec::with_capacity(bs),
+        };
+
+        Ok(Self {
+            config,
+            socket,
+            buf: RefCell::new(buf),
+        })
     }
 
     pub fn config(&self) -> &ClientConfig {
@@ -69,17 +80,19 @@ impl ClientImpl {
     }
 
     pub fn query_rrset<D: RData>(&self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
+        if self.config.buffer_size() == 0 {
+            return Err(Error::NoBuffer);
+        }
         if !qclass.is_data_class() {
             return Err(Error::UnsupportedClass(qclass));
         }
-        let capacity = u16::MAX as usize;
-        let mut vec: Vec<u8> = Vec::with_capacity(capacity);
-        unsafe { vec.set_len(capacity) };
 
-        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut vec)?;
-        unsafe { vec.set_len(response_len) };
+        let mut buf = self.buf.borrow_mut();
+        unsafe { buf.set_len(self.config.buffer_size()) };
+        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut buf)?;
+        unsafe { buf.set_len(response_len) };
 
-        RecordSet::from_msg(&vec)
+        RecordSet::from_msg(&buf)
     }
 }
 

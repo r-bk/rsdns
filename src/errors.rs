@@ -127,6 +127,13 @@ pub enum Error {
     /// Records reader is exhausted or in error state
     #[error("records reader is exhausted or a previous call resulted in error")]
     ReaderDone,
+
+    /// A client API misuse with respect to internal buffer allocation.
+    ///
+    /// A client API which requires an internal buffer was used. However, the client was configured
+    /// to avoid internal buffer allocation.
+    #[error("an internal client buffer is required")]
+    NoBuffer,
 }
 
 /// Result returned by [rsdns](crate).

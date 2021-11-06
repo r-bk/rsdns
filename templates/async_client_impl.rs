@@ -5,6 +5,7 @@ use crate::{
     records::{data::RData, RecordSet},
     Error, Result,
 };
+use std::cell::RefCell;
 
 {% if crate_name == "tokio" %}
 
@@ -44,19 +45,24 @@ type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 pub struct ClientImpl {
     config: ClientConfig,
     sock: UdpSocket,
+    buf: RefCell<Vec<u8>>,
 }
 
 impl ClientImpl {
     pub async fn new(config: ClientConfig) -> Result<Self> {
         let sock = udp_socket(&config).await?;
-        Ok(Self { config, sock })
+        let buf = match config.buffer_size() {
+            0 => Vec::new(),
+            bs => Vec::with_capacity(bs),
+        };
+        Ok(Self { config, sock, buf: RefCell::new(buf) })
     }
 
     pub fn config(&self) -> &ClientConfig {
         &self.config
     }
 
-    pub async fn query_raw(&mut self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
+    pub async fn query_raw(&self, qname: &str, qtype: Type, qclass: Class, buf: &mut [u8]) -> Result<usize> {
         let mut ctx = ClientCtx {
             qname,
             qtype,
@@ -72,18 +78,19 @@ impl ClientImpl {
     }
 
     pub async fn query_rrset<D: RData>(&mut self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
+        if self.config.buffer_size() == 0 {
+            return Err(Error::NoBuffer);
+        }
         if !qclass.is_data_class() {
             return Err(Error::UnsupportedClass(qclass));
         }
 
-        let capacity = u16::MAX as usize;
-        let mut vec: Vec<u8> = Vec::with_capacity(capacity);
-        unsafe { vec.set_len(capacity) };
+        let mut buf = self.buf.borrow_mut();
+        unsafe { buf.set_len(self.config.buffer_size()) };
+        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut buf).await?;
+        unsafe { buf.set_len(response_len) };
 
-        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut vec).await?;
-        unsafe { vec.set_len(response_len) };
-
-        RecordSet::from_msg(&vec)
+        RecordSet::from_msg(&buf)
     }
 }
 

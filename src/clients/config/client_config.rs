@@ -1,6 +1,7 @@
 //! Defines configuration for clients.
 use crate::{
     clients::{ProtocolStrategy, Recursion},
+    constants::{DNS_MESSAGE_BUFFER_MIN_LENGTH, DNS_MESSAGE_MAX_LENGTH},
     Error, Result,
 };
 use std::{
@@ -25,6 +26,7 @@ pub struct ClientConfig {
     pub(crate) query_timeout_: Option<Duration>,
     pub(crate) protocol_strategy_: ProtocolStrategy,
     pub(crate) recursion_: Recursion,
+    pub(crate) buffer_size_: usize,
 }
 
 impl ClientConfig {
@@ -286,6 +288,69 @@ impl ClientConfig {
         Ok(())
     }
 
+    /// Returns the size (in bytes) of client's internal buffer.
+    ///
+    /// *rsdns* clients allocate a buffer for reception of incoming messages. The buffer is
+    /// allocated once, at the time of client creation, and reused throughout the whole lifetime of
+    /// the client.
+    ///
+    /// Note that the buffer is used for both UDP and TCP exchanges. Hence, it must be large enough
+    /// to accommodate any DNS response sent over UDP, and a large DNS response, which would
+    /// possibly be truncated due to DNS-over-UDP message size constraints.
+    ///
+    /// The default buffer size is `65535` bytes, which is the maximal message size in
+    /// DNS-over-TCP protocol. Moreover, the minimal buffer size is `512` bytes to accommodate
+    /// any message in DNS-over-UDP basic protocol.
+    ///
+    /// It is possible to avoid allocation of an internal buffer by setting its size to `0`.
+    /// A client can be used without the internal buffer via methods that accept an external
+    /// buffer (e.g. [`Client::query_raw`]).
+    ///
+    /// Default: `65535`
+    ///
+    /// - [RFC 1035 section 2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)
+    /// - [RFC 1035 section 4.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.2.2)
+    ///
+    /// [`Client::query_raw`]: crate::clients::tokio::Client::query_raw
+    #[inline]
+    pub fn buffer_size(&self) -> usize {
+        self.buffer_size_
+    }
+
+    /// Sets the size (in bytes) of client's internal buffer.
+    ///
+    /// See [`buffer_size`] for more information.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use rsdns::clients::ClientConfig;
+    /// let mut conf = ClientConfig::new();
+    /// assert_eq!(conf.buffer_size(), 65535);
+    ///
+    /// conf = conf.set_buffer_size(4096);
+    /// assert_eq!(conf.buffer_size(), 4096);
+    ///
+    /// // to disable internal buffer allocation, set buffer size to 0
+    /// conf = conf.set_buffer_size(0);
+    /// assert_eq!(conf.buffer_size(), 0);
+    ///
+    /// // otherwise, minimal buffer size is 512 bytes
+    /// conf = conf.set_buffer_size(64);
+    /// assert_eq!(conf.buffer_size(), 512);
+    /// ```
+    ///
+    /// [`buffer_size`]: Self::buffer_size
+    #[inline]
+    pub fn set_buffer_size(mut self, buffer_size: usize) -> Self {
+        self.buffer_size_ = if buffer_size > 0 {
+            buffer_size.max(DNS_MESSAGE_BUFFER_MIN_LENGTH)
+        } else {
+            0
+        };
+        self
+    }
+
     fn ipv4_unspecified() -> SocketAddr {
         SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 0))
     }
@@ -306,6 +371,7 @@ impl Default for ClientConfig {
             query_timeout_: Some(Duration::from_secs(2)),
             protocol_strategy_: ProtocolStrategy::Udp,
             recursion_: Recursion::On,
+            buffer_size_: DNS_MESSAGE_MAX_LENGTH,
         }
     }
 }

@@ -44,3 +44,11 @@ pub const HEADER_LENGTH: usize = 12;
 ///
 /// [RFC 1035 section 4.2.2](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.2.2)
 pub const DNS_MESSAGE_MAX_LENGTH: usize = u16::MAX as usize;
+
+/// Minimal buffer length required for DNS-over-UDP basic protocol.
+///
+/// This value is the maximal DNS message size in the basic DNS-over-UDP protocol, i.e. without
+/// EDNS0 extension. Hence, it is the minimal buffer size required to receive any such message.
+///
+/// [RFC 1025 section 2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)
+pub const DNS_MESSAGE_BUFFER_MIN_LENGTH: usize = 512;
