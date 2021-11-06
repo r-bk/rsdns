@@ -1,12 +1,12 @@
 //! Defines configuration for clients.
-use crate::clients::{ProtocolStrategy, Recursion};
+use crate::{
+    clients::{ProtocolStrategy, Recursion},
+    Error, Result,
+};
 use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     time::Duration,
 };
-
-#[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-use crate::{Error, Result};
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
 const INTERFACE_NAME_MAX_LENGTH: usize = 16; // socket(7), IFNAMSIZ
@@ -274,6 +274,16 @@ impl ClientConfig {
     pub fn set_recursion(mut self, recursion: Recursion) -> Self {
         self.recursion_ = recursion;
         self
+    }
+
+    /// Checks the configuration for validity.
+    #[allow(dead_code)] // clients module may be disabled
+    #[inline]
+    pub(crate) fn check(&self) -> Result<()> {
+        if !self.has_nameserver() {
+            return Err(Error::NoNameservers);
+        }
+        Ok(())
     }
 
     fn ipv4_unspecified() -> SocketAddr {

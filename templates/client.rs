@@ -5,7 +5,7 @@ use crate::{
     },
     constants::{Type, Class},
     records::{data::RData, RecordSet},
-    Error, Result
+    Result
 };
 
 {% if async == "true" -%}
@@ -27,17 +27,9 @@ pub struct Client {
 
 impl Client {
     /// Creates a new instance of [`Client`] with specified configuration.
-    ///
-    /// # Returns
-    ///
-    /// [`NoNameservers`] - if no nameserver is specified in the configuration
-    ///
-    /// [`NoNameservers`]: Error::NoNameservers
     #[inline(always)]
     pub {{ as }} fn new(conf: ClientConfig) -> Result<Self> {
-        if !conf.has_nameserver() {
-            return Err(Error::NoNameservers);
-        }
+        conf.check()?;
         Ok(Self {
             internal: ClientImpl::new(conf){{ aw }}?,
         })
