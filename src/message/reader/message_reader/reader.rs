@@ -34,25 +34,25 @@ use crate::{
 ///
 /// # Message Header
 ///
-/// The message header is read using the [`header()`] method.
+/// The message header is read using the [`header`] method.
 ///
 /// The header contains information about the layout of the sections that follow.
 /// It must be read immediately after creation of a `MessageReader`. Without this
 /// information `MessageReader` is unaware of the amount of elements in each of the message
 /// sections, and behaves as if there are zero elements in all sections.
 ///
-/// [`header()`]: MessageReader::header
+/// [`header`]: MessageReader::header
 ///
 ///
 /// # Questions
 ///
 /// The methods to read the Questions section are:
 ///
-/// 1. [`has_questions()`]
-/// 2. [`questions_count()`]
-/// 3. [`question()`] and [`question_ref()`]
-/// 4. [`the_question()`] and [`the_question_ref()`]
-/// 5. [`skip_questions()`]
+/// 1. [`has_questions`]
+/// 2. [`questions_count`]
+/// 3. [`question`] and [`question_ref`]
+/// 4. [`the_question`] and [`the_question_ref`]
+/// 5. [`skip_questions`]
 ///
 /// The Questions section is the first section immediately following the header. The DNS protocol
 /// allows more than one question to be encoded in a message. However, this is not used in practice,
@@ -60,7 +60,7 @@ use crate::{
 ///
 /// DNS question is represented in *rsdns* by the types [`Question`] and [`QuestionRef`].
 ///
-/// The functions [`question()`] and [`question_ref()`] read and return the next question, and
+/// The functions [`question`] and [`question_ref`] read and return the next question, and
 /// are intended to be used as follows:
 ///
 /// ```rust
@@ -78,7 +78,7 @@ use crate::{
 /// # }
 /// ```
 ///
-/// The functions [`the_question()`] and [`the_question_ref()`] are useful when exactly one
+/// The functions [`the_question`] and [`the_question_ref`] are useful when exactly one
 /// question is expected in the message. They return [`Error::BadQuestionsCount`] if the number
 /// of questions is anything other than `1`.
 ///
@@ -95,7 +95,7 @@ use crate::{
 /// ```
 ///
 /// Finally, if questions are not of any interest, the whole section may be skipped using the
-/// [`skip_questions()`] method:
+/// [`skip_questions`] method:
 ///
 /// ```rust
 /// # use rsdns::{message::reader::MessageReader, Result};
@@ -108,41 +108,41 @@ use crate::{
 /// # }
 /// ```
 ///
-/// [`has_questions()`]: MessageReader::has_questions
-/// [`questions_count()`]: MessageReader::questions_count
-/// [`question()`]: MessageReader::question
-/// [`question_ref()`]: MessageReader::question_ref
-/// [`the_question()`]: MessageReader::the_question
-/// [`the_question_ref()`]: MessageReader::the_question_ref
-/// [`skip_questions()`]: MessageReader::skip_questions
+/// [`has_questions`]: MessageReader::has_questions
+/// [`questions_count`]: MessageReader::questions_count
+/// [`question`]: MessageReader::question
+/// [`question_ref`]: MessageReader::question_ref
+/// [`the_question`]: MessageReader::the_question
+/// [`the_question_ref`]: MessageReader::the_question_ref
+/// [`skip_questions`]: MessageReader::skip_questions
 ///
 ///
 /// # Resource Records
 ///
 /// The methods to read the resource record sections (Answers, Authority and Additional) are:
 ///
-/// 1. [`has_records()`] and [`has_records_in()`]
-/// 2. [`records_count()`] and [`records_count_in()`]
-/// 3. [`record_marker()`] `(G1)`
-/// 4. [`record_header()`] and [`record_header_ref()`] `(G1)`
-/// 5. [`record_data()`] and [`record_data_bytes()`] `(G2)`
-/// 6. [`skip_record_data()`] `(G2)`
+/// 1. [`has_records`] and [`has_records_in`]
+/// 2. [`records_count`] and [`records_count_in`]
+/// 3. [`record_marker`] `(G1)`
+/// 4. [`record_header`] and [`record_header_ref`] `(G1)`
+/// 5. [`record_data`] and [`record_data_bytes`] `(G2)`
+/// 6. [`skip_record_data`] `(G2)`
 ///
 /// Reading a resource record is a two-step process. Firstly, the record header must be read using
 /// any method in group `G1`. Secondly, (immediately after) the record data must be read using any
 /// method in group `G2`. Every call to a method in `G1` must be followed by a call to a method in
 /// `G2`. Every call to a method in `G2` must be preceded by a call to a method from `G1`.
 ///
-/// [`has_records()`]: MessageReader::has_records
-/// [`has_records_in()`]: MessageReader::has_records_in
-/// [`records_count()`]: MessageReader::records_count
-/// [`records_count_in()`]: MessageReader::records_count_in
-/// [`record_marker()`]: MessageReader::record_marker
-/// [`record_header()`]: MessageReader::record_header
-/// [`record_header_ref()`]: MessageReader::record_header_ref
-/// [`record_data()`]: MessageReader::record_data
-/// [`record_data_bytes()`]: MessageReader::record_data_bytes
-/// [`skip_record_data()`]: MessageReader::skip_record_data
+/// [`has_records`]: MessageReader::has_records
+/// [`has_records_in`]: MessageReader::has_records_in
+/// [`records_count`]: MessageReader::records_count
+/// [`records_count_in`]: MessageReader::records_count_in
+/// [`record_marker`]: MessageReader::record_marker
+/// [`record_header`]: MessageReader::record_header
+/// [`record_header_ref`]: MessageReader::record_header_ref
+/// [`record_data`]: MessageReader::record_data
+/// [`record_data_bytes`]: MessageReader::record_data_bytes
+/// [`skip_record_data`]: MessageReader::skip_record_data
 ///
 /// ## Marker, Header and HeaderRef
 ///
@@ -174,9 +174,9 @@ use crate::{
 ///
 /// Random access methods are:
 ///
-/// 1. [`record_data_at()`]
-/// 2. [`record_data_bytes_at()`]
-/// 3. [`name_ref_at()`]
+/// 1. [`record_data_at`]
+/// 2. [`record_data_bytes_at`]
+/// 3. [`name_ref_at`]
 ///
 /// These methods allow random access to record data, assuming the record markers are first
 /// traversed and stored for later processing.
@@ -184,14 +184,14 @@ use crate::{
 /// Note that these methods are immutable, they do not change the internal buffer pointer of
 /// the reader.
 ///
-/// [`record_data_at()`]: MessageReader::record_data_at
-/// [`record_data_bytes_at()`]: MessageReader::record_data_bytes_at
-/// [`name_ref_at()`]: MessageReader::name_ref_at
+/// [`record_data_at`]: MessageReader::record_data_at
+/// [`record_data_bytes_at`]: MessageReader::record_data_bytes_at
+/// [`name_ref_at`]: MessageReader::name_ref_at
 ///
 ///
 /// # Seeking
 ///
-/// Seeking is possible using the [`seek()`] method.
+/// Seeking is possible using the [`seek`] method.
 ///
 /// When `MessageReader` traverses a message and reaches the first record of any of the records
 /// sections, it internally stores the offset of the record. This allows seeking to the beginning
@@ -201,7 +201,7 @@ use crate::{
 /// read. In this case the reader will decode all the elements until it is positioned at the first
 /// record of the requested section.
 ///
-/// [`seek()`]: MessageReader::seek
+/// [`seek`]: MessageReader::seek
 ///
 ///
 /// # Examples
@@ -412,10 +412,10 @@ impl<'s, 'a: 's> MessageReader<'a> {
 
     /// Reads the first and only question.
     ///
-    /// This method is equivalent to [`question()`], except that it returns
+    /// This method is equivalent to [`question`], except that it returns
     /// [`Error::BadQuestionsCount`] if the number of questions is not `1`.
     ///
-    /// [`question()`]: MessageReader::question
+    /// [`question`]: MessageReader::question
     #[inline]
     pub fn the_question(&mut self) -> Result<Question> {
         question!(self, question_check_single_question)
@@ -423,10 +423,10 @@ impl<'s, 'a: 's> MessageReader<'a> {
 
     /// Reads the first and only question as [`QuestionRef`].
     ///
-    /// This method is equivalent to [`question_ref()`], except that it returns
+    /// This method is equivalent to [`question_ref`], except that it returns
     /// [`Error::BadQuestionsCount`] if the number of questions is not `1`.
     ///
-    /// [`question_ref()`]: MessageReader::question_ref
+    /// [`question_ref`]: MessageReader::question_ref
     #[inline]
     pub fn the_question_ref(&'s mut self) -> Result<QuestionRef<'a>> {
         question!(self, question_check_single_question)
