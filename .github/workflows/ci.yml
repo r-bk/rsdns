@@ -97,21 +97,21 @@ jobs:
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
         with:
           command: clippy
-          args: --no-default-features --features ${{ matrix.feature }} -- -D warnings
+          args: --no-default-features --features ${{ matrix.feature }}
 
       - uses: actions-rs/cargo@v1
         name: lint all rsdns
         if: ${{ matrix.feature == 'all' }}
         with:
           command: clippy
-          args: --all-features -- -D warnings
+          args: --all-features
 
       - uses: actions-rs/cargo@v1
         name: lint no-default-features rsdns
         if: ${{ matrix.feature == '' }}
         with:
           command: clippy
-          args: --no-default-features -- -D warnings
+          args: --no-default-features
 
   common-ci:
     runs-on: ubuntu-latest
