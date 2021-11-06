@@ -137,18 +137,18 @@ impl ClientConfig {
         self
     }
 
-    /// Returns the socket local bind address.
+    /// Returns the UDP socket local bind address.
     ///
     /// Default: `0.0.0.0:0`.
     pub fn bind_addr(&self) -> SocketAddr {
         self.bind_addr_
     }
 
-    /// Sets the socket local bind address.
+    /// Sets the UDP socket local bind address.
     ///
-    /// Defines the address UDP sockets are bound to.
+    /// See [`bind_addr`] for more information.
     ///
-    /// Default: `0.0.0.0:0`.
+    /// [`bind_addr`]: Self::bind_addr
     pub fn set_bind_addr(mut self, bind_addr: SocketAddr) -> Self {
         self.bind_addr_ = bind_addr;
         self
@@ -156,7 +156,18 @@ impl ClientConfig {
 
     /// Returns the interface name to bind to.
     ///
+    /// This option forces a client to bind all sockets to a specified interface using the
+    /// `SO_BINDTODEVICE` socket option (see `socket(7)` man page).
+    ///
+    /// `interface_name` should be a non-empty string shorter than 16 bytes (`IFNAMSIZ`).
+    /// Whitespace characters and `'/'` are considered invalid for interface names.
+    ///
+    /// This option is handy when you have multiple network interfaces with the same IP address.
+    /// In this case [`bind_addr`] cannot be used to identify the correct network interface.
+    ///
     /// Default: `None`.
+    ///
+    /// [`bind_addr`]: Self::bind_addr
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
     #[cfg_attr(
         docsrs,
@@ -172,16 +183,9 @@ impl ClientConfig {
 
     /// Sets the interface name to bind to.
     ///
-    /// This option forces a client to bind sockets to a specified interface using the
-    /// `SO_BINDTODEVICE` socket option (see `socket(7)` man page).
+    /// See [`bind_device`] for more information.
     ///
-    /// `interface_name` should be a non-empty string shorter than 16 bytes (`IFNAMSIZ`).
-    /// Whitespace characters and `'/'` are considered invalid for interface names.
-    ///
-    /// This option is handy when you have multiple network interfaces with the same IP address.
-    /// In this case [Self::bind_addr] cannot be used to identify the correct network interface.
-    ///
-    /// Default: `None`.
+    /// [`bind_device`]: Self::bind_device
     #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
     #[cfg_attr(
         docsrs,
@@ -210,18 +214,21 @@ impl ClientConfig {
 
     /// Returns the query lifetime duration.
     ///
+    /// Query lifetime duration is the upper bound on the overall query duration, including all
+    /// UDP retries. This value should be greater than [`query_timeout`], if the latter set.
+    ///
     /// Default: `10 sec`.
+    ///
+    /// [`query_timeout`]: Self::query_timeout
     pub fn query_lifetime(&self) -> Duration {
         self.query_lifetime_
     }
 
     /// Sets the query lifetime duration.
     ///
-    /// Query lifetime duration is the upper bound on the overall query duration, including all
-    /// UDP retries. This value should be greater than [Self::query_timeout] if the latter
-    /// is set.
+    /// See [`query_lifetime`] for more information.
     ///
-    /// Default: `10 sec`.
+    /// [`query_lifetime`]: Self::query_lifetime
     pub fn set_query_lifetime(mut self, query_lifetime: Duration) -> Self {
         self.query_lifetime_ = query_lifetime;
         self
@@ -229,33 +236,43 @@ impl ClientConfig {
 
     /// Returns the UDP query timeout duration.
     ///
+    /// Query timeout duration denotes the time to wait until an unanswered UDP query is resent.
+    /// This value should be smaller than [`query_lifetime`].
+    /// During its lifetime a query may be resent several times before timing out.
+    ///
+    /// This option may be `None`, in which case an unanswered UDP query is never retried.
+    ///
     /// Default: `2 sec`.
+    ///
+    /// [`query_lifetime`]: Self::query_lifetime
     pub fn query_timeout(&self) -> Option<Duration> {
         self.query_timeout_
     }
 
     /// Sets the UDP query timeout duration.
     ///
-    /// Denotes the time to resend an unanswered UDP query. This value should be smaller than
-    /// [Self::query_lifetime]. During query lifetime it may be resent several times before
-    /// timing out.
+    /// See [`query_timeout`] for more information.
     ///
-    /// This option may be `None`, in which case an unanswered UDP query is never resent.
-    ///
-    /// Default: `2 sec`.
+    /// [`query_timeout`]: Self::query_timeout
     pub fn set_query_timeout(mut self, query_timeout: Option<Duration>) -> Self {
         self.query_timeout_ = query_timeout;
         self
     }
 
     /// Returns the protocol strategy.
+    ///
+    /// See [`ProtocolStrategy`] for more information.
+    ///
+    /// Default: [`ProtocolStrategy::Udp`]
     pub fn protocol_strategy(&self) -> ProtocolStrategy {
         self.protocol_strategy_
     }
 
     /// Sets the protocol strategy.
     ///
-    /// See [`ProtocolStrategy`] for more info.
+    /// See [`protocol_strategy`] for more information.
+    ///
+    /// [`protocol_strategy`]: Self::protocol_strategy
     pub fn set_protocol_strategy(mut self, strategy: ProtocolStrategy) -> Self {
         self.protocol_strategy_ = strategy;
         self
@@ -263,22 +280,23 @@ impl ClientConfig {
 
     /// Returns the recursion option.
     ///
-    /// Default: `Recursion::On`.
+    /// Specifies if to set the recursion flag in the query.
+    ///
+    /// Default: [`Recursion::On`]
     pub fn recursion(&self) -> Recursion {
         self.recursion_
     }
 
     /// Sets the recursion option.
     ///
-    /// Specifies if to set the recursion flag in the query.
+    /// See [`recursion`] for more information.
     ///
-    /// Default: `Recursion::On`.
+    /// [`recursion`]: Self::recursion
     pub fn set_recursion(mut self, recursion: Recursion) -> Self {
         self.recursion_ = recursion;
         self
     }
 
-    /// Checks the configuration for validity.
     #[allow(dead_code)] // clients module may be disabled
     #[inline]
     pub(crate) fn check(&self) -> Result<()> {
