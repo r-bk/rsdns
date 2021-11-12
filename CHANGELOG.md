@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.9.0] - 2021-11-12
+## Fixed
+- fixed a bug in encoding of the root DNS zone `.`
+
+  Previously, an attempt to query the root zone failed because the `.` query name was considered invalid.
+
+## Changed
+- clients allocate the incoming message buffer once (in constructor) instead of on every call to `query_rrset`
+
+## Added
+- add `ClientConfig::buffer_size` configuration option. It controls the size of the internal buffer allocated
+  by clients.
+
+
 ## [0.8.0] - 2021-10-22
 
 This release completes the two-step transition from `RecordsReader` to the new
