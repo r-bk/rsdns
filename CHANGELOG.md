@@ -6,15 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [0.9.0] - 2021-11-12
-## Fixed
+### Fixed
 - fixed a bug in encoding of the root DNS zone `.`
 
   Previously, an attempt to query the root zone failed because the `.` query name was considered invalid.
 
-## Changed
+### Changed
 - clients allocate the incoming message buffer once (in constructor) instead of on every call to `query_rrset`
 
-## Added
+### Added
 - add `ClientConfig::buffer_size` configuration option. It controls the size of the internal buffer allocated
   by clients.
 
