@@ -63,11 +63,12 @@ impl Client {
     /// canonical name. See [`RecordSet::from_msg`] for *CNAME flattening* description.
     ///
     /// This method allows data-type queries only.
-    /// For meta-queries (e.g. [`Type::Any`]) use [`query_raw()`](Client::query_raw).
+    /// For meta-queries (e.g. [`Type::Any`]) use [`query_raw`].
     ///
     /// This method allocates.
     ///
     /// [`CNAME`]: crate::records::data::Cname
+    /// [`query_raw`]: Self::query_raw
     pub {{ as }} fn query_rrset<D: RData>(&mut self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
         self.internal.query_rrset(qname, qclass){{ aw }}
     }
