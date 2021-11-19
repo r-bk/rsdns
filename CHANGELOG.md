@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.11.0] - 2021-11-19
+### Added
+- implement EDNS0 support [RFC 2671], [RFC 6891].
+  From now on DNS responses longer than 512 bytes can be received over UDP.
+
+### Changed
+- enable EDNS in default `ClientConfig` with parameters `version: 0` and `udp_payload_size: 1232`.
+
+### Deleted
+- remove `Error::NoNameservers` and `Error::NoBuffer` in favor of the generic `Error::BadParam`.
+
+
+[RFC 2671]: https://www.rfc-editor.org/rfc/rfc2671.html
+[RFC 6891]: https://www.rfc-editor.org/rfc/rfc6891.html
+
+
 ## [0.10.0] - 2021-11-13
 ### Changed
 - upgrade to `tera v0.15.0`, as `v0.13.0` and `v0.14.0` were yanked
