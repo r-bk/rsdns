@@ -84,7 +84,7 @@ impl ClientImpl {
 
     pub fn query_rrset<D: RData>(&self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
         if self.config.buffer_size() == 0 {
-            return Err(Error::NoBuffer);
+            return Err(Error::BadParam("non-zero buffer_size is required"));
         }
         if !qclass.is_data_class() {
             return Err(Error::UnsupportedClass(qclass));

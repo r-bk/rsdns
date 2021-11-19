@@ -302,7 +302,7 @@ impl ClientConfig {
     #[inline]
     pub(crate) fn check(&self) -> Result<()> {
         if !self.has_nameserver() {
-            return Err(Error::NoNameservers);
+            return Err(Error::BadParam("no nameservers"));
         }
 
         if let EDns::On {
