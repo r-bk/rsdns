@@ -1,4 +1,6 @@
-use crate::{constants::Type, Result};
+cfg_any_client! {
+    use crate::{constants::Type, Result};
+}
 
 /// OPT pseudo-record.
 ///
@@ -13,12 +15,19 @@ pub struct Opt {
 }
 
 impl Opt {
-    #[inline]
-    pub(crate) fn new(version: u8, udp_payload_size: u16) -> Opt {
-        Opt {
-            udp_payload_size,
-            version,
-            ..Default::default()
+    cfg_any_client! {
+        #[allow(dead_code)]
+        #[inline]
+        pub(crate) fn new(version: u8, udp_payload_size: u16) -> Opt {
+            Opt {
+                udp_payload_size,
+                version,
+                ..Default::default()
+            }
+        }
+
+        fn ttl(&self) -> u32 {
+            (self.rcode_extension as u32) << 24 | (self.version as u32) << 16 | self.flags as u32
         }
     }
 
@@ -30,10 +39,6 @@ impl Opt {
             version: ((ttl & 0x00FF0000u32) >> 16) as u8,
             flags: (ttl & 0x0000FFFF) as u16,
         }
-    }
-
-    fn ttl(&self) -> u32 {
-        (self.rcode_extension as u32) << 24 | (self.version as u32) << 16 | self.flags as u32
     }
 
     /// Returns the UDP payload size
