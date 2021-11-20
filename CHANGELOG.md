@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.11.1] - 2021-11-20
+### Fixed
+- fix compilation warnings when compiled without `net-*` features
+
+
 ## [0.11.0] - 2021-11-19
 ### Added
 - implement EDNS0 support [RFC 2671], [RFC 6891].
