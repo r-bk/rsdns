@@ -11,6 +11,8 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: --deny warnings
+  MIRIFLAGS: -Zmiri-disable-isolation
+  RUST_BACKTRACE: full
 
 jobs:
   ci:
@@ -183,3 +185,56 @@ jobs:
         with:
           command: fuzz
           args: run rrset_from_msg -- -max_total_time=5 -verbosity=0
+
+  miri:
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      matrix:
+        runs_on:
+          - ubuntu-latest
+        feature:
+          - all
+          - ''
+          - default
+          - net-std
+          - net-async-std
+          - net-tokio
+          - net-tokio,socket2
+          - net-smol
+    steps:
+      - id: find_miri
+        run: |
+          MIRI_NIGHTLY=nightly-$(curl -s https://rust-lang.github.io/rustup-components-history/x86_64-unknown-linux-gnu/miri)
+          echo "Found miri at: $MIRI_NIGHTLY"
+          echo "::set-output name=miri::$MIRI_NIGHTLY"
+        shell: bash
+
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ steps.find_miri.outputs.miri }}
+          override: true
+          components: miri, rust-src, rustfmt
+
+      - uses: actions-rs/cargo@v1
+        name: miri
+        if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
+        with:
+          command: miri
+          args: test --no-default-features --features ${{ matrix.feature }}
+
+      - uses: actions-rs/cargo@v1
+        name: miri all
+        if: ${{ matrix.feature == 'all' }}
+        with:
+          command: miri
+          args: test --all-features
+
+      - uses: actions-rs/cargo@v1
+        name: miri no-default-features
+        if: ${{ matrix.feature == '' }}
+        with:
+          command: miri
+          args: test --no-default-features
