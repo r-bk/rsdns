@@ -216,7 +216,7 @@ impl ClientConfig {
     /// Returns the query lifetime duration.
     ///
     /// Query lifetime duration is the upper bound on the overall query duration, including all
-    /// UDP retries. This value should be greater than [`query_timeout`], if the latter set.
+    /// UDP retries. This value should be greater than [`query_timeout`], if the latter is set.
     ///
     /// Default: `10 sec`.
     ///
