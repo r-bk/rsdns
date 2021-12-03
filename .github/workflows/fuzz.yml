@@ -14,9 +14,6 @@ jobs:
   fuzz:
     runs-on: ubuntu-latest
     steps:
-      - name: install llvm-12
-        run: sudo apt install -y llvm-12
-
       - uses: actions/checkout@v2
 
       - uses: actions-rs/toolchain@v1
@@ -50,10 +47,18 @@ jobs:
           command: fuzz
           args: coverage rrset_from_msg
 
+      - id: find_llvmcov
+        name: find llvm-cov
+        run: |
+          LLVM_COV=$(find ~ -name "llvm-cov")
+          echo "Found llvm-cov: $LLVM_COV"
+          echo "::set-output name=llvmcov::$LLVM_COV"
+        shell: bash
+
       - name: generate coverage.html
         run: >
-          llvm-cov-12 show fuzz/target/x86_64-unknown-linux-gnu/release/rrset_from_msg --format html
-          --instr-profile=fuzz/coverage/rrset_from_msg/coverage.profdata --Xdemangler=rustfilt >
+          ${{ steps.find_llvmcov.outputs.llvmcov }} show fuzz/target/x86_64-unknown-linux-gnu/release/rrset_from_msg
+          --format html --instr-profile=fuzz/coverage/rrset_from_msg/coverage.profdata --Xdemangler=rustfilt >
           rrset_from_msg.fuzz.coverage.html
 
       - uses: actions/upload-artifact@v2
