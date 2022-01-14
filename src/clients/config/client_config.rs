@@ -17,6 +17,7 @@ type InterfaceName = arrayvec::ArrayString<INTERFACE_NAME_MAX_LENGTH>;
 
 /// Configuration for clients.
 #[derive(Clone, Eq, PartialEq, Debug)]
+#[must_use]
 pub struct ClientConfig {
     pub(crate) nameserver_: SocketAddr,
     pub(crate) bind_addr_: SocketAddr,
