@@ -4,7 +4,7 @@ use tera::{Context, Tera};
 const NET_CRATES: &[&str] = &["tokio", "async-std", "smol", "std"];
 
 fn dashes_to_underscores(s: &str) -> String {
-    s.to_string().replace("-", "_")
+    s.to_string().replace('-', "_")
 }
 
 fn need_crate(crate_name: &str) -> bool {
