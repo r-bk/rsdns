@@ -99,7 +99,7 @@ impl<D: RData> RecordSet<D> {
     #[inline(always)]
     fn extract_rrset<'m, 'a: 'm>(
         mr: &'m MessageReader<'a>,
-        headers: &mut Vec<Option<RecordHeaderRef<'a>>>,
+        headers: &mut [Option<RecordHeaderRef<'a>>],
         name: &NameRef<'a>,
         rclass: Class,
     ) -> Result<Option<RecordSet<D>>> {
@@ -131,7 +131,7 @@ impl<D: RData> RecordSet<D> {
     #[inline(always)]
     fn extract_cname<'m, 'a: 'm>(
         mr: &'m MessageReader<'a>,
-        headers: &mut Vec<Option<RecordHeaderRef<'a>>>,
+        headers: &mut [Option<RecordHeaderRef<'a>>],
         name: &NameRef<'a>,
         rclass: Class,
     ) -> Result<Option<NameRef<'a>>> {
