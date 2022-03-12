@@ -40,7 +40,7 @@ use std::cell::RefCell;
 {% endif %}
 
 const QUERY_BUFFER_SIZE: usize = 288;
-type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
+type MsgBuf = cds::arrayvec::ArrayVec<u8, cds::len::U16, cds::mem::Uninitialized, QUERY_BUFFER_SIZE>;
 
 pub struct ClientImpl {
     config: ClientConfig,
@@ -264,7 +264,7 @@ async fn udp_socket2(config: &ClientConfig) -> Result<UdpSocket> {
         return udp_socket_simple(config).await;
     }
 
-    let mut interface = config.interface_;
+    let mut interface = config.interface_.clone();
     interface.try_push(char::default()).ok(); // add terminating null
 
     let sock = socket2::Socket::new(
@@ -292,7 +292,7 @@ async fn tcp_socket2(config: &ClientConfig) -> Result<TcpStream> {
         return tcp_socket_simple(config).await;
     }
 
-    let mut interface = config.interface_;
+    let mut interface = config.interface_.clone();
     interface.try_push(char::default()).ok(); // add terminating null
 
     let sock = socket2::Socket::new(

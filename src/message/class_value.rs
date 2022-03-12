@@ -137,7 +137,11 @@ impl Display for ClassValue {
             Ok(rc) => f.pad(rc.to_str())?,
             _ => {
                 use std::fmt::Write;
-                let mut buf = arrayvec::ArrayString::<32>::new();
+                let mut buf = cds::arraystring::ArrayString::<
+                    cds::len::U8,
+                    cds::mem::Uninitialized,
+                    32,
+                >::new();
                 write!(&mut buf, "CLASS{}", self.0)?;
                 f.pad(buf.as_str())?;
             }

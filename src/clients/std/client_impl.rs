@@ -13,7 +13,8 @@ use std::{
 };
 
 const QUERY_BUFFER_SIZE: usize = 288;
-type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
+type MsgBuf =
+    cds::arrayvec::ArrayVec<u8, cds::len::U16, cds::mem::Uninitialized, QUERY_BUFFER_SIZE>;
 
 struct ClientCtx<'a, 'b, 'c, 'd> {
     qname: &'a str,

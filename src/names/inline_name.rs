@@ -4,7 +4,7 @@ use crate::{
     names::Name,
     Error, Result,
 };
-use arrayvec::ArrayString;
+use cds::{arraystring::ArrayString, len::U8, mem::Uninitialized};
 use std::{
     cmp::Ordering,
     convert::TryFrom,
@@ -13,7 +13,7 @@ use std::{
     str::FromStr,
 };
 
-type ArrayType = ArrayString<DOMAIN_NAME_MAX_LENGTH>;
+type ArrayType = ArrayString<U8, Uninitialized, DOMAIN_NAME_MAX_LENGTH>;
 
 /// A domain name backed by byte array.
 ///
@@ -393,7 +393,7 @@ impl From<Name> for InlineName {
     fn from(name: Name) -> Self {
         Self {
             // Name is a valid domain name, so this unwrap is not expected to panic
-            arr: ArrayType::from(name.as_str()).unwrap(),
+            arr: ArrayType::from_str(name.as_str()).unwrap(),
         }
     }
 }

@@ -13,7 +13,8 @@ use std::{
 const INTERFACE_NAME_MAX_LENGTH: usize = 16; // socket(7), IFNAMSIZ
 
 #[cfg(all(target_os = "linux", feature = "net-tokio", feature = "socket2"))]
-type InterfaceName = arrayvec::ArrayString<INTERFACE_NAME_MAX_LENGTH>;
+type InterfaceName =
+    cds::arraystring::ArrayString<cds::len::U8, cds::mem::Uninitialized, INTERFACE_NAME_MAX_LENGTH>;
 
 /// Configuration for clients.
 #[derive(Clone, Eq, PartialEq, Debug)]
