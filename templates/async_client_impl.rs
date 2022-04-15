@@ -80,6 +80,7 @@ impl ClientImpl {
         ctx.query_raw().await
     }
 
+    #[allow(clippy::await_holding_refcell_ref)]
     pub async fn query_rrset<D: RData>(&mut self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
         if self.config.buffer_size() == 0 {
             return Err(Error::BadParam("non-zero buffer_size is required"));
@@ -88,6 +89,8 @@ impl ClientImpl {
             return Err(Error::UnsupportedClass(qclass));
         }
 
+        // SAFETY: it is OK to hold the buffer RefCell across await
+        // because the function borrows self exclusively
         let mut buf = self.buf.borrow_mut();
         unsafe { buf.set_len(self.config.buffer_size()) };
         let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut buf).await?;
