@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.12.1] - 2022-04-16
+This is a small maintenance release that fixes clippy issues to allow clean
+build of *rsdns* with the latest `beta` toolchain.
+
+## Fixed
+- fix `clippy::ptr-arg` error
+- fix `clippy::await_holding_refcell_ref` warning
+
+
 ## [0.12.0] - 2022-01-14
 This is a small maintenance release, to allow building *rsdns* with the latest
 `nightly` toolchain.
