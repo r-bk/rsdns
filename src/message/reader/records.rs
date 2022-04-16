@@ -2,7 +2,7 @@ use crate::{
     bytes::{Cursor, Reader, RrDataReader},
     constants::{Class, RecordsSection, Type},
     message::{reader::SectionTracker, ClassValue, Header, TypeValue},
-    records::{data::RecordData, ResourceRecord},
+    records::{self, data},
     Error, Result,
 };
 use std::convert::TryFrom;
@@ -29,6 +29,10 @@ use std::convert::TryFrom;
 /// See [`MessageIterator`] for an example.
 ///
 /// [`MessageIterator`]: crate::message::reader::MessageIterator
+#[deprecated(
+    since = "0.13.0",
+    note = "MessageIterator is deprecated together with accompanying types. See MessageReader."
+)]
 pub struct Records<'a> {
     cursor: Cursor<'a>,
     section_tracker: SectionTracker,
@@ -37,16 +41,17 @@ pub struct Records<'a> {
 
 macro_rules! rrr {
     ($self:ident, $rr:ident, $pos:ident, $rclass:ident, $ttl:ident, $rdlen:ident) => {{
-        ResourceRecord {
+        records::ResourceRecord {
             name: $self.cursor.clone_with_pos($pos).read()?,
             rclass: $rclass,
             rtype: Type::$rr,
             $ttl,
-            rdata: RecordData::$rr($self.cursor.read_rr_data($rdlen)?),
+            rdata: data::RecordData::$rr($self.cursor.read_rr_data($rdlen)?),
         }
     }};
 }
 
+#[allow(deprecated)]
 impl<'a> Records<'a> {
     pub(crate) fn new(cursor: Cursor<'a>, header: &Header) -> Records<'a> {
         Records {
@@ -56,7 +61,7 @@ impl<'a> Records<'a> {
         }
     }
 
-    fn read(&mut self) -> Option<Result<(RecordsSection, ResourceRecord)>> {
+    fn read(&mut self) -> Option<Result<(RecordsSection, records::ResourceRecord)>> {
         if !self.err {
             let res = self.read_impl();
             match res {
@@ -72,7 +77,8 @@ impl<'a> Records<'a> {
         }
     }
 
-    fn read_impl(&mut self) -> Result<Option<(RecordsSection, ResourceRecord)>> {
+    #[allow(deprecated)]
+    fn read_impl(&mut self) -> Result<Option<(RecordsSection, records::ResourceRecord)>> {
         loop {
             let section = self.section_tracker.next_section(self.cursor.pos());
 
@@ -140,8 +146,9 @@ impl<'a> Records<'a> {
     }
 }
 
+#[allow(deprecated)]
 impl Iterator for Records<'_> {
-    type Item = Result<(RecordsSection, ResourceRecord)>;
+    type Item = Result<(RecordsSection, records::ResourceRecord)>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {

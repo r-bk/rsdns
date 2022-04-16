@@ -1,10 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     constants::{RecordsSection, HEADER_LENGTH},
-    message::{
-        reader::{Questions, Records},
-        Header, Question,
-    },
+    message::{reader, Header, Question},
     Error, Result,
 };
 
@@ -78,6 +75,10 @@ use crate::{
 ///     Ok(())
 /// }
 /// ```
+#[deprecated(
+    since = "0.13.0",
+    note = "See MessageReader for the preferred way of message parsing"
+)]
 #[derive(Debug)]
 pub struct MessageIterator<'a> {
     buf: &'a [u8],
@@ -85,6 +86,7 @@ pub struct MessageIterator<'a> {
     offsets: [usize; 3],
 }
 
+#[allow(deprecated)]
 impl<'s, 'a: 's> MessageIterator<'a> {
     /// Creates a reader for a message contained in `buf`.
     #[inline]
@@ -120,18 +122,20 @@ impl<'s, 'a: 's> MessageIterator<'a> {
     }
 
     /// Returns an iterator over the questions section of the message.
+    #[allow(deprecated)]
     #[inline]
-    pub fn questions(&self) -> Questions {
-        Questions::new(
+    pub fn questions(&self) -> reader::Questions {
+        reader::Questions::new(
             Cursor::with_pos(self.buf, HEADER_LENGTH),
             self.header.qd_count,
         )
     }
 
     /// Returns an iterator over the resource record sections of the message.
+    #[allow(deprecated)]
     #[inline]
-    pub fn records(&self) -> Records {
-        Records::new(
+    pub fn records(&self) -> reader::Records {
+        reader::Records::new(
             Cursor::with_pos(self.buf, self.offsets[RecordsSection::Answer as usize]),
             &self.header,
         )

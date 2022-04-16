@@ -33,6 +33,10 @@ use crate::{
 /// #   Ok(())
 /// # }
 /// ```
+#[deprecated(
+    since = "0.13.0",
+    note = "MessageIterator is deprecated together with accompanying types. See MessageReader."
+)]
 pub struct Questions<'a> {
     cursor: Cursor<'a>,
     err: bool,
@@ -40,6 +44,7 @@ pub struct Questions<'a> {
     qd_read: u16,
 }
 
+#[allow(deprecated)]
 impl<'a> Questions<'a> {
     pub(crate) fn new(cursor: Cursor<'a>, qd_count: u16) -> Self {
         Self {
@@ -65,6 +70,7 @@ impl<'a> Questions<'a> {
     }
 }
 
+#[allow(deprecated)]
 impl Iterator for Questions<'_> {
     type Item = Result<Question>;
 

@@ -13,6 +13,10 @@ mod rdata;
 pub use rdata::*;
 
 /// Enumerates supported resource records' data.
+#[deprecated(
+    since = "0.13.0",
+    note = "MessageIterator is deprecated together with accompanying types. See MessageReader."
+)]
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum RecordData {
     /// A host address (IPv4).
