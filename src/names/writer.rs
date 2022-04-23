@@ -79,6 +79,7 @@ mod tests {
         let expectations: Vec<(&str, &[u8])> = vec![
             ("sub.example.com", b"\x03sub\x07example\x03com\x00"),
             ("example.com.", b"\x07example\x03com\x00"),
+            ("_example.com.", b"\x08_example\x03com\x00"),
             ("com", b"\x03com\x00"),
             ("com.", b"\x03com\x00"),
             (".", b"\x00"),
@@ -170,7 +171,7 @@ mod tests {
             assert!(matches!(
                 wcursor.write_domain_name(s),
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphanumeric",
+                    "domain name label first character is '-'",
                     v
                 )) if v == c
             ));
@@ -184,7 +185,7 @@ mod tests {
             assert!(matches!(
                 wcursor.write_domain_name(s),
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label last character is not alphanumeric",
+                    "domain name label last character is '-'",
                     v
                 )) if v == c
             ));

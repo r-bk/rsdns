@@ -14,11 +14,11 @@ pub fn check_label_bytes(label: &[u8]) -> Result<()> {
         return Err(Error::DomainNameLabelTooLong(len));
     }
 
-    for b in label.iter().cloned() {
-        if !(b.is_ascii_alphanumeric() || b == b'-') {
+    for b in label.iter() {
+        if !(b.is_ascii_alphanumeric() || *b == b'-' || *b == b'_') {
             return Err(Error::DomainNameLabelInvalidChar(
                 "domain name label invalid character",
-                b,
+                *b,
             ));
         }
     }
@@ -27,17 +27,17 @@ pub fn check_label_bytes(label: &[u8]) -> Result<()> {
     // so it is sound to access it unchecked at the first and last bytes
     unsafe {
         let fc = label.get_unchecked(0);
-        if !fc.is_ascii_alphanumeric() {
+        if *fc == b'-' {
             return Err(Error::DomainNameLabelInvalidChar(
-                "domain name label first character is not alphanumeric",
+                "domain name label first character is '-'",
                 *fc,
             ));
         }
 
         let lc = label.get_unchecked(len - 1);
-        if !lc.is_ascii_alphanumeric() {
+        if *lc == b'-' {
             return Err(Error::DomainNameLabelInvalidChar(
-                "domain name label last character is not alphanumeric",
+                "domain name label last character is '-'",
                 *lc,
             ));
         }
@@ -116,7 +116,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphanumeric",
+                    "domain name label first character is '-'",
                     v
                 )) if v == *c
             ));
@@ -125,7 +125,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphanumeric",
+                    "domain name label first character is '-'",
                     v
                 )) if v == *c
             ));
@@ -138,7 +138,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label last character is not alphanumeric",
+                    "domain name label last character is '-'",
                     v
                 )) if v == *c
             ));
@@ -147,7 +147,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label last character is not alphanumeric",
+                    "domain name label last character is '-'",
                     v
                 )) if v == *c
             ));
@@ -197,6 +197,8 @@ mod tests {
             b"3xample2.com",
             b"exam-3le.com",
             b"su--b.exAmp1e.com",
+            b"_example.com",
+            b"example_.com",
         ];
         for g in good {
             assert!(check_name_bytes(g).is_ok());
@@ -225,7 +227,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphanumeric",
+                    "domain name label first character is '-'",
                     v
                 )) if v == *c
             ));
@@ -234,7 +236,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label first character is not alphanumeric",
+                    "domain name label first character is '-'",
                     v
                 )) if v == *c
             ));
@@ -247,7 +249,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label last character is not alphanumeric",
+                    "domain name label last character is '-'",
                     v
                 )) if v == *c
             ));
@@ -256,7 +258,7 @@ mod tests {
             assert!(matches!(
                 res,
                 Err(Error::DomainNameLabelInvalidChar(
-                    "domain name label last character is not alphanumeric",
+                    "domain name label last character is '-'",
                     v
                 )) if v == *c
             ));
