@@ -39,6 +39,7 @@ use std::{
 /// - [RFC 1035 section 2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)
 /// - [RFC 1035 section 3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1)
 /// - [RFC 1101 section 3.1](https://www.rfc-editor.org/rfc/rfc1101.html#section-3.1)
+/// - [RFC 2181 section 11](https://www.rfc-editor.org/rfc/rfc2181#section-11)
 ///
 /// [RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1
 /// [InlineName]: crate::names::InlineName
