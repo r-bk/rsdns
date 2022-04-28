@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.13.0] - 2022-04-28
+### Changed
+- add support for the underscore character `_` in domain names.
+  Now domains like `_sub._example.com` are not rejected. The underscore character,
+  despite not being allowed by RFC 1035, is very common in domain names. It is forbidden in hostnames,
+  but DNS is not built for hostnames only. This change is made as a first step towards full support
+  of [RFC 2181 section 11].
+
+[RFC 2181 section 11]: https://www.rfc-editor.org/rfc/rfc2181#section-11
+
+
 ## [0.12.1] - 2022-04-16
 This is a small maintenance release that fixes clippy issues to allow clean
 build of *rsdns* with the latest `beta` toolchain.
@@ -201,3 +212,4 @@ the revamped `MessageReader`.
 [0.11.1]: https://github.com/r-bk/rsdns/compare/v0.11.0...v0.11.1
 [0.12.0]: https://github.com/r-bk/rsdns/compare/v0.11.1...v0.12.0
 [0.12.1]: https://github.com/r-bk/rsdns/compare/v0.12.0...v0.12.1
+[0.13.0]: https://github.com/r-bk/rsdns/compare/v0.12.1...v0.13.0
