@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.13.1] - 2022-07-30
+### Changed
+- upgrade the `tera` requirement to `v1.16.0`, enable default features of `tera` and
+  do not use tilde requirement strategy. This is to allow more flexibility when upgrading
+  `tera` in consumer crates.
+
+
 ## [0.13.0] - 2022-04-28
 ### Changed
 - add support for the underscore character `_` in domain names.
@@ -213,3 +220,4 @@ the revamped `MessageReader`.
 [0.12.0]: https://github.com/r-bk/rsdns/compare/v0.11.1...v0.12.0
 [0.12.1]: https://github.com/r-bk/rsdns/compare/v0.12.0...v0.12.1
 [0.13.0]: https://github.com/r-bk/rsdns/compare/v0.12.1...v0.13.0
+[0.13.1]: https://github.com/r-bk/rsdns/compare/v0.13.0...v0.13.1
