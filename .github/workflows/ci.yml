@@ -22,7 +22,7 @@ jobs:
         rust:
           - stable
           - beta
-          - 1.56.0  # MSRV
+          - 1.60.0  # MSRV
         runs_on:
           - ubuntu-latest
           - windows-latest
@@ -43,7 +43,7 @@ jobs:
             rust: beta
           - runs_on: ubuntu-latest
             feature: net-tokio,socket2
-            rust: 1.56.0  # MSRV
+            rust: 1.60.0  # MSRV
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
