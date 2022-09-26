@@ -36,7 +36,7 @@ impl<'a> QueryWriter<'a> {
             id: self.id,
             flags: *Flags::new().set_recursion_desired(recursion_desired),
             qd_count: 1,
-            ar_count: if opt.is_some() { 1 } else { 0 },
+            ar_count: u16::from(opt.is_some()),
             ..Default::default()
         };
 
