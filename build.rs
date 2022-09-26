@@ -19,7 +19,7 @@ fn need_crate(crate_name: &str) -> bool {
 fn format_file(path: &std::path::Path) {
     let path_str = path.to_str().unwrap();
     let output = Command::new("rustfmt")
-        .args(&["--edition", "2018"])
+        .args(["--edition", "2018"])
         .arg(path_str)
         .output()
         .expect("failed to launch rustfmt");
