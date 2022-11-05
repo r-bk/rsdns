@@ -13,7 +13,7 @@ fn need_crate(crate_name: &str) -> bool {
         "CARGO_FEATURE_{}",
         dashes_to_underscores(&feature).to_uppercase()
     );
-    std::env::var_os(&env_var).is_some()
+    std::env::var_os(env_var).is_some()
 }
 
 fn format_file(path: &std::path::Path) {
@@ -40,7 +40,7 @@ fn write_file(tera: &Tera, context: &Context, file_name: &str, crate_name: &str)
         .render(&template_name, context)
         .expect("failed to render template");
     let dest_file_name = format!("{}_{}.rs", file_name, dashes_to_underscores(crate_name));
-    let dest_file_path = std::path::Path::new(&out_dir).join(&dest_file_name);
+    let dest_file_path = std::path::Path::new(&out_dir).join(dest_file_name);
     std::fs::write(&dest_file_path, file_data).expect("failed to write file");
     format_file(&dest_file_path);
 }
