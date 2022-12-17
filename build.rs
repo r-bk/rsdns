@@ -8,7 +8,7 @@ fn dashes_to_underscores(s: &str) -> String {
 }
 
 fn need_crate(crate_name: &str) -> bool {
-    let feature = format!("net-{}", crate_name);
+    let feature = format!("net-{crate_name}");
     let env_var = format!(
         "CARGO_FEATURE_{}",
         dashes_to_underscores(&feature).to_uppercase()
@@ -35,7 +35,7 @@ fn format_file(path: &std::path::Path) {
 
 fn write_file(tera: &Tera, context: &Context, file_name: &str, crate_name: &str) {
     let out_dir = std::env::var_os("OUT_DIR").unwrap();
-    let template_name = format!("{}.rs", file_name);
+    let template_name = format!("{file_name}.rs");
     let file_data = tera
         .render(&template_name, context)
         .expect("failed to render template");
@@ -52,7 +52,7 @@ fn write_clients(tera: &Tera) {
         }
 
         let mut context = Context::new();
-        context.insert("feature", &format!("net-{}", crate_name));
+        context.insert("feature", &format!("net-{crate_name}"));
         context.insert("crate_name", crate_name);
         context.insert("crate_module_name", &dashes_to_underscores(crate_name));
         context.insert(
@@ -79,7 +79,7 @@ fn main() {
     let tera = match Tera::new("templates/*.rs") {
         Ok(t) => t,
         Err(e) => {
-            panic!("Tera parsing error(s): {}", e);
+            panic!("Tera parsing error(s): {e}");
         }
     };
 
