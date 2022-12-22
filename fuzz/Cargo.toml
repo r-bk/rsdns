@@ -13,7 +13,7 @@ cargo-fuzz = true
 libfuzzer-sys = "0.4"
 
 [dependencies.rsdns]
-version = "0.13.1"
+version = "0.13.2"
 # path = ".."
 
 # Prevent this from interfering with workspaces
