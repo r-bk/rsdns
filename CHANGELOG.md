@@ -5,7 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.13.2] - 2022-12-23
+## [0.14.0] - 2022-12-23
+This is a maintenance release with small clippy fixes and updated MSRV.
+
+### Changed
+- the MSRV is `1.60` now
+- upgraded the build dependencies to `tera v0.17.1`
+
+### Fixed
+- `clippy::needless-borrow` warning
+- `clippy::bool_to_int_with_if` warning
+- `clippy::uninlined_format_args` warning
+
+
+## [0.13.2] - 2022-12-23 [YANKED]
 This is a maintenance release with small clippy fixes and updated MSRV.
 
 ### Changed
@@ -234,3 +247,4 @@ the revamped `MessageReader`.
 [0.13.0]: https://github.com/r-bk/rsdns/compare/v0.12.1...v0.13.0
 [0.13.1]: https://github.com/r-bk/rsdns/compare/v0.13.0...v0.13.1
 [0.13.2]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.13.2
+[0.14.0]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.14.0
