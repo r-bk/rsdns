@@ -21,7 +21,6 @@ jobs:
           profile: default
           toolchain: nightly
           override: true
-          components: llvm-tools-preview,rust-src
 
       - uses: actions-rs/cargo@v1
         name: install cargo-fuzz
@@ -30,38 +29,7 @@ jobs:
           args: cargo-fuzz
 
       - uses: actions-rs/cargo@v1
-        name: install rustfilt
-        with:
-          command: install
-          args: rustfilt
-
-      - uses: actions-rs/cargo@v1
         name: fuzz rrset_from_msg
         with:
           command: fuzz
           args: run rrset_from_msg -- -max_total_time=7200 -jobs=2 -workers=2 -verbosity=0
-
-      - uses: actions-rs/cargo@v1
-        name: cover rrset_from_msg
-        with:
-          command: fuzz
-          args: coverage rrset_from_msg
-
-      - id: find_llvmcov
-        name: find llvm-cov
-        run: |
-          LLVM_COV=$(find ~ -name "llvm-cov")
-          echo "Found llvm-cov: $LLVM_COV"
-          echo "::set-output name=llvmcov::$LLVM_COV"
-        shell: bash
-
-      - name: generate coverage.html
-        run: >
-          ${{ steps.find_llvmcov.outputs.llvmcov }} show fuzz/target/x86_64-unknown-linux-gnu/release/rrset_from_msg
-          --format html --instr-profile=fuzz/coverage/rrset_from_msg/coverage.profdata --Xdemangler=rustfilt >
-          rrset_from_msg.fuzz.coverage.html
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: rrset_from_msg.fuzz.coverage.html
-          path: rrset_from_msg.fuzz.coverage.html
