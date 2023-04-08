@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.15.0] - 2023-04-08
+This is a small maintenance release with updated dependencies and MSRV.
+
+### Changed
+- the MSRV is `1.63` now
+- upgrade to `tera v1.18.1`
+- upgrade to `socket v0.5.1`
+
+
 ## [0.14.0] - 2022-12-23
 This is a maintenance release with small clippy fixes and updated MSRV.
 
