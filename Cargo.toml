@@ -17,7 +17,7 @@ rand = "0.8.4"
 cfg-if = "1.0.0"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-socket2 = { version = "0.4.1", optional = true, features = ["all"] }
+socket2 = { version = "0.5.1", optional = true, features = ["all"] }
 
 [features]
 default = []
