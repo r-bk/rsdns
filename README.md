@@ -40,11 +40,6 @@ and shows the results in a zone-file format.
 It can be used as a simple substitute for [dig](https://en.wikipedia.org/wiki/Dig_(command)),
 especially on platforms where *dig* is not originally supported.
 
-## Benchmarks
-
-All benchmarks, performance measurements and comparison are maintained in a separate
-repository [rsdns-benches](https://github.com/r-bk/rsdns-benches).
-
 
 ## Supported RFCs
 
