@@ -257,3 +257,4 @@ the revamped `MessageReader`.
 [0.13.1]: https://github.com/r-bk/rsdns/compare/v0.13.0...v0.13.1
 [0.13.2]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.13.2
 [0.14.0]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.14.0
+[0.15.0]: https://github.com/r-bk/rsdns/compare/v0.14.0...v0.15.0
