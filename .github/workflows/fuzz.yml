@@ -16,20 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
-          profile: default
           toolchain: nightly
-          override: true
 
-      - uses: actions-rs/cargo@v1
-        name: install cargo-fuzz
-        with:
-          command: install
-          args: cargo-fuzz
+      - name: install cargo-fuzz
+        run: cargo install cargo-fuzz
 
-      - uses: actions-rs/cargo@v1
-        name: fuzz rrset_from_msg
-        with:
-          command: fuzz
-          args: run rrset_from_msg -- -max_total_time=7200 -jobs=2 -workers=2 -verbosity=0
+      - name: fuzz rrset_from_msg
+        run: cargo fuzz run rrset_from_msg -- -max_total_time=7200 -jobs=2 -workers=2 -verbosity=0

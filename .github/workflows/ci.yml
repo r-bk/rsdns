@@ -46,98 +46,61 @@ jobs:
             rust: 1.63.0  # MSRV
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
-          profile: minimal
           toolchain: ${{ matrix.rust }}
-          override: true
-          components: rustfmt, clippy
+          components: rustfmt,clippy
 
-      - uses: actions-rs/cargo@v1
-        name: build rsdns
+      - name: build rsdns
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
-        with:
-          command: build
-          args: --no-default-features --features ${{ matrix.feature }}
+        run: cargo build --no-default-features --features ${{ matrix.feature }}
 
-      - uses: actions-rs/cargo@v1
-        name: build all rsdns
+      - name: build all rsdns
         if: ${{ matrix.feature == 'all' }}
-        with:
-          command: build
-          args: --all-features
+        run: cargo build --all-features
 
-      - uses: actions-rs/cargo@v1
-        name: build no-default-features rsdns
+      - name: build no-default-features rsdns
         if: ${{ matrix.feature == '' }}
-        with:
-          command: build
-          args: --no-default-features
+        run: cargo build --no-default-features
 
-      - uses: actions-rs/cargo@v1
-        name: test rsdns
+      - name: test rsdns
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
-        with:
-          command: test
-          args: --no-default-features --features ${{ matrix.feature }}
+        run: cargo test --no-default-features --features ${{ matrix.feature }}
 
-      - uses: actions-rs/cargo@v1
-        name: test all rsdns
+      - name: test all rsdns
         if: ${{ matrix.feature == 'all' }}
-        with:
-          command: test
-          args: --all-features
+        run: cargo test --all-features
 
-      - uses: actions-rs/cargo@v1
-        name: test no-default-features rsdns
+      - name: test no-default-features rsdns
         if: ${{ matrix.feature == '' }}
-        with:
-          command: test
-          args: --no-default-features
+        run: cargo test --no-default-features
 
-      - uses: actions-rs/cargo@v1
-        name: lint rsdns
+      - name: lint rsdns
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
-        with:
-          command: clippy
-          args: --no-default-features --features ${{ matrix.feature }}
+        run: cargo clippy --no-default-features --features ${{ matrix.feature }}
 
-      - uses: actions-rs/cargo@v1
-        name: lint all rsdns
+      - name: lint all rsdns
         if: ${{ matrix.feature == 'all' }}
-        with:
-          command: clippy
-          args: --all-features
+        run: cargo clippy --all-features
 
-      - uses: actions-rs/cargo@v1
-        name: lint no-default-features rsdns
+      - name: lint no-default-features rsdns
         if: ${{ matrix.feature == '' }}
-        with:
-          command: clippy
-          args: --no-default-features
+        run: cargo clippy --no-default-features
 
   common-ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
-          profile: minimal
           toolchain: nightly
-          override: true
           components: rustfmt
-      - uses: actions-rs/cargo@v1
-        name: format all
-        with:
-          command: fmt
-          args: -- --check
-      - uses: actions-rs/cargo@v1
-        name: doc rsdns
+      - name: format all
+        run: cargo fmt -- --check
+      - name: doc rsdns
         env:
           RUSTDOCFLAGS: "--cfg docsrs"
-        with:
-          command: doc
-          args: --all-features --no-deps
+        run: cargo doc --all-features --no-deps
 
   fuzz:
     runs-on: ubuntu-latest
@@ -167,24 +130,16 @@ jobs:
                 cargo.write(''.join(lines))
             print('Cargo.toml updated succcessfully')
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
-          profile: default
           toolchain: nightly
-          override: true
           components: llvm-tools-preview,rust-src
 
-      - uses: actions-rs/cargo@v1
-        name: install cargo-fuzz
-        with:
-          command: install
-          args: cargo-fuzz
+      - name: install cargo-fuzz
+        run: cargo install cargo-fuzz
 
-      - uses: actions-rs/cargo@v1
-        name: fuzz rrset_from_msg
-        with:
-          command: fuzz
-          args: run rrset_from_msg -- -max_total_time=5 -verbosity=0
+      - name: fuzz rrset_from_msg
+        run: cargo fuzz run rrset_from_msg -- -max_total_time=5 -verbosity=0
 
   miri:
     runs-on: ${{ matrix.runs_on }}
@@ -211,30 +166,19 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
-          profile: minimal
           toolchain: ${{ steps.find_miri.outputs.miri }}
-          override: true
-          components: miri, rust-src, rustfmt
+          components: miri,rust-src,rustfmt
 
-      - uses: actions-rs/cargo@v1
-        name: miri
+      - name: miri
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
-        with:
-          command: miri
-          args: test --no-default-features --features ${{ matrix.feature }}
+        run: cargo miri test --no-default-features --features ${{ matrix.feature }}
 
-      - uses: actions-rs/cargo@v1
-        name: miri all
+      - name: miri all
         if: ${{ matrix.feature == 'all' }}
-        with:
-          command: miri
-          args: test --all-features
+        run: cargo miri test --all-features
 
-      - uses: actions-rs/cargo@v1
-        name: miri no-default-features
+      - name: miri no-default-features
         if: ${{ matrix.feature == '' }}
-        with:
-          command: miri
-          args: test --no-default-features
+        run: cargo miri test --no-default-features
