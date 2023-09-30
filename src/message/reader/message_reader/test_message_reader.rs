@@ -254,7 +254,7 @@ fn test_data_bytes() {
         }
     }
 
-    let addresses = vec![
+    let addresses = [
         Ipv6Addr::from_str("2620:4d:4000:6259:7:9:0:1").unwrap(),
         Ipv6Addr::from_str("2a00:edc0:6259:7:9::2").unwrap(),
         Ipv6Addr::from_str("2607:f740:e04e::1").unwrap(),

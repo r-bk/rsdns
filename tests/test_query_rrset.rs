@@ -21,7 +21,7 @@ use {
     feature = "net-smol",
     feature = "net-std"
 ))]
-const HOSTNAME: &'static str = "a.gtld-servers.net";
+const HOSTNAME: &str = "a.gtld-servers.net";
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "net-tokio")] {
@@ -52,7 +52,7 @@ fn check_rrset(rrset: &RecordSet<A>) {
     if !ip_addrs.is_empty() {
         for rdata in &rrset.rdata {
             let addr = rdata.address;
-            assert!(ip_addrs.iter().find(|ipa| **ipa == addr).is_some());
+            assert!(ip_addrs.iter().any(|ipa| *ipa == addr));
         }
     }
 }

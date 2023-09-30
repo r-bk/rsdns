@@ -469,7 +469,7 @@ mod tests {
         let label_63 = "a".repeat(63);
         let label_61 = "b".repeat(60);
 
-        let dn_253 = vec![
+        let dn_253 = [
             label_63.as_str(),
             label_63.as_str(),
             label_63.as_str(),
@@ -479,7 +479,7 @@ mod tests {
 
         let dn_254 = dn_253.clone() + ".";
 
-        let dn_255 = vec![
+        let dn_255 = [
             label_63.as_str(),
             label_63.as_str(),
             label_63.as_str(),
@@ -504,7 +504,7 @@ mod tests {
 
         for sc in success_cases {
             let dn = InlineName::from(sc).unwrap();
-            let expected = if sc.ends_with(".") {
+            let expected = if sc.ends_with('.') {
                 sc.to_string()
             } else {
                 format!("{}.", sc)

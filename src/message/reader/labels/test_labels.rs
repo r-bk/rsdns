@@ -121,7 +121,7 @@ fn test_invalid_label_type() {
 
 #[test]
 fn test_too_much_pointers() {
-    let mut packet: Vec<u8> = b"\x07example\x03com\x00".iter().cloned().collect();
+    let mut packet = b"\x07example\x03com\x00".to_vec();
     let start = packet.len();
 
     for i in 0..DOMAIN_NAME_MAX_POINTERS {

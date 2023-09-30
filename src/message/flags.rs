@@ -189,14 +189,14 @@ mod tests {
     fn test_bool_flag(get: FlagGet, set: FlagSet, mask: u16) {
         let mut f = Flags::default();
         assert_eq!(u16::from(f), 0);
-        assert_eq!(get(f), false);
+        assert!(!get(f));
 
         set(&mut f, true);
-        assert_eq!(get(f), true);
+        assert!(get(f));
         assert_eq!(u16::from(f), mask);
 
         set(&mut f, false);
-        assert_eq!(get(f), false);
+        assert!(!get(f));
         assert_eq!(u16::from(f), 0);
     }
 
@@ -253,10 +253,8 @@ mod tests {
         }
 
         for i in 0..16 {
-            if OpCode::VALUES.iter().find(|oc| **oc as u16 == i).is_none() {
-                let f = Flags {
-                    bits: (i << 11) as u16,
-                };
+            if !OpCode::VALUES.iter().any(|oc| *oc as u16 == i) {
+                let f = Flags { bits: i << 11 };
                 assert_eq!(f.opcode(), i as u8);
             }
         }
@@ -281,8 +279,8 @@ mod tests {
         }
 
         for i in 0..16 {
-            if RCode::VALUES.iter().find(|rc| **rc as u16 == i).is_none() {
-                let f = Flags { bits: i as u16 };
+            if !RCode::VALUES.iter().any(|rc| *rc as u16 == i) {
+                let f = Flags { bits: i };
                 matches!(
                     RCode::try_from(f.response_code()),
                     Err(Error::UnknownRCode(v)) if v == i

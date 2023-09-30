@@ -77,6 +77,7 @@ mod tests {
         assert_eq!(size, 34 + 2);
 
         let msg_id = qw.message_id();
+        #[allow(clippy::drop_non_drop)]
         drop(qw);
 
         let mut c = Cursor::new(&query[..size]);
@@ -112,6 +113,7 @@ mod tests {
         assert_eq!(size, 34 + 11 + 2);
 
         let msg_id = qw.message_id();
+        #[allow(clippy::drop_non_drop)]
         drop(qw);
 
         let mut c = Cursor::new(&query[..size]);
@@ -130,7 +132,7 @@ mod tests {
         let opt = Opt::from_msg(opt_rclass, opt_ttl);
 
         assert_eq!(size, 34 + 11);
-        assert_eq!(header.flags.recursion_desired(), false);
+        assert!(!header.flags.recursion_desired());
         assert_eq!(header.id, msg_id);
         assert_eq!(header.qd_count, 1);
         assert_eq!(header.ar_count, 1);
@@ -143,7 +145,7 @@ mod tests {
         assert_eq!(opt_rclass, payload_size);
         assert_eq!(opt.version(), 0);
         assert_eq!(opt.rcode_extension(), 0);
-        assert_eq!(opt.dnssec_ok(), false);
+        assert!(!opt.dnssec_ok());
         assert_eq!(opt_rdlen, 0);
     }
 }

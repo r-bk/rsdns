@@ -107,7 +107,7 @@ mod tests {
 
         let l_63 = "a".repeat(63);
 
-        let long_label = vec![l_63.as_str(), l_63.as_str(), l_63.as_str(), l_63.as_str()].join(".");
+        let long_label = [l_63.as_str(), l_63.as_str(), l_63.as_str(), l_63.as_str()].join(".");
         assert_eq!(long_label.len(), 255);
 
         {

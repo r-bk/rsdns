@@ -282,13 +282,13 @@ mod tests {
 
         let l_63 = "a".repeat(63);
         let l_61 = "b".repeat(61);
-        let dn_253 = vec![l_63.clone(), l_63.clone(), l_63.clone()].join(".") + "." + l_61.as_str();
+        let dn_253 = [l_63.clone(), l_63.clone(), l_63].join(".") + "." + l_61.as_str();
         let dn_254 = dn_253.clone() + "b";
 
         assert!(check_name_bytes(dn_253.as_str().as_bytes()).is_ok());
         assert!(check_name(dn_253.as_str()).is_ok());
         assert!(check_name_bytes((dn_253.clone() + ".").as_str().as_bytes()).is_ok());
-        assert!(check_name((dn_253.clone() + ".").as_str()).is_ok());
+        assert!(check_name((dn_253 + ".").as_str()).is_ok());
 
         let too_long = &[dn_254.as_str()];
         for tl in too_long {
