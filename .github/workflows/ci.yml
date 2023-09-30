@@ -77,15 +77,15 @@ jobs:
 
       - name: lint rsdns
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
-        run: cargo clippy --no-default-features --features ${{ matrix.feature }}
+        run: cargo clippy --no-default-features --features ${{ matrix.feature }} --all-targets
 
       - name: lint all rsdns
         if: ${{ matrix.feature == 'all' }}
-        run: cargo clippy --all-features
+        run: cargo clippy --all-features --all-targets
 
       - name: lint no-default-features rsdns
         if: ${{ matrix.feature == '' }}
-        run: cargo clippy --no-default-features
+        run: cargo clippy --no-default-features --all-targets
 
   common-ci:
     runs-on: ubuntu-latest
