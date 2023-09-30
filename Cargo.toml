@@ -55,3 +55,6 @@ smol-potat = "1.1.2"
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[workspace]
+members = [".", "bench"]
