@@ -285,9 +285,9 @@ mod tests {
         let dn_253 = [l_63.clone(), l_63.clone(), l_63].join(".") + "." + l_61.as_str();
         let dn_254 = dn_253.clone() + "b";
 
-        assert!(check_name_bytes(dn_253.as_str().as_bytes()).is_ok());
+        assert!(check_name_bytes(dn_253.as_bytes()).is_ok());
         assert!(check_name(dn_253.as_str()).is_ok());
-        assert!(check_name_bytes((dn_253.clone() + ".").as_str().as_bytes()).is_ok());
+        assert!(check_name_bytes((dn_253.clone() + ".").as_bytes()).is_ok());
         assert!(check_name((dn_253 + ".").as_str()).is_ok());
 
         let too_long = &[dn_254.as_str()];
