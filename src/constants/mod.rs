@@ -3,9 +3,6 @@
 mod r#type;
 pub use r#type::*;
 
-mod rcode;
-pub use rcode::*;
-
 // ----------------------------------------------------------------------------
 
 /// Domain name max length.

@@ -1,8 +1,8 @@
 use crate::{
-    constants::{RCode, Type},
+    constants::Type,
     message::{
         reader::{MessageReader, NameRef, RecordHeaderRef},
-        MessageType, RCodeValue, RecordsSection,
+        MessageType, RCode, RecordsSection,
     },
     names::Name,
     records::{data::RData, Class, Opt},
@@ -67,12 +67,12 @@ impl<D: RData> RecordSet<D> {
         let opt = Self::read_opt(&mut mr)?;
 
         let response_code = if let Some(ref o) = opt {
-            RCodeValue::extended(header.flags.response_code(), o.rcode_extension())
+            RCode::extended(header.flags.response_code(), o.rcode_extension())
         } else {
             header.flags.response_code()
         };
 
-        if response_code != RCode::NoError {
+        if response_code != RCode::NOERROR {
             return Err(Error::BadResponseCode(response_code));
         }
 

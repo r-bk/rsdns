@@ -1,6 +1,4 @@
-#[cfg(test)]
-use crate::constants::RCode;
-use crate::message::{MessageType, OpCode, RCodeValue};
+use crate::message::{MessageType, OpCode, RCode};
 
 macro_rules! get_bit {
     ($e:expr, $l:literal) => {
@@ -142,7 +140,7 @@ impl Flags {
     }
 
     /// Returns the response code.
-    pub fn response_code(self) -> RCodeValue {
+    pub fn response_code(self) -> RCode {
         let bits = self.bits & 0b0000_0000_0000_1111;
         bits.into()
     }
@@ -150,7 +148,7 @@ impl Flags {
     /// Sets the response code.
     #[cfg(test)]
     pub(crate) fn set_response_code(&mut self, rcode: RCode) -> &mut Self {
-        self.bits |= rcode as u16;
+        self.bits |= rcode.value();
         self
     }
 }
@@ -178,8 +176,6 @@ impl std::convert::From<Flags> for u16 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Error;
-    use std::convert::TryFrom;
 
     type FlagGet = fn(Flags) -> bool;
     type FlagSet = fn(&mut Flags, bool) -> &mut Flags;
@@ -264,11 +260,13 @@ mod tests {
     #[test]
     fn test_response_code() {
         for rcode in RCode::VALUES {
-            if rcode as u16 > 15 {
+            if rcode > 15 {
                 continue;
             }
 
-            let f = Flags { bits: rcode as u16 };
+            let f = Flags {
+                bits: rcode.value(),
+            };
             assert_eq!(f.response_code(), rcode);
 
             let mut f = Flags::default();
@@ -276,16 +274,13 @@ mod tests {
 
             f.set_response_code(rcode);
             assert_eq!(f.response_code(), rcode);
-            assert_eq!(u16::from(f) & 0b0000_0000_0000_1111, rcode as u16);
+            assert_eq!(u16::from(f) & 0b0000_0000_0000_1111, rcode);
         }
 
         for i in 0..16 {
-            if !RCode::VALUES.iter().any(|rc| *rc as u16 == i) {
+            if !RCode::VALUES.iter().any(|rc| *rc == i) {
                 let f = Flags { bits: i };
-                matches!(
-                    RCode::try_from(f.response_code()),
-                    Err(Error::UnknownRCode(v)) if v == i
-                );
+                assert!(!f.response_code().is_defined());
             }
         }
     }

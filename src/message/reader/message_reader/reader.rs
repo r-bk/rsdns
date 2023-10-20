@@ -217,8 +217,8 @@ use crate::{
 ///
 /// ```rust
 /// use rsdns::{
-///     constants::{Type, RCode},
-///     message::{reader::MessageReader, RecordsSection},
+///     constants::Type,
+///     message::{reader::MessageReader, RCode, RecordsSection},
 ///     names::Name,
 ///     records::data::{A, Aaaa},
 ///     Error, Result,
@@ -229,7 +229,7 @@ use crate::{
 ///     let header = mr.header()?;
 ///
 ///     let rcode = header.flags.response_code();
-///     if rcode != RCode::NoError {
+///     if rcode != RCode::NOERROR {
 ///         return Err(Error::BadResponseCode(rcode));
 ///     }
 ///

@@ -4,7 +4,7 @@ use crate::{
     constants::{
         Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
     },
-    message::{MessageType, OpCode, RCodeValue, RecordsSection, TypeValue},
+    message::{MessageType, OpCode, RCode, RecordsSection, TypeValue},
     records::Class,
 };
 
@@ -29,7 +29,7 @@ pub enum Error {
     UnknownOpCode(OpCode),
 
     #[error("unknown response code: {0}")]
-    UnknownRCode(RCodeValue),
+    UnknownRCode(RCode),
 
     #[error("{0}: {1:#02X}")]
     DomainNameLabelInvalidChar(&'static str, u8),
@@ -86,7 +86,7 @@ pub enum Error {
     BadMessageType(MessageType),
 
     #[error("bad response code: {0}")]
-    BadResponseCode(RCodeValue),
+    BadResponseCode(RCode),
 
     #[error("message is truncated")]
     MessageTruncated,

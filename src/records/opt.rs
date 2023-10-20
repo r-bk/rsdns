@@ -49,12 +49,12 @@ impl Opt {
 
     /// Returns the EDNS `RCODE` extension value (upper 8 bits).
     ///
-    /// See [`RCodeValue::extended`] for a way to combine a base `RCODE` value
+    /// See [`RCode::extended`] for a way to combine a base `RCODE` value
     /// from the message header and this extension to a final extended `RCODE` value.
     ///
     /// [RFC 6891 section 6.1.3](https://www.rfc-editor.org/rfc/rfc6891.html#section-6.1.3)
     ///
-    /// [`RCodeValue::extended`]: crate::message::RCodeValue::extended
+    /// [`RCode::extended`]: crate::message::RCode::extended
     #[inline]
     pub fn rcode_extension(&self) -> u8 {
         self.rcode_extension

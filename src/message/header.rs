@@ -70,8 +70,7 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{WCursor, Writer},
-        constants::RCode,
-        message::OpCode,
+        message::{OpCode, RCode},
     };
     use rand::seq::IteratorRandom;
 

@@ -29,9 +29,6 @@ pub use question::*;
 
 pub mod reader;
 
-mod rcode_value;
-pub use rcode_value::*;
-
 mod rcode;
 pub use rcode::*;
 
