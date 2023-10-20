@@ -135,6 +135,20 @@ pub struct ClassFromStrError;
 #[error("UnknownClassName")]
 pub struct UnknownClassName;
 
+/// RCode couldn't be created from a string.
+#[derive(thiserror::Error, Debug)]
+#[error("ClassFromStrError")]
+pub struct RCodeFromStrError;
+
+/// Unknown return code name.
+///
+/// This error is returned when creation of an [`RCode`] from a string fails.
+///
+/// [`RCode`]: crate::message::RCode
+#[derive(thiserror::Error, Debug)]
+#[error("UnknownRCodeName")]
+pub struct UnknownRCodeName;
+
 /// Result returned by [rsdns](crate).
 pub type Result<T> = std::result::Result<T, Error>;
 
