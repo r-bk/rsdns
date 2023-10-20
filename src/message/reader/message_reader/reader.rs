@@ -1,12 +1,12 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::{RecordsSection, Type, HEADER_LENGTH},
+    constants::{Type, HEADER_LENGTH},
     message::{
         reader::{
             NameRef, QuestionRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset,
             SectionTracker,
         },
-        ClassValue, Header, Question, TypeValue,
+        ClassValue, Header, Question, RecordsSection, TypeValue,
     },
     names::DName,
     records::{data::RData, Opt},
@@ -217,8 +217,8 @@ use crate::{
 ///
 /// ```rust
 /// use rsdns::{
-///     constants::{RecordsSection, Type, RCode},
-///     message::reader::MessageReader,
+///     constants::{Type, RCode},
+///     message::{reader::MessageReader, RecordsSection},
 ///     names::Name,
 ///     records::data::{A, Aaaa},
 ///     Error, Result,

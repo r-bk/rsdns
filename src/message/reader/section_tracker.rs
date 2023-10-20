@@ -1,4 +1,4 @@
-use crate::{constants::RecordsSection, message::Header};
+use crate::message::{Header, RecordsSection};
 
 #[derive(Debug, Clone, Default)]
 struct Counts {

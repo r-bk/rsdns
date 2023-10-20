@@ -1,9 +1,6 @@
-use crate::{
-    constants::RecordsSection,
-    message::{
-        reader::{NameRef, RecordMarker, RecordOffset},
-        ClassValue, TypeValue,
-    },
+use crate::message::{
+    reader::{NameRef, RecordMarker, RecordOffset},
+    ClassValue, RecordsSection, TypeValue,
 };
 
 /// A resource record header with [`NameRef`].

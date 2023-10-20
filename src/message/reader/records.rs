@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::{Class, RecordsSection, Type},
-    message::{reader::SectionTracker, ClassValue, Header, TypeValue},
+    constants::{Class, Type},
+    message::{reader::SectionTracker, ClassValue, Header, RecordsSection, TypeValue},
     records::{data::RecordData, ResourceRecord},
     Error, Result,
 };

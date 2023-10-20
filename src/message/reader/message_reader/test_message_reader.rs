@@ -1,6 +1,6 @@
 use crate::{
-    constants::{Class, RecordsSection, Type},
-    message::reader::*,
+    constants::{Class, Type},
+    message::{reader::*, RecordsSection},
     names::{InlineName, Name},
     records::data::*,
 };

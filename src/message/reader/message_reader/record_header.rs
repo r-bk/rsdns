@@ -1,8 +1,7 @@
 use crate::{
-    constants::RecordsSection,
     message::{
         reader::{RecordMarker, RecordOffset},
-        ClassValue, TypeValue,
+        ClassValue, RecordsSection, TypeValue,
     },
     names::DName,
 };

@@ -1,7 +1,4 @@
-use crate::{
-    constants::RecordsSection,
-    message::{reader::RecordOffset, ClassValue, TypeValue},
-};
+use crate::message::{reader::RecordOffset, ClassValue, RecordsSection, TypeValue};
 
 // The distance from the start of the TYPE field till the RDATA field.
 const TYPE_TO_RDATA_OFFSET: usize = 10;

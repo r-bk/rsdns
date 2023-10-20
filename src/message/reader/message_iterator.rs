@@ -1,9 +1,9 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::{RecordsSection, HEADER_LENGTH},
+    constants::HEADER_LENGTH,
     message::{
         reader::{Questions, Records},
-        Header, Question,
+        Header, Question, RecordsSection,
     },
     Error, Result,
 };
@@ -27,8 +27,7 @@ use crate::{
 ///
 /// ```rust
 /// use rsdns::{
-///     constants::RecordsSection,
-///     message::reader::MessageIterator,
+///     message::{reader::MessageIterator, RecordsSection},
 ///     records::data::RecordData,
 /// };
 ///

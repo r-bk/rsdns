@@ -12,9 +12,6 @@ pub use r#type::*;
 mod rcode;
 pub use rcode::*;
 
-mod records_section;
-pub use records_section::*;
-
 // ----------------------------------------------------------------------------
 
 /// Domain name max length.

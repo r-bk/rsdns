@@ -1,8 +1,8 @@
 use crate::{
-    constants::{Class, RCode, RecordsSection, Type},
+    constants::{Class, RCode, Type},
     message::{
         reader::{MessageReader, NameRef, RecordHeaderRef},
-        MessageType, RCodeValue,
+        MessageType, RCodeValue, RecordsSection,
     },
     names::Name,
     records::{data::RData, Opt},

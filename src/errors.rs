@@ -2,10 +2,9 @@
 
 use crate::{
     constants::{
-        Class, RecordsSection, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH,
-        DOMAIN_NAME_MAX_POINTERS,
+        Class, Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
     },
-    message::{ClassValue, MessageType, OpCodeValue, RCodeValue, TypeValue},
+    message::{ClassValue, MessageType, OpCodeValue, RCodeValue, RecordsSection, TypeValue},
 };
 
 /// Errors returned by [rsdns](crate).
