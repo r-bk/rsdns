@@ -1,8 +1,8 @@
 use crate::{
     bytes::{WCursor, Writer},
-    constants::{Class, Type},
+    constants::Type,
     message::{Flags, Header},
-    records::Opt,
+    records::{Class, Opt},
     Result,
 };
 
@@ -44,7 +44,7 @@ impl<'a> QueryWriter<'a> {
         self.wcursor.write(&header)?;
         self.wcursor.write_domain_name(qname)?;
         self.wcursor.u16_be(qtype as u16)?;
-        self.wcursor.u16_be(qclass as u16)?;
+        self.wcursor.u16_be(qclass.value())?;
 
         if let Some(opt) = opt {
             self.wcursor.write_opt(&opt)?;
@@ -61,8 +61,9 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        message::{ClassValue, TypeValue},
+        message::TypeValue,
         names::InlineName,
+        records::Class,
     };
     use std::convert::TryFrom;
 
@@ -72,7 +73,7 @@ mod tests {
         let mut qw = QueryWriter::new(&mut query[..]);
 
         let size = qw
-            .write("host.example.com", Type::Cname, Class::In, true, None)
+            .write("host.example.com", Type::Cname, Class::IN, true, None)
             .unwrap();
         assert_eq!(size, 34 + 2);
 
@@ -86,7 +87,7 @@ mod tests {
         let header: Header = c.read().unwrap();
         let dn: InlineName = c.read().unwrap();
         let qt = Type::try_from(TypeValue::from(c.u16_be().unwrap())).unwrap();
-        let qc = Class::try_from(ClassValue::from(c.u16_be().unwrap())).unwrap();
+        let qc = Class::from(c.u16_be().unwrap());
 
         assert_eq!(size, 34);
         assert!(header.flags.recursion_desired());
@@ -95,7 +96,7 @@ mod tests {
         assert_eq!(header.ar_count, 0);
         assert_eq!(dn.as_str(), "host.example.com.");
         assert_eq!(qt, Type::Cname);
-        assert_eq!(qc, Class::In);
+        assert_eq!(qc, Class::IN);
     }
 
     #[test]
@@ -108,7 +109,7 @@ mod tests {
         let opt = Opt::from_msg(payload_size, ttl);
 
         let size = qw
-            .write("host.example.com", Type::Cname, Class::In, false, Some(opt))
+            .write("host.example.com", Type::Cname, Class::IN, false, Some(opt))
             .unwrap();
         assert_eq!(size, 34 + 11 + 2);
 
@@ -122,7 +123,7 @@ mod tests {
         let header: Header = c.read().unwrap();
         let dn: InlineName = c.read().unwrap();
         let qt = Type::try_from(TypeValue::from(c.u16_be().unwrap())).unwrap();
-        let qc = Class::try_from(ClassValue::from(c.u16_be().unwrap())).unwrap();
+        let qc = Class::from(c.u16_be().unwrap());
 
         let opt_dn: InlineName = c.read().unwrap();
         let opt_rtype = TypeValue(c.u16_be().unwrap());
@@ -138,7 +139,7 @@ mod tests {
         assert_eq!(header.ar_count, 1);
         assert_eq!(dn.as_str(), "host.example.com.");
         assert_eq!(qt, Type::Cname);
-        assert_eq!(qc, Class::In);
+        assert_eq!(qc, Class::IN);
 
         assert_eq!(opt_dn.as_str(), ".");
         assert_eq!(opt_rtype, Type::Opt);

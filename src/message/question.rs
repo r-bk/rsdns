@@ -1,7 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader},
-    message::{ClassValue, TypeValue},
+    message::TypeValue,
     names::InlineName,
+    records::Class,
     Result,
 };
 
@@ -17,7 +18,7 @@ pub struct Question {
     /// Question type.
     pub qtype: TypeValue,
     /// Question class.
-    pub qclass: ClassValue,
+    pub qclass: Class,
 }
 
 impl Reader<Question> for Cursor<'_> {

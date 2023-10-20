@@ -1,7 +1,7 @@
 use crate::{
-    constants::{Class, Type},
+    constants::Type,
     names::InlineName,
-    records::data::RecordData,
+    records::{data::RecordData, Class},
 };
 
 /// A resource record.

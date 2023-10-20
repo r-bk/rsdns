@@ -6,10 +6,10 @@ use crate::{
             NameRef, QuestionRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset,
             SectionTracker,
         },
-        ClassValue, Header, Question, RecordsSection, TypeValue,
+        Header, Question, RecordsSection, TypeValue,
     },
     names::DName,
-    records::{data::RData, Opt},
+    records::{data::RData, Class, Opt},
     Error, Result,
 };
 
@@ -539,7 +539,7 @@ impl<'s, 'a: 's> MessageReader<'a> {
         };
 
         let rtype = TypeValue::from(self.cursor.u16_be()?);
-        let rclass = ClassValue::from(self.cursor.u16_be()?);
+        let rclass = Class::from(self.cursor.u16_be()?);
         let ttl = self.cursor.u32_be()?;
         let rdlen = self.cursor.u16_be()?;
 
@@ -708,7 +708,7 @@ impl<'s, 'a: 's> MessageReader<'a> {
     #[inline(always)]
     fn opt_record_impl(&mut self, marker: &RecordMarker) -> Result<Opt> {
         self.cursor.skip(marker.rdlen as usize)?;
-        Ok(Opt::from_msg(marker.rclass.0, marker.ttl))
+        Ok(Opt::from_msg(marker.rclass.value(), marker.ttl))
     }
 
     /// Reads the data of a record at specified marker and returns it as a byte slice.

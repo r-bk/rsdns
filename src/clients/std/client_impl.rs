@@ -1,9 +1,9 @@
 use crate::{
     clients::config::{ClientConfig, EDns, ProtocolStrategy, Recursion},
-    constants::{Class, Type, DNS_MESSAGE_BUFFER_MIN_LENGTH},
+    constants::{Type, DNS_MESSAGE_BUFFER_MIN_LENGTH},
     errors::{Error, Result},
     message::{reader::MessageReader, Flags, QueryWriter},
-    records::{data::RData, Opt, RecordSet},
+    records::{data::RData, Class, Opt, RecordSet},
 };
 use std::{
     cell::RefCell,

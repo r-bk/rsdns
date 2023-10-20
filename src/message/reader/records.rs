@@ -1,8 +1,8 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::{Class, Type},
-    message::{reader::SectionTracker, ClassValue, Header, RecordsSection, TypeValue},
-    records::{data::RecordData, ResourceRecord},
+    constants::Type,
+    message::{reader::SectionTracker, Header, RecordsSection, TypeValue},
+    records::{data::RecordData, Class, ResourceRecord},
     Error, Result,
 };
 use std::convert::TryFrom;
@@ -81,20 +81,17 @@ impl<'a> Records<'a> {
                 self.cursor.skip_domain_name()?;
 
                 let rtype: TypeValue = self.cursor.u16_be()?.into();
-                let rclass: ClassValue = self.cursor.u16_be()?.into();
+                let rclass: Class = self.cursor.u16_be()?.into();
                 let ttl = self.cursor.u32_be()?;
                 let rdlen = self.cursor.u16_be()? as usize;
 
-                let rclass = match Class::try_from(rclass) {
-                    Ok(rc) => rc,
-                    _ => {
-                        /* unsupported RCLASS */
-                        self.cursor.skip(rdlen)?;
-                        self.section_tracker
-                            .section_read(section, self.cursor.pos());
-                        continue;
-                    }
-                };
+                if !rclass.is_defined() {
+                    /* unsupported RCLASS */
+                    self.cursor.skip(rdlen)?;
+                    self.section_tracker
+                        .section_read(section, self.cursor.pos());
+                    continue;
+                }
 
                 let rtype = match Type::try_from(rtype) {
                     Ok(rt) if rt != Type::Opt => rt,

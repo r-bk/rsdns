@@ -38,8 +38,5 @@ pub use rcode_value::*;
 mod rcode;
 pub use rcode::*;
 
-mod class_value;
-pub use class_value::*;
-
 mod type_value;
 pub use type_value::*;

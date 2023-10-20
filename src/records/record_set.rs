@@ -1,11 +1,11 @@
 use crate::{
-    constants::{Class, RCode, Type},
+    constants::{RCode, Type},
     message::{
         reader::{MessageReader, NameRef, RecordHeaderRef},
         MessageType, RCodeValue, RecordsSection,
     },
     names::Name,
-    records::{data::RData, Opt},
+    records::{data::RData, Class, Opt},
     Error, Result,
 };
 
@@ -76,7 +76,7 @@ impl<D: RData> RecordSet<D> {
             return Err(Error::BadResponseCode(response_code));
         }
 
-        let rclass = Class::try_from(question.qclass)?;
+        let rclass = question.qclass;
         let mut name = question.qname;
 
         let mut rrset = loop {

@@ -1,4 +1,7 @@
-use crate::message::{reader::RecordOffset, ClassValue, RecordsSection, TypeValue};
+use crate::{
+    message::{reader::RecordOffset, RecordsSection, TypeValue},
+    records::Class,
+};
 
 // The distance from the start of the TYPE field till the RDATA field.
 const TYPE_TO_RDATA_OFFSET: usize = 10;
@@ -17,7 +20,7 @@ const TYPE_TO_RDATA_OFFSET: usize = 10;
 pub struct RecordMarker {
     pub(crate) offset: RecordOffset,
     pub(crate) rtype: TypeValue,
-    pub(crate) rclass: ClassValue,
+    pub(crate) rclass: Class,
     pub(crate) ttl: u32,
     pub(crate) rdlen: u16,
     pub(crate) section: RecordsSection,
@@ -43,7 +46,7 @@ impl RecordMarker {
 
     /// Returns the record's Class.
     #[inline]
-    pub fn rclass(&self) -> ClassValue {
+    pub fn rclass(&self) -> Class {
         self.rclass
     }
 

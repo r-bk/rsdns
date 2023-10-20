@@ -1,8 +1,8 @@
 use crate::{
-    constants::{Class, Type},
+    constants::Type,
     message::{reader::*, RecordsSection},
     names::{InlineName, Name},
-    records::data::*,
+    records::{data::*, Class},
 };
 use std::{
     convert::TryInto,
@@ -128,7 +128,7 @@ fn test_whole_message() {
 
     let question = mr.the_question_ref().expect("the_question_ref failed");
     assert_eq!(question.qtype, Type::A);
-    assert_eq!(question.qclass, Class::In);
+    assert_eq!(question.qclass, Class::IN);
 
     let mut headers = Vec::new();
 
@@ -155,7 +155,7 @@ fn test_whole_message() {
         }
 
         assert_eq!(h.rtype(), Type::Ns);
-        assert_eq!(h.rclass(), Class::In);
+        assert_eq!(h.rclass(), Class::IN);
         assert_eq!(h.ttl(), 106241);
 
         let name: Name = h.name().try_into().expect("name_ref::try_into failed");
@@ -190,7 +190,7 @@ fn test_answer_section() {
 
         assert_eq!(header.name().as_str(), "bbc.com.");
         assert_eq!(header.rtype(), Type::A);
-        assert_eq!(header.rclass(), Class::In);
+        assert_eq!(header.rclass(), Class::IN);
         assert_eq!(header.section(), RecordsSection::Answer);
         assert_eq!(header.ttl(), 300);
         assert_eq!(header.rdlen(), 4);
@@ -348,7 +348,7 @@ fn test_seek_empty_section() {
     assert_eq!(record_header.name.as_str(), "cnn.com.");
     assert_eq!(record_header.marker.section, RecordsSection::Answer);
     assert_eq!(record_header.marker.rtype, Type::A);
-    assert_eq!(record_header.marker.rclass, Class::In);
+    assert_eq!(record_header.marker.rclass, Class::IN);
     assert_eq!(record_header.marker.ttl, 51);
     let a_record = mr.record_data::<A>(record_header.marker()).unwrap();
     assert_eq!(

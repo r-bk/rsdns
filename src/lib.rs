@@ -69,7 +69,7 @@
 //! [`clients`]: crate::clients
 //!
 //! ```rust
-//! use rsdns::{constants::Class, records::data::A};
+//! use rsdns::records::{data::A, Class};
 //! # #[cfg(feature = "net-tokio")]
 //! use rsdns::clients::{tokio::Client, ClientConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
@@ -86,7 +86,7 @@
 //!     let mut client = Client::new(config).await?;
 //!
 //!     // issue an A query
-//!     let rrset = client.query_rrset::<A>(qname, Class::In).await?;
+//!     let rrset = client.query_rrset::<A>(qname, Class::IN).await?;
 //!
 //!     Ok(rrset.rdata)
 //! }
@@ -97,7 +97,7 @@
 //! [`std::Client`]: crate::clients::std::Client
 //!
 //! ```rust
-//! use rsdns::{constants::Class, records::data::A};
+//! use rsdns::records::{data::A, Class};
 //! # #[cfg(feature = "net-std")]
 //! use rsdns::clients::{std::Client, ClientConfig};
 //! # use std::{error::Error, net::{Ipv4Addr, SocketAddr}, str::FromStr};
@@ -106,7 +106,7 @@
 //! fn get_a_records(qname: &str) -> Result<Vec<A>, Box<dyn Error>> {
 //!     let nameserver = SocketAddr::from_str("8.8.8.8:53")?;
 //!     let mut client = Client::new(ClientConfig::with_nameserver(nameserver))?;
-//!     let rrset = client.query_rrset::<A>(qname, Class::In)?;
+//!     let rrset = client.query_rrset::<A>(qname, Class::IN)?;
 //!     Ok(rrset.rdata)
 //! }
 //! ```

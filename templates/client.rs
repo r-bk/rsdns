@@ -3,8 +3,8 @@ use crate::{
         {{ crate_module_name }}::ClientImpl,
         config::ClientConfig,
     },
-    constants::{Type, Class},
-    records::{data::RData, RecordSet},
+    constants::Type,
+    records::{data::RData, Class, RecordSet},
     Result
 };
 

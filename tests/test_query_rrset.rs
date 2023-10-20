@@ -5,10 +5,7 @@
     feature = "net-std"
 ))]
 use {
-    rsdns::{
-        constants::Class,
-        records::{data::A, RecordSet},
-    },
+    rsdns::records::{data::A, Class, RecordSet},
     std::{
         net::{IpAddr, SocketAddr, ToSocketAddrs},
         str::FromStr,
@@ -61,7 +58,7 @@ fn check_rrset(rrset: &RecordSet<A>) {
 async fn test_async_query_rrset() {
     let config = ClientConfig::with_nameserver(SocketAddr::from_str("8.8.8.8:53").unwrap());
     let mut client = Client::new(config).await.unwrap();
-    let rrset = client.query_rrset::<A>(HOSTNAME, Class::In).await.unwrap();
+    let rrset = client.query_rrset::<A>(HOSTNAME, Class::IN).await.unwrap();
     check_rrset(&rrset);
 }
 
@@ -72,7 +69,7 @@ async fn test_async_query_rrset() {
 fn test_sync_query_rrset() {
     let config = ClientConfig::with_nameserver(SocketAddr::from_str("8.8.8.8:53").unwrap());
     let mut client = rsdns::clients::std::Client::new(config).unwrap();
-    let rrset = client.query_rrset::<A>(HOSTNAME, Class::In).unwrap();
+    let rrset = client.query_rrset::<A>(HOSTNAME, Class::IN).unwrap();
     check_rrset(&rrset);
 }
 

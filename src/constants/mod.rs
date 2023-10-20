@@ -3,9 +3,6 @@
 mod opcode;
 pub use opcode::*;
 
-mod class;
-pub use class::*;
-
 mod r#type;
 pub use r#type::*;
 

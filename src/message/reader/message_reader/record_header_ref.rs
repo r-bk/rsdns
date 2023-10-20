@@ -1,6 +1,9 @@
-use crate::message::{
-    reader::{NameRef, RecordMarker, RecordOffset},
-    ClassValue, RecordsSection, TypeValue,
+use crate::{
+    message::{
+        reader::{NameRef, RecordMarker, RecordOffset},
+        RecordsSection, TypeValue,
+    },
+    records::Class,
 };
 
 /// A resource record header with [`NameRef`].
@@ -47,7 +50,7 @@ impl<'a> RecordHeaderRef<'a> {
 
     /// Returns the record's Class.
     #[inline]
-    pub fn rclass(&self) -> ClassValue {
+    pub fn rclass(&self) -> Class {
         self.marker.rclass
     }
 
