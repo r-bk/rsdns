@@ -1,6 +1,6 @@
 #[cfg(test)]
-use crate::constants::{OpCode, RCode};
-use crate::message::{MessageType, OpCodeValue, RCodeValue};
+use crate::constants::RCode;
+use crate::message::{MessageType, OpCode, RCodeValue};
 
 macro_rules! get_bit {
     ($e:expr, $l:literal) => {
@@ -32,9 +32,7 @@ pub struct Flags {
 impl Flags {
     /// Creates new (default) [`Flags`].
     ///
-    /// Default [`Flags`] have [`MessageType::Query`] and [`OpCode::Query`].
-    ///
-    /// [`OpCode::Query`]: crate::constants::OpCode::Query
+    /// Default [`Flags`] have [`MessageType::Query`] and [`OpCode::QUERY`].
     pub fn new() -> Flags {
         Flags { bits: 0 }
     }
@@ -54,7 +52,7 @@ impl Flags {
 
     /// Returns the message opcode.
     #[inline]
-    pub fn opcode(self) -> OpCodeValue {
+    pub fn opcode(self) -> OpCode {
         let bits = ((self.bits & 0b0111_1000_0000_0000) >> 11) as u8;
         bits.into()
     }
@@ -63,7 +61,7 @@ impl Flags {
     #[cfg(test)]
     pub(crate) fn set_opcode(&mut self, opcode: OpCode) -> &mut Self {
         let mask = 0b0111_1000_0000_0000;
-        self.bits = (self.bits & !mask) | (opcode as u16) << 11;
+        self.bits = (self.bits & !mask) | (opcode.value() as u16) << 11;
         self
     }
 
@@ -240,7 +238,7 @@ mod tests {
     fn test_opcode() {
         for opcode in OpCode::VALUES {
             let f = Flags {
-                bits: (opcode as u16) << 11,
+                bits: (opcode.value() as u16) << 11,
             };
             assert_eq!(f.opcode(), opcode);
 
@@ -249,11 +247,14 @@ mod tests {
 
             f.set_opcode(opcode);
             assert_eq!(f.opcode(), opcode);
-            assert_eq!((u16::from(f) & 0b0111_1000_0000_0000) >> 11, opcode as u16);
+            assert_eq!(
+                (u16::from(f) & 0b0111_1000_0000_0000) >> 11,
+                opcode.value() as u16
+            );
         }
 
         for i in 0..16 {
-            if !OpCode::VALUES.iter().any(|oc| *oc as u16 == i) {
+            if !OpCode::VALUES.iter().any(|oc| oc.value() as u16 == i) {
                 let f = Flags { bits: i << 11 };
                 assert_eq!(f.opcode(), i as u8);
             }

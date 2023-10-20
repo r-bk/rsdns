@@ -1,8 +1,5 @@
 //! Constants and definitions.
 
-mod opcode;
-pub use opcode::*;
-
 mod r#type;
 pub use r#type::*;
 

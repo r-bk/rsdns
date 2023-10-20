@@ -4,7 +4,7 @@ use crate::{
     constants::{
         Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
     },
-    message::{MessageType, OpCodeValue, RCodeValue, RecordsSection, TypeValue},
+    message::{MessageType, OpCode, RCodeValue, RecordsSection, TypeValue},
     records::Class,
 };
 
@@ -26,7 +26,7 @@ pub enum Error {
     UnknownClass(Class),
 
     #[error("unknown operation code: {0}")]
-    UnknownOpCode(OpCodeValue),
+    UnknownOpCode(OpCode),
 
     #[error("unknown response code: {0}")]
     UnknownRCode(RCodeValue),

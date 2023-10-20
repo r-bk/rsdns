@@ -14,9 +14,6 @@ pub use message_type::*;
 mod records_section;
 pub use records_section::*;
 
-mod opcode_value;
-pub use opcode_value::*;
-
 mod opcode;
 pub use opcode::*;
 
