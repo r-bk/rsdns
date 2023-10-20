@@ -13,3 +13,6 @@ pub use record_set::*;
 
 mod class;
 pub use class::*;
+
+mod r#type;
+pub use r#type::*;

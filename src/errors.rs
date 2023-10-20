@@ -149,6 +149,20 @@ pub struct RCodeFromStrError;
 #[error("UnknownRCodeName")]
 pub struct UnknownRCodeName;
 
+/// Type couldn't be created from a string.
+#[derive(thiserror::Error, Debug)]
+#[error("TypeFromStrError")]
+pub struct TypeFromStrError;
+
+/// Unknown type name.
+///
+/// This error is returned when creation of a [`Type`] from a string fails.
+///
+/// [`Type`]: crate::records::Type
+#[derive(thiserror::Error, Debug)]
+#[error("UnknownTypeName")]
+pub struct UnknownTypeName;
+
 /// Result returned by [rsdns](crate).
 pub type Result<T> = std::result::Result<T, Error>;
 
