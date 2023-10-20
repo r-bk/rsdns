@@ -118,7 +118,7 @@
 pub(crate) mod macros;
 pub(crate) mod bytes;
 pub mod constants;
-mod errors;
+pub mod errors;
 pub mod message;
 pub mod names;
 pub mod records;

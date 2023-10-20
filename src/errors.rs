@@ -125,6 +125,16 @@ pub enum Error {
     ReaderDone,
 }
 
+/// Class couldn't be created from a string.
+#[derive(thiserror::Error, Debug)]
+#[error("ClassFromStrError")]
+pub struct ClassFromStrError;
+
+/// Unknown class name.
+#[derive(thiserror::Error, Debug)]
+#[error("UnknownClassName")]
+pub struct UnknownClassName;
+
 /// Result returned by [rsdns](crate).
 pub type Result<T> = std::result::Result<T, Error>;
 

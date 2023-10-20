@@ -10,3 +10,6 @@ pub use record::*;
 
 mod record_set;
 pub use record_set::*;
+
+mod class;
+pub use class::*;
