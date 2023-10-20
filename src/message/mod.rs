@@ -14,6 +14,9 @@ pub use message_type::*;
 mod opcode_value;
 pub use opcode_value::*;
 
+mod opcode;
+pub use opcode::*;
+
 cfg_any_client! {
     mod query_writer;
 

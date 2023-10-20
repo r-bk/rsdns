@@ -163,6 +163,20 @@ pub struct TypeFromStrError;
 #[error("UnknownTypeName")]
 pub struct UnknownTypeName;
 
+/// OpCode couldn't be created from a string.
+#[derive(thiserror::Error, Debug)]
+#[error("OpCodeFromStrError")]
+pub struct OpCodeFromStrError;
+
+/// Unknown operation code name.
+///
+/// This error is returned when creation of a [`OpCode`] from a string fails.
+///
+/// [`OpCode`]: crate::message::OpCode
+#[derive(thiserror::Error, Debug)]
+#[error("UnknownOpCodeName")]
+pub struct UnknownOpCodeName;
+
 /// Result returned by [rsdns](crate).
 pub type Result<T> = std::result::Result<T, Error>;
 
