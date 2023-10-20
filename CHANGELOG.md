@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2023-10-21
+
+This is a refactoring release which removes some duplication in `rsdns` types.
+For example, till now `rsdns` had two types for RCLASS - `constants::Class` and
+`message::ClassValue`. This release removes such duplication by introducing a
+new non-enum type `records::Class`.
+
+### Added
+
+- `Class`, `Type`, `RCode`, and `OpCode` have an implementation of `FromStr`
+which also recognizes generic values as specified by [RFC 3597 section 5] for
+unknown classes and types
+
+[RFC 3597 section 5]: https://www.rfc-editor.org/rfc/rfc3597.html#section-5
+
+### Changed
+
+- the MSRV is `1.65` now
+- add new type `records::Class` to replace `constants::Class` and `message::ClassValue`
+- add new type `records::Type` to replace `constants::Type` and `message::TypeValue`
+- add new type `message::OpCode` to replace `constants::OpCode` and `message::OpCodeValue`
+- add new type `message::RCode` to replace `constants::RCode` and `message::RCodeValue`
+- move `constants::RecordsSection` into `message` module
+- fix `clippy` issues in test code
+- fix `clippy::redundant_as_str` warning
+
 ## [0.15.0] - 2023-04-08
 
 This is a small maintenance release with updated dependencies and MSRV.
@@ -282,3 +308,4 @@ the revamped `MessageReader`.
 [0.13.2]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.13.2
 [0.14.0]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.14.0
 [0.15.0]: https://github.com/r-bk/rsdns/compare/v0.14.0...v0.15.0
+[0.16.0]: https://github.com/r-bk/rsdns/compare/v0.15.0...v0.16.0
