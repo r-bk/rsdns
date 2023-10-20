@@ -1,5 +1,5 @@
 cfg_any_client! {
-    use crate::{constants::Type, Result};
+    use crate::{records::Type, Result};
 }
 
 /// OPT pseudo-record.
@@ -79,7 +79,7 @@ cfg_any_client! {
     impl crate::bytes::WCursor<'_> {
         pub(crate) fn write_opt(&mut self, opt: &Opt) -> Result<()> {
             self.u8(0)?; // DNAME
-            self.u16_be(Type::Opt as u16)?; // TYPE
+            self.u16_be(Type::OPT.value())?; // TYPE
             self.u16_be(opt.udp_payload_size)?; // CLASS
             self.u32_be(opt.ttl())?; // TTL
             self.u16_be(0)?; // RDLEN

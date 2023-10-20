@@ -1,8 +1,8 @@
 macro_rules! rr_data {
-    ($RR:ident) => {
+    ($RR:ident, $RT:expr) => {
         impl $RR {
             /// The record type as associated constant.
-            pub const RTYPE: Type = Type::$RR;
+            pub const RTYPE: Type = $RT;
 
             /// Returns the record type.
             ///
@@ -27,7 +27,7 @@ macro_rules! rr_data {
 }
 
 macro_rules! rr_dn_data {
-    ($(#[$outer:meta])* $RR:ident, $(#[$dn_outer:meta])* $DN:ident) => {
+    ($(#[$outer:meta])* $RR:ident, $RT:expr, $(#[$dn_outer:meta])* $DN:ident) => {
         $(#[$outer])*
         #[derive(Clone, Eq, PartialEq, Hash, Default, Debug, Ord, PartialOrd)]
         pub struct $RR {
@@ -35,7 +35,7 @@ macro_rules! rr_dn_data {
             pub $DN: crate::names::Name,
         }
 
-        rr_data!($RR);
+        rr_data!($RR, $RT);
 
         impl crate::bytes::RrDataReader<$RR> for crate::bytes::Cursor<'_> {
             fn read_rr_data(&mut self, rd_len: usize) -> crate::Result<$RR> {

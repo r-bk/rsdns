@@ -1,10 +1,5 @@
 //! Constants and definitions.
 
-mod r#type;
-pub use r#type::*;
-
-// ----------------------------------------------------------------------------
-
 /// Domain name max length.
 ///
 /// [RFC 1035 section 3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.1)

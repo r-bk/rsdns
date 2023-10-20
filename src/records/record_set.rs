@@ -1,11 +1,10 @@
 use crate::{
-    constants::Type,
     message::{
         reader::{MessageReader, NameRef, RecordHeaderRef},
         MessageType, RCode, RecordsSection,
     },
     names::Name,
-    records::{data::RData, Class, Opt},
+    records::{data::RData, Class, Opt, Type},
     Error, Result,
 };
 
@@ -48,7 +47,7 @@ impl<D: RData> RecordSet<D> {
     /// creating a *chain*. The record set belongs to the last name in the *chain*,
     /// which is reflected in the returned record set's [`name`](RecordSet::name) attribute.
     ///
-    /// [`CNAME`]: crate::constants::Type::Cname
+    /// [`CNAME`]: crate::records::Type::CNAME
     pub fn from_msg(msg: &[u8]) -> Result<Self> {
         let mut mr = MessageReader::new(msg)?;
         let header = mr.header()?;
@@ -138,7 +137,7 @@ impl<D: RData> RecordSet<D> {
         #[allow(clippy::manual_flatten)]
         for o in headers.iter_mut() {
             if let Some(h) = o {
-                if h.name().eq(name)? && h.rtype() == Type::Cname && h.rclass() == rclass {
+                if h.name().eq(name)? && h.rtype() == Type::CNAME && h.rclass() == rclass {
                     let n = mr.name_ref_at(h.marker());
                     o.take();
                     return Ok(Some(n));
@@ -166,7 +165,7 @@ impl<D: RData> RecordSet<D> {
         let mut opt = None;
         while mr.has_records() {
             let marker = mr.record_marker()?;
-            if marker.rtype == Type::Opt {
+            if marker.rtype == Type::OPT {
                 opt = Some(mr.opt_record(&marker)?);
                 break;
             } else {

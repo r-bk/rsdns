@@ -1,8 +1,7 @@
 use crate::{
     bytes::{WCursor, Writer},
-    constants::Type,
     message::{Flags, Header},
-    records::{Class, Opt},
+    records::{Class, Opt, Type},
     Result,
 };
 
@@ -43,7 +42,7 @@ impl<'a> QueryWriter<'a> {
         self.wcursor.u16_be(0)?;
         self.wcursor.write(&header)?;
         self.wcursor.write_domain_name(qname)?;
-        self.wcursor.u16_be(qtype as u16)?;
+        self.wcursor.u16_be(qtype.value())?;
         self.wcursor.u16_be(qclass.value())?;
 
         if let Some(opt) = opt {
@@ -61,11 +60,9 @@ mod tests {
     use super::*;
     use crate::{
         bytes::{Cursor, Reader},
-        message::TypeValue,
         names::InlineName,
-        records::Class,
+        records::{Class, Type},
     };
-    use std::convert::TryFrom;
 
     #[test]
     fn test_good_flow() {
@@ -73,7 +70,7 @@ mod tests {
         let mut qw = QueryWriter::new(&mut query[..]);
 
         let size = qw
-            .write("host.example.com", Type::Cname, Class::IN, true, None)
+            .write("host.example.com", Type::CNAME, Class::IN, true, None)
             .unwrap();
         assert_eq!(size, 34 + 2);
 
@@ -86,7 +83,7 @@ mod tests {
         let size = c.u16_be().unwrap();
         let header: Header = c.read().unwrap();
         let dn: InlineName = c.read().unwrap();
-        let qt = Type::try_from(TypeValue::from(c.u16_be().unwrap())).unwrap();
+        let qt = Type::from(c.u16_be().unwrap());
         let qc = Class::from(c.u16_be().unwrap());
 
         assert_eq!(size, 34);
@@ -95,7 +92,7 @@ mod tests {
         assert_eq!(header.qd_count, 1);
         assert_eq!(header.ar_count, 0);
         assert_eq!(dn.as_str(), "host.example.com.");
-        assert_eq!(qt, Type::Cname);
+        assert_eq!(qt, Type::CNAME);
         assert_eq!(qc, Class::IN);
     }
 
@@ -109,7 +106,7 @@ mod tests {
         let opt = Opt::from_msg(payload_size, ttl);
 
         let size = qw
-            .write("host.example.com", Type::Cname, Class::IN, false, Some(opt))
+            .write("host.example.com", Type::CNAME, Class::IN, false, Some(opt))
             .unwrap();
         assert_eq!(size, 34 + 11 + 2);
 
@@ -122,11 +119,11 @@ mod tests {
         let size = c.u16_be().unwrap();
         let header: Header = c.read().unwrap();
         let dn: InlineName = c.read().unwrap();
-        let qt = Type::try_from(TypeValue::from(c.u16_be().unwrap())).unwrap();
+        let qt = Type::from(c.u16_be().unwrap());
         let qc = Class::from(c.u16_be().unwrap());
 
         let opt_dn: InlineName = c.read().unwrap();
-        let opt_rtype = TypeValue(c.u16_be().unwrap());
+        let opt_rtype = Type::from(c.u16_be().unwrap());
         let opt_rclass = c.u16_be().unwrap();
         let opt_ttl = c.u32_be().unwrap();
         let opt_rdlen = c.u16_be().unwrap();
@@ -138,11 +135,11 @@ mod tests {
         assert_eq!(header.qd_count, 1);
         assert_eq!(header.ar_count, 1);
         assert_eq!(dn.as_str(), "host.example.com.");
-        assert_eq!(qt, Type::Cname);
+        assert_eq!(qt, Type::CNAME);
         assert_eq!(qc, Class::IN);
 
         assert_eq!(opt_dn.as_str(), ".");
-        assert_eq!(opt_rtype, Type::Opt);
+        assert_eq!(opt_rtype, Type::OPT);
         assert_eq!(opt_rclass, payload_size);
         assert_eq!(opt.version(), 0);
         assert_eq!(opt.rcode_extension(), 0);

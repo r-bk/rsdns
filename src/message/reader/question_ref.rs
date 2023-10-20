@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
-    message::{reader::NameRef, TypeValue},
-    records::Class,
+    message::reader::NameRef,
+    records::{Class, Type},
     Result,
 };
 
@@ -16,7 +16,7 @@ pub struct QuestionRef<'a> {
     /// Domain name to query.
     pub qname: NameRef<'a>,
     /// Question type.
-    pub qtype: TypeValue,
+    pub qtype: Type,
     /// Question class.
     pub qclass: Class,
 }

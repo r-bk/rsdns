@@ -1,15 +1,15 @@
 use crate::{
     bytes::{Cursor, Reader},
-    constants::{Type, HEADER_LENGTH},
+    constants::HEADER_LENGTH,
     message::{
         reader::{
             NameRef, QuestionRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset,
             SectionTracker,
         },
-        Header, Question, RecordsSection, TypeValue,
+        Header, Question, RecordsSection,
     },
     names::DName,
-    records::{data::RData, Class, Opt},
+    records::{data::RData, Class, Opt, Type},
     Error, Result,
 };
 
@@ -217,10 +217,9 @@ use crate::{
 ///
 /// ```rust
 /// use rsdns::{
-///     constants::Type,
 ///     message::{reader::MessageReader, RCode, RecordsSection},
 ///     names::Name,
-///     records::data::{A, Aaaa},
+///     records::{data::{A, Aaaa}, Type},
 ///     Error, Result,
 /// };
 ///
@@ -248,7 +247,7 @@ use crate::{
 ///                 "Name: {}; Class: {}; TTL: {}; ipv4: {}",
 ///                 rh.name(), rh.rclass(), rh.ttl(), rdata.address
 ///             );
-///         } else if rh.rtype() == Type::Aaaa {
+///         } else if rh.rtype() == Type::AAAA {
 ///             let rdata = mr.record_data::<Aaaa>(rh.marker())?;
 ///             println!(
 ///                 "Name: {}; Class: {}; TTL: {}; ipv6: {}",
@@ -538,7 +537,7 @@ impl<'s, 'a: 's> MessageReader<'a> {
             type_offset: self.cursor.pos(),
         };
 
-        let rtype = TypeValue::from(self.cursor.u16_be()?);
+        let rtype = Type::from(self.cursor.u16_be()?);
         let rclass = Class::from(self.cursor.u16_be()?);
         let ttl = self.cursor.u32_be()?;
         let rdlen = self.cursor.u16_be()?;
@@ -687,14 +686,14 @@ impl<'s, 'a: 's> MessageReader<'a> {
     /// This method uses debug assertions to verify that:
     ///
     /// - the `marker` matches the reader's buffer pointer
-    /// - the record type of the marker is [`Opt`](Type::Opt)
+    /// - the record type of the marker is [`OPT`](Type::OPT)
     #[inline]
     pub fn opt_record(&mut self, marker: &RecordMarker) -> Result<Opt> {
         if self.done {
             return Err(Error::ReaderDone);
         }
         debug_assert!(self.cursor.pos() == marker.rdata_pos());
-        debug_assert!(marker.rtype == Type::Opt);
+        debug_assert!(marker.rtype == Type::OPT);
         let res = self.opt_record_impl(marker);
         if res.is_ok() {
             self.section_tracker

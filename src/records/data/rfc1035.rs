@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::Type,
     names::Name,
+    records::Type,
     Result,
 };
 use std::net::Ipv4Addr;
@@ -17,7 +17,7 @@ pub struct A {
     pub address: Ipv4Addr,
 }
 
-rr_data!(A);
+rr_data!(A, Type::A);
 
 impl RrDataReader<A> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<A> {
@@ -37,6 +37,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.1](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.1)
     Cname,
+    Type::CNAME,
     /// A domain name which specifies the canonical or primary name for the owner.
     /// The RR owner name is an alias.
     cname
@@ -59,7 +60,7 @@ pub struct Hinfo {
     pub os: Vec<u8>,
 }
 
-rr_data!(Hinfo);
+rr_data!(Hinfo, Type::HINFO);
 
 impl RrDataReader<Hinfo> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Hinfo> {
@@ -97,7 +98,7 @@ pub struct Wks {
     pub bitmap: Vec<u8>,
 }
 
-rr_data!(Wks);
+rr_data!(Wks, Type::WKS);
 
 impl RrDataReader<Wks> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Wks> {
@@ -119,6 +120,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.3](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.3)
     Mb,
+    Type::MB,
     /// A domain name which specifies a host which has the specified mailbox.
     madname
 );
@@ -132,6 +134,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.4)
     Md,
+    Type::MD,
     /// A domain name which specifies a host which has a mail agent for the domain which should
     /// be able to deliver mail for the domain.
     madname
@@ -146,6 +149,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.5)
     Mf,
+    Type::MF,
     /// A domain name which specifies a host which has a mail agent for the domain which will
     /// accept mail for forwarding to the domain.
     madname
@@ -158,6 +162,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.6](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.6)
     Mg,
+    Type::MG,
     /// A domain name which specifies a mailbox which is a member of the mail group specified
     /// by the domain name.
     mgmname
@@ -181,7 +186,7 @@ pub struct Minfo {
     pub emailbx: Name,
 }
 
-rr_data!(Minfo);
+rr_data!(Minfo, Type::MINFO);
 
 impl RrDataReader<Minfo> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Minfo> {
@@ -202,6 +207,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.8](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.8)
     Mr,
+    Type::MR,
     /// A domain name which specifies a mailbox which is the proper rename of the specified mailbox.
     newname
 );
@@ -220,7 +226,7 @@ pub struct Mx {
     pub exchange: Name,
 }
 
-rr_data!(Mx);
+rr_data!(Mx, Type::MX);
 
 impl RrDataReader<Mx> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Mx> {
@@ -245,7 +251,7 @@ pub struct Null {
     pub anything: Vec<u8>,
 }
 
-rr_data!(Null);
+rr_data!(Null, Type::NULL);
 
 impl RrDataReader<Null> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Null> {
@@ -265,6 +271,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.11](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.11)
     Ns,
+    Type::NS,
     /// A domain name  which specifies a host which should be authoritative for the
     /// specified class and domain.
     nsdname
@@ -277,6 +284,7 @@ rr_dn_data!(
     ///
     /// [RFC 1035 section 3.3.12](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.12)
     Ptr,
+    Type::PTR,
     /// A domain name which points to some location in the domain name space.
     ptrdname
 );
@@ -307,7 +315,7 @@ pub struct Soa {
     pub minimum: u32,
 }
 
-rr_data!(Soa);
+rr_data!(Soa, Type::SOA);
 
 impl RrDataReader<Soa> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Soa> {
@@ -338,7 +346,7 @@ pub struct Txt {
     pub text: Vec<u8>,
 }
 
-rr_data!(Txt);
+rr_data!(Txt, Type::TXT);
 
 impl RrDataReader<Txt> for Cursor<'_> {
     fn read_rr_data(&mut self, mut rd_len: usize) -> Result<Txt> {

@@ -1,4 +1,4 @@
-use crate::constants::Type;
+use crate::records::Type;
 use std::{fmt::Debug, hash::Hash};
 
 pub(super) mod private {

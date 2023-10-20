@@ -1,9 +1,9 @@
 use crate::{
     message::{
         reader::{NameRef, RecordMarker, RecordOffset},
-        RecordsSection, TypeValue,
+        RecordsSection,
     },
-    records::Class,
+    records::{Class, Type},
 };
 
 /// A resource record header with [`NameRef`].
@@ -44,7 +44,7 @@ impl<'a> RecordHeaderRef<'a> {
 
     /// Returns the record's Type.
     #[inline]
-    pub fn rtype(&self) -> TypeValue {
+    pub fn rtype(&self) -> Type {
         self.marker.rtype
     }
 

@@ -3,8 +3,7 @@ use crate::{
         {{ crate_module_name }}::ClientImpl,
         config::ClientConfig,
     },
-    constants::Type,
-    records::{data::RData, Class, RecordSet},
+    records::{data::RData, Class, RecordSet, Type},
     Result
 };
 
@@ -69,7 +68,7 @@ impl Client {
     /// canonical name. See [`RecordSet::from_msg`] for *CNAME flattening* description.
     ///
     /// This method allows data-type queries only.
-    /// For meta-queries (e.g. [`Type::Any`]) use [`query_raw`].
+    /// For meta-queries (e.g. [`Type::ANY`]) use [`query_raw`].
     ///
     /// This method allocates.
     ///

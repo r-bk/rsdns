@@ -1,8 +1,7 @@
 use crate::{
-    constants::Type,
     message::{reader::*, RecordsSection},
     names::{InlineName, Name},
-    records::{data::*, Class},
+    records::{data::*, Class, Type},
 };
 use std::{
     convert::TryInto,
@@ -154,7 +153,7 @@ fn test_whole_message() {
             continue;
         }
 
-        assert_eq!(h.rtype(), Type::Ns);
+        assert_eq!(h.rtype(), Type::NS);
         assert_eq!(h.rclass(), Class::IN);
         assert_eq!(h.ttl(), 106241);
 
@@ -242,7 +241,7 @@ fn test_data_bytes() {
 
     while mr.has_records() {
         let marker = mr.record_marker().expect("record_marker failed");
-        if marker.rtype() == Type::Aaaa {
+        if marker.rtype() == Type::AAAA {
             data.push(
                 mr.record_data_bytes(&marker)
                     .expect("record_data_bytes failed"),

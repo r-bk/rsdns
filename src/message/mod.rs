@@ -31,6 +31,3 @@ pub mod reader;
 
 mod rcode;
 pub use rcode::*;
-
-mod type_value;
-pub use type_value::*;

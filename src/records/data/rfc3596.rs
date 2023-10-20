@@ -1,6 +1,6 @@
 use crate::{
     bytes::{Cursor, Reader, RrDataReader},
-    constants::Type,
+    records::Type,
     Result,
 };
 use std::net::Ipv6Addr;
@@ -14,7 +14,7 @@ pub struct Aaaa {
     pub address: Ipv6Addr,
 }
 
-rr_data!(Aaaa);
+rr_data!(Aaaa, Type::AAAA);
 
 impl RrDataReader<Aaaa> for Cursor<'_> {
     fn read_rr_data(&mut self, rd_len: usize) -> Result<Aaaa> {

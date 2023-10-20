@@ -1,11 +1,9 @@
 //! Error types.
 
 use crate::{
-    constants::{
-        Type, DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS,
-    },
-    message::{MessageType, OpCode, RCode, RecordsSection, TypeValue},
-    records::Class,
+    constants::{DOMAIN_NAME_LABEL_MAX_LENGTH, DOMAIN_NAME_MAX_LENGTH, DOMAIN_NAME_MAX_POINTERS},
+    message::{MessageType, OpCode, RCode, RecordsSection},
+    records::{Class, Type},
 };
 
 /// Errors returned by [rsdns](crate).
@@ -17,7 +15,7 @@ pub enum Error {
     IoError(#[from] std::io::Error),
 
     #[error("unknown type: {0}")]
-    UnknownType(TypeValue),
+    UnknownType(Type),
 
     #[error("TYPE {0} is not expected")]
     UnexpectedType(Type),
