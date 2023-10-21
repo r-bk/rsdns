@@ -142,6 +142,7 @@ jobs:
         run: cargo fuzz run rrset_from_msg -- -max_total_time=5 -verbosity=0
 
   miri:
+    if: false  # disabled until miri RAM consumption is fixed
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
