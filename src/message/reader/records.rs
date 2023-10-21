@@ -83,16 +83,8 @@ impl<'a> Records<'a> {
                 let ttl = self.cursor.u32_be()?;
                 let rdlen = self.cursor.u16_be()? as usize;
 
-                if !rclass.is_defined() {
-                    /* unsupported RCLASS */
-                    self.cursor.skip(rdlen)?;
-                    self.section_tracker
-                        .section_read(section, self.cursor.pos());
-                    continue;
-                }
-
-                if !rtype.is_defined() {
-                    // unsupported RTYPE or OPT. OPT record is supported in MessageReader only
+                if !rclass.is_defined() || !rtype.is_defined() {
+                    /* unsupported RCLASS or RTYPE */
                     self.cursor.skip(rdlen)?;
                     self.section_tracker
                         .section_read(section, self.cursor.pos());
@@ -141,6 +133,7 @@ impl<'a> Records<'a> {
                     Type::MX => rrr!(self, Type::MX, Mx, domain_name_pos, rclass, ttl, rdlen),
                     Type::TXT => rrr!(self, Type::TXT, Txt, domain_name_pos, rclass, ttl, rdlen),
                     Type::AAAA => rrr!(self, Type::AAAA, Aaaa, domain_name_pos, rclass, ttl, rdlen),
+                    /* Type::OPT => OPT record is supported in MessageReader only */
                     _ => {
                         return Err(Error::UnexpectedType(rtype));
                     }
