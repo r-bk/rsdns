@@ -10,7 +10,7 @@ pub use reader::*;
 cfg_any_client! {
     mod wcursor;
     pub use wcursor::*;
-}
 
-mod writer;
-pub use writer::*;
+    mod writer;
+    pub use writer::*;
+}
