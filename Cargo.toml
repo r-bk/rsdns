@@ -37,7 +37,7 @@ version = "^1"
 optional = true
 
 [dependencies.smol]
-version = "^1"
+version = "^2"
 optional = true
 
 [dependencies.smol-timeout]
