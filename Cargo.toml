@@ -15,6 +15,15 @@ thiserror = "1.0.26"
 arrayvec = "0.7.1"
 rand = "0.8.4"
 cfg-if = "1.0.0"
+tokio = { version = "1", optional = true, default_features = false, features = [
+    "rt",
+    "net",
+    "time",
+    "io-util",
+] }
+async-std = { version = "1", optional = true }
+smol = { version = "2", optional = true }
+smol-timeout = { version = "0.6.0", optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 socket2 = { version = "0.5.1", optional = true, features = ["all"] }
@@ -22,34 +31,17 @@ socket2 = { version = "0.5.1", optional = true, features = ["all"] }
 [features]
 default = []
 net-std = []
-net-tokio = ["tokio"]
-net-async-std = ["async-std"]
-net-smol = ["smol", "smol-timeout"]
-
-[dependencies.tokio]
-version = "^1"
-optional = true
-default-features = false
-features = ["rt", "net", "time", "io-util"]
-
-[dependencies.async-std]
-version = "^1"
-optional = true
-
-[dependencies.smol]
-version = "^2"
-optional = true
-
-[dependencies.smol-timeout]
-version = "0.6.0"
-optional = true
+net-tokio = ["dep:tokio"]
+net-async-std = ["dep:async-std"]
+net-smol = ["dep:smol", "dep:smol-timeout"]
+socket2 = ["dep:socket2"]
 
 [build-dependencies]
 tera = "1.18.1"
 
 [dev-dependencies]
-async-std = { version = "^1", features = ["attributes"] }
-tokio = { version = "^1", features = ["macros"] }
+async-std = { version = "1", features = ["attributes"] }
+tokio = { version = "1", features = ["macros"] }
 smol-potat = "1.1.2"
 
 [package.metadata.docs.rs]
