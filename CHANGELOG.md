@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - 2024-01-19
+
+This is a small but breaking change that cleans up depepdencies and features.
+
+### Changed
+
+- bump the MSRV to `rustc 1.70.0`
+- upgrade to `smol v2`
+- cleanup crate features; optional dependencies `tokio`, `async-std`, `smol`
+  and `smol-timeout` are not crate features anymore. They were never meant
+  to be used as features. Now cargo provides a means to be explicit about
+  which optional dependency is also a feature, and which is not.
+
 ## [0.16.0] - 2023-10-21
 
 This is a refactoring release which removes some duplication in `rsdns` types.
@@ -309,3 +322,4 @@ the revamped `MessageReader`.
 [0.14.0]: https://github.com/r-bk/rsdns/compare/v0.13.1...v0.14.0
 [0.15.0]: https://github.com/r-bk/rsdns/compare/v0.14.0...v0.15.0
 [0.16.0]: https://github.com/r-bk/rsdns/compare/v0.15.0...v0.16.0
+[0.17.0]: https://github.com/r-bk/rsdns/compare/v0.16.0...v0.17.0
