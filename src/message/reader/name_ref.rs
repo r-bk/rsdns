@@ -4,7 +4,6 @@ use crate::{
     names::{InlineName, Name},
     Error, Result,
 };
-use std::convert::TryFrom;
 
 /// An encoded domain name.
 ///

@@ -6,7 +6,6 @@ use crate::{
 };
 use std::{
     cmp::Ordering,
-    convert::TryFrom,
     fmt::{self, Display, Formatter},
     hash::{Hash, Hasher},
     str::FromStr,

@@ -4,7 +4,6 @@ use crate::{
     records::{data::*, Class, Type},
 };
 use std::{
-    convert::TryInto,
     net::{Ipv4Addr, Ipv6Addr},
     str::FromStr,
 };

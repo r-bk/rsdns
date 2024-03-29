@@ -1,6 +1,5 @@
-use super::*;
+use super::{read_domain_name, skip_domain_name, Cursor, Labels, Reader};
 use crate::{
-    bytes::Reader,
     constants::DOMAIN_NAME_MAX_POINTERS,
     names::{InlineName, Name},
     Error,
