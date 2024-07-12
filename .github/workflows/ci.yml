@@ -105,6 +105,35 @@ jobs:
           RUSTDOCFLAGS: "--cfg docsrs"
         run: cargo doc --all-features --no-deps
 
+  no-rustfmt:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: --deny warnings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+      - name: remove rustfmt
+        run: |
+          if which rustfmt; then
+            rm $(which rustfmt)
+            echo "remove-rustfmt: OK"
+          fi
+          if which rustfmt; then
+            echo "remove-rustfmt: VERIFY ERR"
+            exit 1
+          fi
+        shell: bash
+      - name: build with minimal toolchain
+        run: cargo build --all-features
+
+      - name: test with minimal toolchain
+        run: cargo build --all-features
+
+      - name: check with minimal toolchain
+        run: cargo check --all-features
+
   fuzz:
     runs-on: ubuntu-latest
     steps:
