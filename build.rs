@@ -19,7 +19,7 @@ fn need_crate(crate_name: &str) -> bool {
 fn format_file(path: &std::path::Path) -> bool {
     let path_str = path.to_str().unwrap();
     Command::new("rustfmt")
-        .args(["--edition", "2018"])
+        .args(["--edition", "2021"])
         .arg(path_str)
         .output()
         .map(|o| o.status.success())
