@@ -6,7 +6,6 @@ use crate::{
     records::{data::RData, Class, Opt, RecordSet, Type},
 };
 use std::{
-    cell::RefCell,
     io::{ErrorKind, Read, Write},
     net::{TcpStream, UdpSocket},
     time::{Duration, Instant},
@@ -31,7 +30,7 @@ struct ClientCtx<'a, 'b, 'c, 'd> {
 pub(crate) struct ClientImpl {
     config: ClientConfig,
     socket: UdpSocket,
-    buf: RefCell<Vec<u8>>,
+    buf: Vec<u8>,
 }
 
 impl ClientImpl {
@@ -47,7 +46,7 @@ impl ClientImpl {
         Ok(Self {
             config,
             socket,
-            buf: RefCell::new(buf),
+            buf,
         })
     }
 
@@ -82,20 +81,34 @@ impl ClientImpl {
         ctx.query_raw()
     }
 
-    pub fn query_rrset<D: RData>(&self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
+    pub fn query_rrset<D: RData>(&mut self, qname: &str, qclass: Class) -> Result<RecordSet<D>> {
         if self.config.buffer_size() == 0 {
             return Err(Error::BadParam("non-zero buffer_size is required"));
         }
         if !qclass.is_data_class() {
             return Err(Error::UnsupportedClass(qclass));
         }
-
-        let mut buf = self.buf.borrow_mut();
-        unsafe { buf.set_len(self.config.buffer_size()) };
-        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut buf)?;
+        let mut buf = unsafe { self.take_buf() };
+        let response_len = match self.query_raw(qname, D::RTYPE, qclass, &mut buf) {
+            Ok(v) => v,
+            Err(e) => {
+                std::mem::swap(&mut self.buf, &mut buf);
+                return Err(e);
+            }
+        };
         unsafe { buf.set_len(response_len) };
+        let result = RecordSet::from_msg(&buf);
+        std::mem::swap(&mut self.buf, &mut buf);
+        result
+    }
 
-        RecordSet::from_msg(&buf)
+    unsafe fn take_buf(&mut self) -> Vec<u8> {
+        let mut buf = std::mem::take(&mut self.buf);
+        if buf.capacity() < self.config.buffer_size() {
+            buf.reserve(self.config.buffer_size() - buf.capacity());
+        }
+        buf.set_len(self.config.buffer_size());
+        buf
     }
 }
 

@@ -5,7 +5,6 @@ use crate::{
     records::{data::RData, Class, RecordSet, Opt, Type},
     Error, Result,
 };
-use std::cell::RefCell;
 
 {% if crate_name == "tokio" %}
 
@@ -45,7 +44,7 @@ type MsgBuf = arrayvec::ArrayVec<u8, QUERY_BUFFER_SIZE>;
 pub struct ClientImpl {
     config: ClientConfig,
     sock: UdpSocket,
-    buf: RefCell<Vec<u8>>,
+    buf: Vec<u8>,
 }
 
 impl ClientImpl {
@@ -55,7 +54,7 @@ impl ClientImpl {
             0 => Vec::new(),
             bs => Vec::with_capacity(bs),
         };
-        Ok(Self { config, sock, buf: RefCell::new(buf) })
+        Ok(Self { config, sock, buf })
     }
 
     pub fn config(&self) -> &ClientConfig {
@@ -88,15 +87,27 @@ impl ClientImpl {
         if !qclass.is_data_class() {
             return Err(Error::UnsupportedClass(qclass));
         }
-
-        // SAFETY: it is OK to hold the buffer RefCell across await
-        // because the function borrows self exclusively
-        let mut buf = self.buf.borrow_mut();
-        unsafe { buf.set_len(self.config.buffer_size()) };
-        let response_len = self.query_raw(qname, D::RTYPE, qclass, &mut buf).await?;
+        let mut buf = unsafe { self.take_buf() };
+        let response_len = match self.query_raw(qname, D::RTYPE, qclass, &mut buf).await {
+            Ok(v) => v,
+            Err(e) => {
+                std::mem::swap(&mut self.buf, &mut buf);
+                return Err(e);
+            }
+        };
         unsafe { buf.set_len(response_len) };
+        let result = RecordSet::from_msg(&buf);
+        std::mem::swap(&mut self.buf, &mut buf);
+        result
+    }
 
-        RecordSet::from_msg(&buf)
+    unsafe fn take_buf(&mut self) -> Vec<u8> {
+        let mut buf = std::mem::take(&mut self.buf);
+        if buf.capacity() < self.config.buffer_size() {
+            buf.reserve(self.config.buffer_size() - buf.capacity());
+        }
+        buf.set_len(self.config.buffer_size());
+        buf
     }
 }
 

@@ -80,17 +80,38 @@ cfg_if::cfg_if! {
         async fn test_query_rrset() {
             test_async_query_rrset().await
         }
+
+        #[tokio::test]
+        #[cfg_attr(miri, ignore)]
+        async fn test_query_rrset_spawn() {
+            let handle = tokio::spawn(async { test_async_query_rrset().await } );
+            handle.await.unwrap()
+        }
     } else if #[cfg(feature = "net-async-std")] {
         #[async_std::test]
         #[cfg_attr(miri, ignore)]
         async fn test_query_rrset() {
             test_async_query_rrset().await
         }
+
+        #[async_std::test]
+        #[cfg_attr(miri, ignore)]
+        async fn test_query_rrset_spawn() {
+            let handle = async_std::task::spawn(async { test_async_query_rrset().await } );
+            handle.await
+        }
     } else if #[cfg(feature = "net-smol")] {
         #[smol_potat::test]
         #[cfg_attr(miri, ignore)]
         async fn test_query_rrset() {
             test_async_query_rrset().await
+        }
+
+        #[smol_potat::test]
+        #[cfg_attr(miri, ignore)]
+        async fn test_query_rrset_spawn() {
+            let handle = smol::spawn(async { test_async_query_rrset().await } );
+            handle.await
         }
     } else if #[cfg(feature = "net-std")] {
         #[test]
