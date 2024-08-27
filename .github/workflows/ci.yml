@@ -3,10 +3,10 @@ name: ci
 on:
   push:
     branches-ignore:
-      - '**-wip'
+      - "**-wip"
   pull_request:
   schedule:
-    - cron: '0 1 * * 0'
+    - cron: "0 1 * * 0"
 
 env:
   CARGO_TERM_COLOR: always
@@ -21,7 +21,7 @@ jobs:
         rust:
           - stable
           - beta
-          - 1.70.0  # MSRV
+          - 1.70.0 # MSRV
         runs_on:
           - ubuntu-latest
           - windows-latest
@@ -32,7 +32,7 @@ jobs:
           - net-tokio
           - net-smol
           - all
-          - ''
+          - ""
         include:
           - runs_on: ubuntu-latest
             feature: net-tokio,socket2
@@ -42,7 +42,7 @@ jobs:
             rust: beta
           - runs_on: ubuntu-latest
             feature: net-tokio,socket2
-            rust: 1.70.0  # MSRV
+            rust: 1.70.0 # MSRV
     env:
       RUSTFLAGS: --deny warnings
     steps:
@@ -174,7 +174,7 @@ jobs:
         run: cargo fuzz run rrset_from_msg -- -max_total_time=5 -verbosity=0
 
   miri:
-    if: false  # disabled until miri RAM consumption is fixed
+    if: false # disabled until miri RAM consumption is fixed
     runs-on: ${{ matrix.runs_on }}
     strategy:
       matrix:
@@ -182,7 +182,7 @@ jobs:
           - ubuntu-latest
         feature:
           - all
-          - ''
+          - ""
           - default
           - net-std
           - net-async-std
