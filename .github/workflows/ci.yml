@@ -2,8 +2,9 @@ name: ci
 
 on:
   push:
-    branches-ignore:
-      - "**-wip"
+    branches:
+      - "master"
+      - "**_ci"
   pull_request:
   schedule:
     - cron: "0 1 * * 0"
