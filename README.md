@@ -31,7 +31,6 @@ runtimes. Moreover, *rsdns* has an independent synchronous client as well.
   systems with `SO_BINDTODEVICE` support)
 * Minimal set of dependencies
 
-
 ## ch4
 
 *rsdns* comes with a small command-line tool [ch4](https://github.com/r-bk/ch4).
@@ -39,7 +38,6 @@ runtimes. Moreover, *rsdns* has an independent synchronous client as well.
 and shows the results in a zone-file format.
 It can be used as a simple substitute for [dig](https://en.wikipedia.org/wiki/Dig_(command)),
 especially on platforms where *dig* is not originally supported.
-
 
 ## Supported RFCs
 
@@ -68,23 +66,20 @@ The following is a short list of features planned for the near future.
 * [RFC 6844](https://www.rfc-editor.org/rfc/rfc6844.html) - `CAA`
 * [RFC 7208](https://www.rfc-editor.org/rfc/rfc7208.html) - `SPF`
 
-
 ## Changelog
 
 The changelog is maintained in [CHANGELOG.md](CHANGELOG.md)
-
 
 ## License
 
 Licensed under either of
 
 * Apache License, Version 2.0
-  ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+  ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
 * MIT license
-  ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+  ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
-
 
 ## Contribution
 
