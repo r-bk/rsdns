@@ -59,9 +59,8 @@ especially on platforms where *dig* is not originally supported.
 
 ## Roadmap
 
-The following is a short list of features planned for the near future.
+The next planned features are:
 
-* Zero memory allocation for all essential data-types records
 * [RFC 2782](https://www.rfc-editor.org/rfc/rfc2782.html) - `SRV`
 * [RFC 6844](https://www.rfc-editor.org/rfc/rfc6844.html) - `CAA`
 * [RFC 7208](https://www.rfc-editor.org/rfc/rfc7208.html) - `SPF`
