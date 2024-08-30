@@ -7,6 +7,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2024-08-30
+
+### Fixed
+
+- update clients' implementation to not use `RefCell`, to make them `Send`.
+  Now async clients can be used in async blocks that spawn tasks, e.g.,
+  `tokio::spawn`.
+
+  This change closes [#5](https://github.com/r-bk/rsdns/issues/5).
+  Thanks @sophacles for reporting this issue.
+
 ## [0.18.0] - 2024-07-12
 
 ### Changed
@@ -334,3 +345,4 @@ the revamped `MessageReader`.
 [0.16.0]: https://github.com/r-bk/rsdns/compare/v0.15.0...v0.16.0
 [0.17.0]: https://github.com/r-bk/rsdns/compare/v0.16.0...v0.17.0
 [0.18.0]: https://github.com/r-bk/rsdns/compare/v0.17.0...v0.18.0
+[0.19.0]: https://github.com/r-bk/rsdns/compare/v0.18.0...v0.19.0
