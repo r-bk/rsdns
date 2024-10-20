@@ -176,6 +176,7 @@ impl Type {
     pub const ANY: Type = Type::new(255);
 
     #[cfg(test)]
+    #[allow(missing_docs)]
     pub const VALUES: [Type; 22] = [
         Self::A,
         Self::NS,

@@ -122,6 +122,7 @@ impl Class {
     pub const ANY: Class = Class::new(255);
 
     #[cfg(test)]
+    #[allow(missing_docs)]
     pub const VALUES: [Class; 5] = [Self::IN, Self::CS, Self::CH, Self::HS, Self::ANY];
 
     #[inline]
