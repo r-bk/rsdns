@@ -106,6 +106,7 @@ impl RCode {
     pub const BADVERS: RCode = RCode::new(16);
 
     #[cfg(test)]
+    #[allow(missing_docs)]
     pub const VALUES: [RCode; 7] = [
         Self::NOERROR,
         Self::FORMERR,
