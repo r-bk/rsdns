@@ -112,7 +112,7 @@ impl ClientImpl {
     }
 }
 
-impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
+impl ClientCtx<'_, '_, '_, '_> {
     #[inline]
     fn query_raw(&mut self) -> Result<usize> {
         match self.query_raw_impl() {
