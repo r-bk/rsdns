@@ -84,7 +84,7 @@ pub struct MessageIterator<'a> {
     offsets: [usize; 3],
 }
 
-impl<'s, 'a: 's> MessageIterator<'a> {
+impl MessageIterator<'_> {
     /// Creates a reader for a message contained in `buf`.
     #[inline]
     pub fn new(buf: &[u8]) -> Result<MessageIterator> {
