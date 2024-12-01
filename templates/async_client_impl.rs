@@ -122,7 +122,7 @@ struct ClientCtx<'a, 'b, 'c, 'd> {
     buf: &'d mut [u8],
 }
 
-impl<'a, 'b, 'c, 'd> ClientCtx<'a, 'b, 'c, 'd> {
+impl ClientCtx<'_, '_, '_, '_> {
     async fn query_raw(&mut self) -> Result<usize> {
         let query_lifetime = self.config.query_lifetime();
 
