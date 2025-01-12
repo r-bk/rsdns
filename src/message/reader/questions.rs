@@ -1,7 +1,7 @@
 use crate::{
     bytes::{Cursor, Reader},
     message::Question,
-    Error, Result,
+    Result,
 };
 
 /// An iterator over the questions section of a message.
@@ -61,7 +61,7 @@ impl<'a> Questions<'a> {
         } else {
             self.err = true;
         }
-        Some(res.map_err(Error::from))
+        Some(res)
     }
 }
 
