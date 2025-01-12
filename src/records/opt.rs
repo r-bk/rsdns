@@ -27,7 +27,7 @@ impl Opt {
         }
 
         fn ttl(&self) -> u32 {
-            (self.rcode_extension as u32) << 24 | (self.version as u32) << 16 | self.flags as u32
+            ((self.rcode_extension as u32) << 24) | ((self.version as u32) << 16) | self.flags as u32
         }
     }
 
