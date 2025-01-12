@@ -138,8 +138,8 @@ jobs:
   fuzz:
     runs-on: ubuntu-latest
     steps:
-      - name: install llvm-12
-        run: sudo apt install -y llvm-12
+      - name: install llvm-18
+        run: sudo apt install -y llvm-18
 
       - uses: actions/checkout@v4
 
