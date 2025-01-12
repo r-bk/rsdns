@@ -59,7 +59,7 @@ impl Flags {
     #[cfg(test)]
     pub(crate) fn set_opcode(&mut self, opcode: OpCode) -> &mut Self {
         let mask = 0b0111_1000_0000_0000;
-        self.bits = (self.bits & !mask) | (opcode.value() as u16) << 11;
+        self.bits = (self.bits & !mask) | ((opcode.value() as u16) << 11);
         self
     }
 
