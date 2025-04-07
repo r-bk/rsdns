@@ -86,11 +86,7 @@ impl<'s, 'a: 's> Cursor<'a> {
 
     pub fn len(&self) -> usize {
         let capacity = self.capacity();
-        if self.pos < capacity {
-            capacity - self.pos
-        } else {
-            0
-        }
+        capacity.saturating_sub(self.pos)
     }
 
     #[inline]
