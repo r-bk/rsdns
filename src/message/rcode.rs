@@ -431,10 +431,7 @@ mod test {
 
         for i in 0..=u8::MAX {
             let rcode = RCode::from(i as u16);
-            assert_eq!(
-                rcode.is_defined(),
-                RCode::VALUES.iter().any(|e| *e == rcode)
-            );
+            assert_eq!(rcode.is_defined(), RCode::VALUES.contains(&rcode));
         }
     }
 }
