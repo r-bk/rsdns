@@ -506,7 +506,7 @@ mod tests {
             let expected = if sc.ends_with('.') {
                 sc.to_string()
             } else {
-                format!("{}.", sc)
+                format!("{sc}.")
             };
             assert_eq!(dn.as_str(), &expected);
             assert_eq!(dn.len(), expected.len());

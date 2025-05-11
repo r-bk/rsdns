@@ -328,7 +328,7 @@ mod tests {
         }
 
         for i in 0..=u8::MAX {
-            let s = format!("OPCODE{}", i);
+            let s = format!("OPCODE{i}");
             assert_eq!(OpCode::from_str(&s).unwrap(), OpCode::from(i));
             assert!(OpCode::from_str(&s.to_lowercase()).is_err());
         }

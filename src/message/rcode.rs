@@ -403,7 +403,7 @@ mod test {
         }
 
         for i in 0..=u16::MAX {
-            let s = format!("RCODE{}", i);
+            let s = format!("RCODE{i}");
             assert_eq!(RCode::from_str(&s).unwrap(), RCode::from(i));
             assert!(RCode::from_str(&s.to_lowercase()).is_err());
         }
