@@ -435,7 +435,7 @@ mod test {
         }
 
         for i in 0..=u16::MAX {
-            let s = format!("CLASS{}", i);
+            let s = format!("CLASS{i}");
             assert_eq!(Class::from_str(&s).unwrap(), Class::from(i));
             assert!(Class::from_str(&s.to_lowercase()).is_err());
         }

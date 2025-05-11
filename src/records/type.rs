@@ -595,7 +595,7 @@ mod tests {
         }
 
         for i in 0..=u16::MAX {
-            let s = format!("TYPE{}", i);
+            let s = format!("TYPE{i}");
             assert_eq!(Type::from_str(&s).unwrap(), Type::from(i));
             assert!(Type::from_str(&s.to_lowercase()).is_err());
         }
