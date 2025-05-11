@@ -76,7 +76,7 @@ mod tests {
 
     #[test]
     fn test_serialization() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let flags = *Flags::new()
             .set_message_type(rand::random::<bool>().into())
