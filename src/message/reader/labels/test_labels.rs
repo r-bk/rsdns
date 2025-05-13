@@ -1,8 +1,8 @@
-use super::{read_domain_name, skip_domain_name, Cursor, Labels, Reader};
+use super::{Cursor, Labels, Reader, read_domain_name, skip_domain_name};
 use crate::{
+    Error,
     constants::DOMAIN_NAME_MAX_POINTERS,
     names::{InlineName, Name},
-    Error,
 };
 
 // ; <<>> ch4 0.6.0 <<>> --read ibm.ns

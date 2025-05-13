@@ -1,8 +1,8 @@
 //! Defines configuration for clients.
 use crate::{
+    Error, Result,
     clients::{EDns, ProtocolStrategy, Recursion},
     constants::{DNS_MESSAGE_BUFFER_MIN_LENGTH, DNS_MESSAGE_MAX_LENGTH},
-    Error, Result,
 };
 use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},

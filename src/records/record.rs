@@ -1,6 +1,6 @@
 use crate::{
     names::InlineName,
-    records::{data::RecordData, Class, Type},
+    records::{Class, Type, data::RecordData},
 };
 
 /// A resource record.

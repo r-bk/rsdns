@@ -34,11 +34,7 @@ impl MessageType {
 
 impl From<bool> for MessageType {
     fn from(value: bool) -> Self {
-        if value {
-            Self::Response
-        } else {
-            Self::Query
-        }
+        if value { Self::Response } else { Self::Query }
     }
 }
 

@@ -4,7 +4,7 @@ use std::{
 };
 
 pub(super) mod private {
-    use crate::{bytes::Cursor, Result};
+    use crate::{Result, bytes::Cursor};
 
     /// An interface of a domain name.
     pub trait DNameBase: Sized {

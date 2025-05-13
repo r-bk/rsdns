@@ -1,7 +1,7 @@
 use crate::{
+    Result,
     bytes::{Cursor, Reader, RrDataReader},
     records::Type,
-    Result,
 };
 use std::net::Ipv6Addr;
 

@@ -1,8 +1,8 @@
 use crate::{
+    Result,
     bytes::{Cursor, Reader},
     names::InlineName,
     records::{Class, Type},
-    Result,
 };
 
 /// Query question.

@@ -1,11 +1,11 @@
 use crate::{
+    Error, Result,
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
     message::{
-        reader::{Questions, Records},
         Header, Question, RecordsSection,
+        reader::{Questions, Records},
     },
-    Error, Result,
 };
 
 /// An iterator-based message reader.

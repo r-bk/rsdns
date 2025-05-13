@@ -1,7 +1,7 @@
 use crate::{
     message::{
-        reader::{NameRef, RecordMarker, RecordOffset},
         RecordsSection,
+        reader::{NameRef, RecordMarker, RecordOffset},
     },
     records::{Class, Type},
 };

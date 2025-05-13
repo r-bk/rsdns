@@ -1,8 +1,8 @@
 use crate::{
-    bytes::Cursor,
-    message::reader::{read_domain_name, Labels},
-    names::{InlineName, Name},
     Error, Result,
+    bytes::Cursor,
+    message::reader::{Labels, read_domain_name},
+    names::{InlineName, Name},
 };
 
 /// An encoded domain name.

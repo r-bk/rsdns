@@ -1,8 +1,8 @@
 use crate::{
+    Result,
     bytes::{Cursor, Reader},
     message::reader::NameRef,
     records::{Class, Type},
-    Result,
 };
 
 /// Query question with [`NameRef`].

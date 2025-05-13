@@ -1,8 +1,8 @@
 use crate::{
+    Error, Result,
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
     message::Flags,
-    Error, Result,
 };
 
 /// Message header.

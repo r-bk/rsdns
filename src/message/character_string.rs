@@ -1,4 +1,4 @@
-use crate::{bytes::Cursor, Result};
+use crate::{Result, bytes::Cursor};
 
 impl Cursor<'_> {
     pub fn read_character_string(&mut self) -> Result<Vec<u8>> {

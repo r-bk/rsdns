@@ -1,7 +1,7 @@
 use crate::{
-    message::{reader::*, RecordsSection},
+    message::{RecordsSection, reader::*},
     names::{InlineName, Name},
-    records::{data::*, Class, Type},
+    records::{Class, Type, data::*},
 };
 use std::{
     net::{Ipv4Addr, Ipv6Addr},

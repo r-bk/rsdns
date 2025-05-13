@@ -1,5 +1,5 @@
 use crate::{
-    message::{reader::RecordOffset, RecordsSection},
+    message::{RecordsSection, reader::RecordOffset},
     records::{Class, Type},
 };
 
