@@ -2,8 +2,8 @@ use crate::{
     clients::config::{ClientConfig, EDns, ProtocolStrategy, Recursion},
     constants::DNS_MESSAGE_BUFFER_MIN_LENGTH,
     errors::{Error, Result},
-    message::{reader::MessageReader, Flags, QueryWriter},
-    records::{data::RData, Class, Opt, RecordSet, Type},
+    message::{Flags, QueryWriter, reader::MessageReader},
+    records::{Class, Opt, RecordSet, Type, data::RData},
 };
 use std::{
     io::{ErrorKind, Read, Write},
@@ -107,7 +107,9 @@ impl ClientImpl {
         if buf.capacity() < self.config.buffer_size() {
             buf.reserve(self.config.buffer_size() - buf.capacity());
         }
-        buf.set_len(self.config.buffer_size());
+        unsafe {
+            buf.set_len(self.config.buffer_size());
+        }
         buf
     }
 }

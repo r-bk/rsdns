@@ -61,22 +61,28 @@ impl<'a> WCursor<'a> {
 
     #[inline]
     pub fn u8(&mut self, val: u8) -> Result<()> {
-        unsafe { *self.slice(1)?.get_unchecked_mut(0) = val };
+        unsafe {
+            *self.slice(1)?.get_unchecked_mut(0) = val;
+        }
         self.pos += 1;
         Ok(())
     }
 
     #[inline]
     pub unsafe fn u8_unchecked(&mut self, val: u8) {
-        *self.buf.get_unchecked_mut(self.pos) = val;
+        unsafe {
+            *self.buf.get_unchecked_mut(self.pos) = val;
+        }
         self.pos += 1;
     }
 
     #[inline]
     pub unsafe fn bytes_unchecked(&mut self, buf: &[u8]) {
-        self.buf
-            .get_unchecked_mut(self.pos..self.pos + buf.len())
-            .copy_from_slice(buf);
+        unsafe {
+            self.buf
+                .get_unchecked_mut(self.pos..self.pos + buf.len())
+                .copy_from_slice(buf);
+        }
         self.pos += buf.len();
     }
 }

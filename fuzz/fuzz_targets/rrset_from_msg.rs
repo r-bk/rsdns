@@ -1,6 +1,6 @@
 #![no_main]
 use libfuzzer_sys::fuzz_target;
-use rsdns::records::{data, RecordSet};
+use rsdns::records::{RecordSet, data};
 
 fuzz_target!(|data: &[u8]| {
     RecordSet::<data::A>::from_msg(data).ok();

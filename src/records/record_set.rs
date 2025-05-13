@@ -1,11 +1,11 @@
 use crate::{
+    Error, Result,
     message::{
-        reader::{MessageReader, NameRef, RecordHeaderRef},
         MessageType, RCode, RecordsSection,
+        reader::{MessageReader, NameRef, RecordHeaderRef},
     },
     names::Name,
-    records::{data::RData, Class, Opt, Type},
-    Error, Result,
+    records::{Class, Opt, Type, data::RData},
 };
 
 /// A set of similar records.

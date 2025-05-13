@@ -1,7 +1,7 @@
 use crate::{
+    Result,
     bytes::{Cursor, Reader},
     message::Question,
-    Result,
 };
 
 /// An iterator over the questions section of a message.

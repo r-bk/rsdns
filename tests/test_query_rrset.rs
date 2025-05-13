@@ -5,7 +5,7 @@
     feature = "net-std"
 ))]
 use {
-    rsdns::records::{data::A, Class, RecordSet},
+    rsdns::records::{Class, RecordSet, data::A},
     std::{
         net::{IpAddr, SocketAddr, ToSocketAddrs},
         str::FromStr,

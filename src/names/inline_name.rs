@@ -1,8 +1,8 @@
 use crate::{
+    Error, Result,
     bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_LENGTH,
     names::Name,
-    Error, Result,
 };
 use arrayvec::ArrayString;
 use std::{

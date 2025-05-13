@@ -1,8 +1,8 @@
 use crate::{
+    Error, Result,
     bytes::{Cursor, Reader},
     constants::DOMAIN_NAME_MAX_POINTERS,
     names::{self, DName},
-    Error, Result,
 };
 
 #[macro_use]

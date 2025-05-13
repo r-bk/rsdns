@@ -1,8 +1,8 @@
 use crate::{
-    bytes::{Cursor, Reader, RrDataReader},
-    message::{reader::SectionTracker, Header, RecordsSection},
-    records::{data::RecordData, Class, ResourceRecord, Type},
     Error, Result,
+    bytes::{Cursor, Reader, RrDataReader},
+    message::{Header, RecordsSection, reader::SectionTracker},
+    records::{Class, ResourceRecord, Type, data::RecordData},
 };
 
 /// An iterator over the resource record sections of a message.

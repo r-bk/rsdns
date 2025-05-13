@@ -1,16 +1,16 @@
 use crate::{
+    Error, Result,
     bytes::{Cursor, Reader},
     constants::HEADER_LENGTH,
     message::{
+        Header, Question, RecordsSection,
         reader::{
             NameRef, QuestionRef, RecordHeader, RecordHeaderRef, RecordMarker, RecordOffset,
             SectionTracker,
         },
-        Header, Question, RecordsSection,
     },
     names::DName,
-    records::{data::RData, Class, Opt, Type},
-    Error, Result,
+    records::{Class, Opt, Type, data::RData},
 };
 
 #[derive(Debug)]

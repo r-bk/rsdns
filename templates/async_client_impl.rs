@@ -95,7 +95,9 @@ impl ClientImpl {
                 return Err(e);
             }
         };
-        unsafe { buf.set_len(response_len) };
+        unsafe {
+            buf.set_len(response_len);
+        }
         let result = RecordSet::from_msg(&buf);
         std::mem::swap(&mut self.buf, &mut buf);
         result
@@ -106,7 +108,9 @@ impl ClientImpl {
         if buf.capacity() < self.config.buffer_size() {
             buf.reserve(self.config.buffer_size() - buf.capacity());
         }
-        buf.set_len(self.config.buffer_size());
+        unsafe {
+            buf.set_len(self.config.buffer_size());
+        }
         buf
     }
 }

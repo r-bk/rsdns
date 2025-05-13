@@ -1,7 +1,7 @@
 use crate::{
+    Result,
     bytes::{Cursor, Reader},
     errors::{ClassFromStrError, UnknownClassName},
-    Result,
 };
 use core::{
     cmp::Ordering,
@@ -150,11 +150,7 @@ impl Class {
     pub fn name(self) -> &'static str {
         let val = self.value() as usize;
         let name = if val < NAMES.len() { NAMES[val] } else { "" };
-        if name.is_empty() {
-            UNKNOWN_CLASS
-        } else {
-            name
-        }
+        if name.is_empty() { UNKNOWN_CLASS } else { name }
     }
 
     /// Returns the Class numerical value as `u16`.

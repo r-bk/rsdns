@@ -1,7 +1,7 @@
 use crate::{
+    Result,
     bytes::{Cursor, Reader},
     errors::{TypeFromStrError, UnknownTypeName},
-    Result,
 };
 use core::{
     cmp::Ordering,
