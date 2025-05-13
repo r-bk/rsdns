@@ -33,8 +33,8 @@ pub enum Error {
     DomainNameLabelInvalidChar(&'static str, u8),
 
     #[error(
-        "domain name label length exceeds allowed limit {}: {0}",
-        DOMAIN_NAME_LABEL_MAX_LENGTH
+        "domain name label length exceeds allowed limit {limit}: {0}",
+        limit = DOMAIN_NAME_LABEL_MAX_LENGTH
     )]
     DomainNameLabelTooLong(usize),
 
@@ -42,14 +42,14 @@ pub enum Error {
     DomainNameLabelIsEmpty,
 
     #[error(
-        "domain name length exceeds allowed limit {}: {0}",
-        DOMAIN_NAME_MAX_LENGTH
+        "domain name length exceeds allowed limit {limit}: {0}",
+        limit = DOMAIN_NAME_MAX_LENGTH
     )]
     DomainNameTooLong(usize),
 
     #[error(
-        "domain name pointer count exceeds allowed limit {}",
-        DOMAIN_NAME_MAX_POINTERS
+        "domain name pointer count exceeds allowed limit {limit}",
+        limit = DOMAIN_NAME_MAX_POINTERS
     )]
     DomainNameTooMuchPointers,
 
