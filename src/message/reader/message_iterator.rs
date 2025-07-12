@@ -87,7 +87,7 @@ pub struct MessageIterator<'a> {
 impl MessageIterator<'_> {
     /// Creates a reader for a message contained in `buf`.
     #[inline]
-    pub fn new(buf: &[u8]) -> Result<MessageIterator> {
+    pub fn new(buf: &[u8]) -> Result<MessageIterator<'_>> {
         let mut cursor = Cursor::new(buf);
         let header: Header = cursor.read()?;
         let mut mi = MessageIterator {
@@ -120,7 +120,7 @@ impl MessageIterator<'_> {
 
     /// Returns an iterator over the questions section of the message.
     #[inline]
-    pub fn questions(&self) -> Questions {
+    pub fn questions(&self) -> Questions<'_> {
         Questions::new(
             Cursor::with_pos(self.buf, HEADER_LENGTH),
             self.header.qd_count,
@@ -129,7 +129,7 @@ impl MessageIterator<'_> {
 
     /// Returns an iterator over the resource record sections of the message.
     #[inline]
-    pub fn records(&self) -> Records {
+    pub fn records(&self) -> Records<'_> {
         Records::new(
             Cursor::with_pos(self.buf, self.offsets[RecordsSection::Answer as usize]),
             &self.header,
