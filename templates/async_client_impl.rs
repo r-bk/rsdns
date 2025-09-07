@@ -320,7 +320,7 @@ async fn tcp_socket2(config: &ClientConfig) -> Result<TcpStream> {
     )?;
 
     sock.bind_device(Some(interface.as_bytes()))?;
-    sock.set_nodelay(true)?;
+    sock.set_tcp_nodelay(true)?;
 
     let tcp_socket = unsafe { TcpSocket::from_raw_fd(sock.into_raw_fd()) };
 
