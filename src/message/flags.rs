@@ -274,7 +274,7 @@ mod tests {
 
             f.set_response_code(rcode);
             assert_eq!(f.response_code(), rcode);
-            assert_eq!(u16::from(f) & 0b0000_0000_0000_1111, rcode);
+            assert_eq!(u16::from(f) & 0b0000_0000_0000_1111, rcode.value());
         }
 
         for i in 0..16 {
