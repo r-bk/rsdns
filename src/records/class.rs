@@ -81,7 +81,7 @@ static KNOWN: [u8; 256] = [
 ///
 /// // Class is comparable to u16
 /// assert_eq!(Class::from(1), 1);
-/// assert!(1 < Class::from(255));
+/// assert!(Class::from(255) > 1);
 ///
 /// // Class name is queried in constant time
 /// assert_eq!(Class::IN.name(), "IN");
@@ -297,24 +297,10 @@ impl PartialEq<u16> for Class {
     }
 }
 
-impl PartialEq<Class> for u16 {
-    #[inline]
-    fn eq(&self, other: &Class) -> bool {
-        *self == other.0
-    }
-}
-
 impl PartialOrd<u16> for Class {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
         self.0.partial_cmp(other)
-    }
-}
-
-impl PartialOrd<Class> for u16 {
-    #[inline]
-    fn partial_cmp(&self, other: &Class) -> Option<Ordering> {
-        self.partial_cmp(&other.0)
     }
 }
 

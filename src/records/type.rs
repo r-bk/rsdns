@@ -402,24 +402,10 @@ impl PartialEq<u16> for Type {
     }
 }
 
-impl PartialEq<Type> for u16 {
-    #[inline]
-    fn eq(&self, other: &Type) -> bool {
-        *self == other.0
-    }
-}
-
 impl PartialOrd<u16> for Type {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
         self.0.partial_cmp(other)
-    }
-}
-
-impl PartialOrd<Type> for u16 {
-    #[inline]
-    fn partial_cmp(&self, other: &Type) -> Option<Ordering> {
-        self.partial_cmp(&other.0)
     }
 }
 

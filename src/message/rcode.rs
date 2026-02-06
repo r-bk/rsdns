@@ -285,24 +285,10 @@ impl PartialEq<u16> for RCode {
     }
 }
 
-impl PartialEq<RCode> for u16 {
-    #[inline]
-    fn eq(&self, other: &RCode) -> bool {
-        *self == other.0
-    }
-}
-
 impl PartialOrd<u16> for RCode {
     #[inline]
     fn partial_cmp(&self, other: &u16) -> Option<Ordering> {
         self.0.partial_cmp(other)
-    }
-}
-
-impl PartialOrd<RCode> for u16 {
-    #[inline]
-    fn partial_cmp(&self, other: &RCode) -> Option<Ordering> {
-        self.partial_cmp(&other.0)
     }
 }
 
