@@ -118,6 +118,28 @@ const M1: [u8; 89] = [
     0x04, 0x97, 0x65, 0xc1, 0x43, /*                                     */ // |..e.C| 84
 ];
 
+// ; <<>> SRV query for _sip._tcp.example.com.
+// ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 4660
+// ;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 0
+//
+// ;; QUESTION SECTION:
+// ;_sip._tcp.example.com.        IN     SRV
+//
+// ;; ANSWER SECTION:
+// _sip._tcp.example.com.  300    IN     SRV    10 60 5060 sipserver.example.com.
+// _sip._tcp.example.com.  300    IN     SRV    20 10 5060 backup.example.com.
+#[rustfmt::skip]
+const M2: [u8; 96] = [
+    0x12, 0x34, 0x81, 0x80, 0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, // |.4..........| 0
+    0x04, 0x5f, 0x73, 0x69, 0x70, 0x04, 0x5f, 0x74, 0x63, 0x70, 0x07, 0x65, // |._sip._tcp.e| 12
+    0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, // |xample.com..| 24
+    0x21, 0x00, 0x01, 0xc0, 0x0c, 0x00, 0x21, 0x00, 0x01, 0x00, 0x00, 0x01, // |!.....!.....| 36
+    0x2c, 0x00, 0x12, 0x00, 0x0a, 0x00, 0x3c, 0x13, 0xc4, 0x09, 0x73, 0x69, // |,.....<...si| 48
+    0x70, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0xc0, 0x16, 0xc0, 0x0c, 0x00, // |pserver.....| 60
+    0x21, 0x00, 0x01, 0x00, 0x00, 0x01, 0x2c, 0x00, 0x0f, 0x00, 0x14, 0x00, // |!.....,.....| 72
+    0x0a, 0x13, 0xc4, 0x06, 0x62, 0x61, 0x63, 0x6b, 0x75, 0x70, 0xc0, 0x16, // |....backup..| 84
+];
+
 #[test]
 fn test_whole_message() {
     let mut mr = MessageReader::new(&M0[..]).expect("failed to create MessageReader");
@@ -394,6 +416,54 @@ fn test_seek_authority() {
     assert_eq!(record_header.name.as_str(), "bbc.com.");
     let ns_record = mr.record_data::<Ns>(record_header.marker()).unwrap();
     assert_eq!(ns_record.nsdname.as_str(), "ddns1.bbc.com.");
+}
+
+#[test]
+fn test_srv_records() {
+    let mut mr = MessageReader::new(&M2[..]).expect("failed to create MessageReader");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Answer).expect("seek failed");
+
+    let mut records = Vec::new();
+
+    while mr.has_records() {
+        let header = mr
+            .record_header::<Name>()
+            .expect("failed to read record header");
+
+        if header.section() != RecordsSection::Answer {
+            break;
+        }
+
+        assert_eq!(header.name().as_str(), "_sip._tcp.example.com.");
+        assert_eq!(header.rtype(), Type::SRV);
+        assert_eq!(header.rclass(), Class::IN);
+        assert_eq!(header.ttl(), 300);
+
+        records.push(
+            mr.record_data::<Srv>(header.marker())
+                .expect("failed to read SRV record data"),
+        );
+    }
+
+    assert_eq!(records.len(), 2);
+    assert_eq!(
+        records,
+        vec![
+            Srv {
+                priority: 10,
+                weight: 60,
+                port: 5060,
+                target: Name::from_str("sipserver.example.com.").unwrap(),
+            },
+            Srv {
+                priority: 20,
+                weight: 10,
+                port: 5060,
+                target: Name::from_str("backup.example.com.").unwrap(),
+            },
+        ]
+    );
 }
 
 #[test]
