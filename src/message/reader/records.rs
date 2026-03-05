@@ -132,6 +132,7 @@ impl<'a> Records<'a> {
                     ),
                     Type::MX => rrr!(self, Type::MX, Mx, domain_name_pos, rclass, ttl, rdlen),
                     Type::TXT => rrr!(self, Type::TXT, Txt, domain_name_pos, rclass, ttl, rdlen),
+                    Type::SRV => rrr!(self, Type::SRV, Srv, domain_name_pos, rclass, ttl, rdlen),
                     Type::AAAA => rrr!(self, Type::AAAA, Aaaa, domain_name_pos, rclass, ttl, rdlen),
                     /* Type::OPT => OPT record is supported in MessageReader only */
                     _ => {
