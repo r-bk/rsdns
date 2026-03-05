@@ -6,6 +6,9 @@ mod macros;
 mod rfc1035;
 pub use rfc1035::*;
 
+mod rfc2782;
+pub use rfc2782::*;
+
 mod rfc3596;
 pub use rfc3596::*;
 
@@ -47,6 +50,8 @@ pub enum RecordData {
     Mx(rfc1035::Mx),
     /// Text strings.
     Txt(rfc1035::Txt),
+    /// Service locator.
+    Srv(rfc2782::Srv),
     /// A host address (IPv6)
     Aaaa(rfc3596::Aaaa),
 }

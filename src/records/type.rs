@@ -16,7 +16,7 @@ const RFC3597_PFX: &str = "TYPE";
 static NAMES: [&str; 256] = [
     /*  0 */ "", "A", "NS", "MD", "MF", "CNAME", "SOA", "MB", "MG", "MR", "NULL", "WKS", "PTR", "HINFO", "MINFO", "MX",
     /*  1 */ "TXT", "", "", "", "", "", "", "", "", "", "", "", "AAAA", "", "", "",
-    /*  2 */ "", "", "", "", "", "", "", "", "", "OPT", "", "", "", "", "", "",
+    /*  2 */ "", "SRV", "", "", "", "", "", "", "", "OPT", "", "", "", "", "", "",
     /*  3 */ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
     /*  4 */ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
     /*  5 */ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -36,7 +36,7 @@ static NAMES: [&str; 256] = [
 static KNOWN: [u8; 256] = [
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -160,6 +160,10 @@ impl Type {
     /// [RFC 3596 section 2.1](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.1)
     pub const AAAA: Type = Type::new(28);
 
+    /// service locator
+    /// [RFC 2782](https://www.rfc-editor.org/rfc/rfc2782.html)
+    pub const SRV: Type = Type::new(33);
+
     /// EDNS(0) OPT pseudo-record [RFC 6891](https://www.rfc-editor.org/rfc/rfc6891.html#section-6)
     pub const OPT: Type = Type::new(41);
 
@@ -177,7 +181,7 @@ impl Type {
 
     #[cfg(test)]
     #[allow(missing_docs)]
-    pub const VALUES: [Type; 22] = [
+    pub const VALUES: [Type; 23] = [
         Self::A,
         Self::NS,
         Self::MD,
@@ -195,6 +199,7 @@ impl Type {
         Self::MX,
         Self::TXT,
         Self::AAAA,
+        Self::SRV,
         Self::OPT,
         Self::AXFR,
         Self::MAILB,
@@ -318,6 +323,7 @@ impl Type {
             3 => match name {
                 "SOA" => Ok(Type::SOA),
                 "TXT" => Ok(Type::TXT),
+                "SRV" => Ok(Type::SRV),
                 "OPT" => Ok(Type::OPT),
                 "PTR" => Ok(Type::PTR),
                 "ANY" => Ok(Type::ANY),
@@ -479,6 +485,7 @@ mod tests {
         assert_eq!(Type::MX.name(), "MX");
         assert_eq!(Type::TXT.name(), "TXT");
         assert_eq!(Type::AAAA.name(), "AAAA");
+        assert_eq!(Type::SRV.name(), "SRV");
         assert_eq!(Type::OPT.name(), "OPT");
         assert_eq!(Type::AXFR.name(), "AXFR");
         assert_eq!(Type::MAILB.name(), "MAILB");
@@ -505,6 +512,7 @@ mod tests {
                 Type::MX => assert_eq!(Type::MX.name(), *name),
                 Type::TXT => assert_eq!(Type::TXT.name(), *name),
                 Type::AAAA => assert_eq!(Type::AAAA.name(), *name),
+                Type::SRV => assert_eq!(Type::SRV.name(), *name),
                 Type::OPT => assert_eq!(Type::OPT.name(), *name),
                 Type::AXFR => assert_eq!(Type::AXFR.name(), *name),
                 Type::MAILB => assert_eq!(Type::MAILB.name(), *name),
@@ -534,6 +542,7 @@ mod tests {
         assert_eq!(Type::from_name("MX").unwrap(), Type::MX);
         assert_eq!(Type::from_name("TXT").unwrap(), Type::TXT);
         assert_eq!(Type::from_name("AAAA").unwrap(), Type::AAAA);
+        assert_eq!(Type::from_name("SRV").unwrap(), Type::SRV);
         assert_eq!(Type::from_name("OPT").unwrap(), Type::OPT);
         assert_eq!(Type::from_name("AXFR").unwrap(), Type::AXFR);
         assert_eq!(Type::from_name("MAILB").unwrap(), Type::MAILB);
@@ -567,6 +576,7 @@ mod tests {
         assert_eq!(Type::from_str("MX").unwrap(), Type::MX);
         assert_eq!(Type::from_str("TXT").unwrap(), Type::TXT);
         assert_eq!(Type::from_str("AAAA").unwrap(), Type::AAAA);
+        assert_eq!(Type::from_str("SRV").unwrap(), Type::SRV);
         assert_eq!(Type::from_str("OPT").unwrap(), Type::OPT);
         assert_eq!(Type::from_str("AXFR").unwrap(), Type::AXFR);
         assert_eq!(Type::from_str("MAILB").unwrap(), Type::MAILB);
@@ -606,6 +616,7 @@ mod tests {
         assert!(Type::MX.is_defined());
         assert!(Type::TXT.is_defined());
         assert!(Type::AAAA.is_defined());
+        assert!(Type::SRV.is_defined());
         assert!(Type::OPT.is_defined());
         assert!(Type::AXFR.is_defined());
         assert!(Type::MAILB.is_defined());
