@@ -79,7 +79,8 @@ jobs:
 
       - name: lint rsdns
         if: ${{ matrix.feature != 'all' && matrix.feature != '' }}
-        run: cargo clippy --no-default-features --features ${{ matrix.feature }} --all-targets
+        run: cargo clippy --no-default-features --features ${{ matrix.feature }}
+          --all-targets
 
       - name: lint all rsdns
         if: ${{ matrix.feature == 'all' }}
