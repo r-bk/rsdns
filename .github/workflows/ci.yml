@@ -148,21 +148,21 @@ jobs:
         with:
           python-version: "3.x"
 
-      - uses: jannekem/run-python-script-action@v1
-        with:
-          script: |
-            lines = []
-            with open("fuzz/Cargo.toml", "r") as cargo:
-                lines = cargo.readlines()
+      - name: Update fuzz Cargo.toml
+        shell: python
+        run: |
+          lines = []
+          with open("fuzz/Cargo.toml", "r") as cargo:
+              lines = cargo.readlines()
 
-            for i in range(len(lines)):
-                if lines[i] == '# path = ".."\n':
-                    lines[i] = 'path = ".."\n'
-                    print('rsdns path set to ".."')
+          for i in range(len(lines)):
+              if lines[i] == '# path = ".."\n':
+                  lines[i] = 'path = ".."\n'
+                  print('rsdns path set to ".."')
 
-            with open("fuzz/Cargo.toml", "w") as cargo:
-                cargo.write(''.join(lines))
-            print('Cargo.toml updated succcessfully')
+          with open("fuzz/Cargo.toml", "w") as cargo:
+              cargo.write(''.join(lines))
+          print('Cargo.toml updated successfully')
 
       - uses: dtolnay/rust-toolchain@v1
         with:
