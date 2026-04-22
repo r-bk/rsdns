@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.0] - 2026-04-22
+
+### Changed
+
+- replace the `tera` build dependency with `zyn`. The templates under
+  `templates/` are now real Rust modules rather than Jinja2-style text files,
+  which makes them editor-friendly and type-checked.
+- drop the `rustfmt` post-processing step in the build script in favor of
+  `prettyplease`, which formats the generated code directly.
+- upgrade to `rand v0.10`.
+- bump the MSRV to `1.88` (required by `zyn`).
+
 ## [0.21.0] - 2026-02-06
 
 ### Changed
@@ -368,3 +380,4 @@ the revamped `MessageReader`.
 [0.19.0]: https://github.com/r-bk/rsdns/compare/v0.18.0...v0.19.0
 [0.20.0]: https://github.com/r-bk/rsdns/compare/v0.19.0...v0.20.0
 [0.21.0]: https://github.com/r-bk/rsdns/compare/v0.20.0...v0.21.0
+[0.22.0]: https://github.com/r-bk/rsdns/compare/v0.21.0...v0.22.0
