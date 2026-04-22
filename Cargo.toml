@@ -9,7 +9,7 @@ keywords = ["dns", "dig", "async", "resolver"]
 categories = ["asynchronous", "network-programming", "parser-implementations"]
 repository = "https://github.com/r-bk/rsdns"
 exclude = [".git*", "Makefile.toml"]
-rust-version = "1.85"
+rust-version = "1.88"
 
 [dependencies]
 thiserror = "2.0.12"
@@ -38,7 +38,8 @@ net-smol = ["dep:smol", "dep:smol-timeout"]
 socket2 = ["dep:socket2"]
 
 [build-dependencies]
-tera = "1.18.1"
+zyn = "0.5.4"
+prettyplease = "0.2"
 
 [dev-dependencies]
 async-std = { version = "1", features = ["attributes"] }
