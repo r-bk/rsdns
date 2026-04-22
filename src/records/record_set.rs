@@ -111,12 +111,14 @@ impl<D: RData> RecordSet<D> {
 
         #[allow(clippy::manual_flatten)]
         for o in headers.iter_mut() {
-            if let Some(h) = o {
-                if h.name().eq(name)? && h.rtype() == D::RTYPE && h.rclass() == rclass {
-                    rrset.ttl = rrset.ttl.min(h.ttl());
-                    rrset.rdata.push(mr.record_data_at::<D>(h.marker())?);
-                    o.take();
-                }
+            if let Some(h) = o
+                && h.name().eq(name)?
+                && h.rtype() == D::RTYPE
+                && h.rclass() == rclass
+            {
+                rrset.ttl = rrset.ttl.min(h.ttl());
+                rrset.rdata.push(mr.record_data_at::<D>(h.marker())?);
+                o.take();
             }
         }
 
@@ -136,12 +138,14 @@ impl<D: RData> RecordSet<D> {
     ) -> Result<Option<NameRef<'a>>> {
         #[allow(clippy::manual_flatten)]
         for o in headers.iter_mut() {
-            if let Some(h) = o {
-                if h.name().eq(name)? && h.rtype() == Type::CNAME && h.rclass() == rclass {
-                    let n = mr.name_ref_at(h.marker());
-                    o.take();
-                    return Ok(Some(n));
-                }
+            if let Some(h) = o
+                && h.name().eq(name)?
+                && h.rtype() == Type::CNAME
+                && h.rclass() == rclass
+            {
+                let n = mr.name_ref_at(h.marker());
+                o.take();
+                return Ok(Some(n));
             }
         }
         Ok(None)

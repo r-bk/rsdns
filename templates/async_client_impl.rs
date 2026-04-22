@@ -224,12 +224,12 @@ pub fn render(crate_name: &str) -> TokenStream {
                         continue;
                     }
 
-                    if let Ok(question) = mr.the_question() {
-                        if question.qtype == self.qtype
-                            && question.qclass == self.qclass
-                            && question.qname == self.qname {
-                            return Ok((size, header.flags));
-                        }
+                    if let Ok(question) = mr.the_question()
+                        && question.qtype == self.qtype
+                        && question.qclass == self.qclass
+                        && question.qname == self.qname
+                    {
+                        return Ok((size, header.flags));
                     }
                 }
             }
