@@ -45,6 +45,7 @@ especially on platforms where *dig* is not originally supported.
 * [RFC 1101], [RFC 1123] - allow leading digits in domain name labels
 * [RFC 2181] - RRSet definition and TTL handling
 * [RFC 2671], [RFC 6891] - EDNS0
+* [RFC 2782] - `SRV`
 * [RFC 3596] - `AAAA`
 * [RFC 7766] - DNS Transport over TCP, TCP message length field handling
 
@@ -53,6 +54,7 @@ especially on platforms where *dig* is not originally supported.
 [RFC 1123]: https://www.rfc-editor.org/rfc/rfc1123.html
 [RFC 2181]: https://www.rfc-editor.org/rfc/rfc2181#section-5
 [RFC 2671]: https://www.rfc-editor.org/rfc/rfc2671.html
+[RFC 2782]: https://www.rfc-editor.org/rfc/rfc2782.html
 [RFC 3596]: https://www.rfc-editor.org/rfc/rfc3596.html
 [RFC 6891]: https://www.rfc-editor.org/rfc/rfc6891.html
 [RFC 7766]: https://www.rfc-editor.org/rfc/rfc7766.html
@@ -61,7 +63,6 @@ especially on platforms where *dig* is not originally supported.
 
 The next planned features are:
 
-* [RFC 2782](https://www.rfc-editor.org/rfc/rfc2782.html) - `SRV`
 * [RFC 6844](https://www.rfc-editor.org/rfc/rfc6844.html) - `CAA`
 * [RFC 7208](https://www.rfc-editor.org/rfc/rfc7208.html) - `SPF`
 
