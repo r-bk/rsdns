@@ -118,6 +118,43 @@ const M1: [u8; 89] = [
     0x04, 0x97, 0x65, 0xc1, 0x43, /*                                     */ // |..e.C| 84
 ];
 
+// ; <<>> CAA query for example.com.
+// ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 4660
+// ;; flags: qr rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+//
+// ;; QUESTION SECTION:
+// ;example.com.                  IN     CAA
+//
+// ;; ANSWER SECTION:
+// example.com.            300    IN     CAA    0 issue "letsencrypt.org"
+// example.com.            300    IN     CAA    128 iodef "mailto:security@example.com"
+// example.com.            300    IN     CAA    0 issuewild "letsencrypt.org"
+#[rustfmt::skip]
+const M3: [u8; 147] = [
+    // Header (id=0x1234, qdcount=1, ancount=3)
+    0x12, 0x34, 0x81, 0x80, 0x00, 0x01, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, // |.4..........| 0
+    // Question: example.com. CAA IN
+    0x07, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x03, 0x63, 0x6f, 0x6d, // |.example.com| 12
+    0x00, 0x01, 0x01, 0x00, 0x01,                                           // |.....|        24
+    // Answer 1 header: ptr->12, type=257, class=1, ttl=300, rdlen=22
+    0xc0, 0x0c, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x2c, 0x00, 0x16, // |.............| 29
+    // Answer 1 RDATA: flags=0, tag_len=5, "issue", "letsencrypt.org"
+    0x00, 0x05, 0x69, 0x73, 0x73, 0x75, 0x65, 0x6c, 0x65, 0x74, 0x73, 0x65, // |..issuelettse| 41
+    0x6e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x2e, 0x6f, 0x72, 0x67,             // |ncrypt.org|    53
+    // Answer 2 header: ptr->12, type=257, class=1, ttl=300, rdlen=34
+    0xc0, 0x0c, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x2c, 0x00, 0x22, // |..........,."| 63
+    // Answer 2 RDATA: flags=0x80, tag_len=5, "iodef", "mailto:security@example.com"
+    0x80, 0x05, 0x69, 0x6f, 0x64, 0x65, 0x66, 0x6d, 0x61, 0x69, 0x6c, 0x74, // |..iodefmailt|  75
+    0x6f, 0x3a, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x40, 0x65, // |o:security@e|  87
+    0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,             // |xample.com|    99
+    // Answer 3 header: ptr->12, type=257, class=1, ttl=300, rdlen=26
+    0xc0, 0x0c, 0x01, 0x01, 0x00, 0x01, 0x00, 0x00, 0x01, 0x2c, 0x00, 0x1a, // |............| 109
+    // Answer 3 RDATA: flags=0, tag_len=9, "issuewild", "letsencrypt.org"
+    0x00, 0x09, 0x69, 0x73, 0x73, 0x75, 0x65, 0x77, 0x69, 0x6c, 0x64, 0x6c, // |..issuewildl| 121
+    0x65, 0x74, 0x73, 0x65, 0x6e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x2e, 0x6f, // |etsencrypt.o| 133
+    0x72, 0x67,                                                             // |rg|           145
+];
+
 // ; <<>> SRV query for _sip._tcp.example.com.
 // ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 4660
 // ;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 0
@@ -461,6 +498,57 @@ fn test_srv_records() {
                 weight: 10,
                 port: 5060,
                 target: Name::from_str("backup.example.com.").unwrap(),
+            },
+        ]
+    );
+}
+
+#[test]
+fn test_caa_records() {
+    let mut mr = MessageReader::new(&M3[..]).expect("failed to create MessageReader");
+    mr.header().expect("failed to read the header");
+    mr.seek(RecordsSection::Answer).expect("seek failed");
+
+    let mut records = Vec::new();
+
+    while mr.has_records() {
+        let header = mr
+            .record_header::<Name>()
+            .expect("failed to read record header");
+
+        if header.section() != RecordsSection::Answer {
+            break;
+        }
+
+        assert_eq!(header.name().as_str(), "example.com.");
+        assert_eq!(header.rtype(), Type::CAA);
+        assert_eq!(header.rclass(), Class::IN);
+        assert_eq!(header.ttl(), 300);
+
+        records.push(
+            mr.record_data::<Caa>(header.marker())
+                .expect("failed to read CAA record data"),
+        );
+    }
+
+    assert_eq!(records.len(), 3);
+    assert_eq!(
+        records,
+        vec![
+            Caa {
+                flags: 0,
+                tag: b"issue".to_vec(),
+                value: b"letsencrypt.org".to_vec(),
+            },
+            Caa {
+                flags: 0x80,
+                tag: b"iodef".to_vec(),
+                value: b"mailto:security@example.com".to_vec(),
+            },
+            Caa {
+                flags: 0,
+                tag: b"issuewild".to_vec(),
+                value: b"letsencrypt.org".to_vec(),
             },
         ]
     );

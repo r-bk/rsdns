@@ -134,6 +134,7 @@ impl<'a> Records<'a> {
                     Type::TXT => rrr!(self, Type::TXT, Txt, domain_name_pos, rclass, ttl, rdlen),
                     Type::SRV => rrr!(self, Type::SRV, Srv, domain_name_pos, rclass, ttl, rdlen),
                     Type::AAAA => rrr!(self, Type::AAAA, Aaaa, domain_name_pos, rclass, ttl, rdlen),
+                    Type::CAA => rrr!(self, Type::CAA, Caa, domain_name_pos, rclass, ttl, rdlen),
                     /* Type::OPT => OPT record is supported in MessageReader only */
                     _ => {
                         return Err(Error::UnexpectedType(rtype));
