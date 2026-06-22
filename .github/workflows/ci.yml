@@ -47,7 +47,7 @@ jobs:
     env:
       RUSTFLAGS: --deny warnings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
@@ -95,7 +95,7 @@ jobs:
     env:
       RUSTFLAGS: --deny warnings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
@@ -112,7 +112,7 @@ jobs:
     env:
       RUSTFLAGS: --deny warnings
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
@@ -142,7 +142,7 @@ jobs:
       - name: install llvm-18
         run: sudo apt install -y llvm-18
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v6
         with:
@@ -204,7 +204,7 @@ jobs:
           echo "miri=$MIRI_NIGHTLY" >> $GITHUB_OUTPUT
         shell: bash
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@v1
         with:
