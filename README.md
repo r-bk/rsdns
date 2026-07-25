@@ -47,6 +47,7 @@ especially on platforms where *dig* is not originally supported.
 * [RFC 2671], [RFC 6891] - EDNS0
 * [RFC 2782] - `SRV`
 * [RFC 3596] - `AAAA`
+* [RFC 6844] - `CAA`
 * [RFC 7766] - DNS Transport over TCP, TCP message length field handling
 
 [RFC 1035]: https://www.rfc-editor.org/rfc/rfc1035.html
@@ -56,6 +57,7 @@ especially on platforms where *dig* is not originally supported.
 [RFC 2671]: https://www.rfc-editor.org/rfc/rfc2671.html
 [RFC 2782]: https://www.rfc-editor.org/rfc/rfc2782.html
 [RFC 3596]: https://www.rfc-editor.org/rfc/rfc3596.html
+[RFC 6844]: https://www.rfc-editor.org/rfc/rfc6844.html
 [RFC 6891]: https://www.rfc-editor.org/rfc/rfc6891.html
 [RFC 7766]: https://www.rfc-editor.org/rfc/rfc7766.html
 
@@ -63,7 +65,6 @@ especially on platforms where *dig* is not originally supported.
 
 The next planned features are:
 
-* [RFC 6844](https://www.rfc-editor.org/rfc/rfc6844.html) - `CAA`
 * [RFC 7208](https://www.rfc-editor.org/rfc/rfc7208.html) - `SPF`
 
 ## Changelog

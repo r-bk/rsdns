@@ -12,6 +12,9 @@ pub use rfc2782::*;
 mod rfc3596;
 pub use rfc3596::*;
 
+mod rfc6844;
+pub use rfc6844::*;
+
 mod rdata;
 pub use rdata::*;
 
@@ -54,4 +57,6 @@ pub enum RecordData {
     Srv(rfc2782::Srv),
     /// A host address (IPv6)
     Aaaa(rfc3596::Aaaa),
+    /// Certification Authority Authorization.
+    Caa(rfc6844::Caa),
 }

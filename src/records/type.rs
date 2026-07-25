@@ -13,7 +13,7 @@ const UNKNOWN_TYPE: &str = "__UNKNOWN_TYPE__";
 const RFC3597_PFX: &str = "TYPE";
 
 #[rustfmt::skip]
-static NAMES: [&str; 256] = [
+static NAMES: [&str; 272] = [
     /*  0 */ "", "A", "NS", "MD", "MF", "CNAME", "SOA", "MB", "MG", "MR", "NULL", "WKS", "PTR", "HINFO", "MINFO", "MX",
     /*  1 */ "TXT", "", "", "", "", "", "", "", "", "", "", "", "AAAA", "", "", "",
     /*  2 */ "", "SRV", "", "", "", "", "", "", "", "OPT", "", "", "", "", "", "",
@@ -30,10 +30,11 @@ static NAMES: [&str; 256] = [
     /* 13 */ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
     /* 14 */ "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
     /* 15 */ "", "", "", "", "", "", "", "", "", "", "", "", "AXFR", "MAILB", "MAILA", "ANY",
+    /* 16 */ "", "CAA", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 ];
 
 #[rustfmt::skip]
-static KNOWN: [u8; 256] = [
+static KNOWN: [u8; 272] = [
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
     0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
@@ -50,6 +51,7 @@ static KNOWN: [u8; 256] = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+    0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ];
 
 /// DNS record type.
@@ -179,9 +181,13 @@ impl Type {
     /// a request for all records
     pub const ANY: Type = Type::new(255);
 
+    /// Certification Authority Authorization
+    /// [RFC 6844](https://www.rfc-editor.org/rfc/rfc6844.html)
+    pub const CAA: Type = Type::new(257);
+
     #[cfg(test)]
     #[allow(missing_docs)]
-    pub const VALUES: [Type; 23] = [
+    pub const VALUES: [Type; 24] = [
         Self::A,
         Self::NS,
         Self::MD,
@@ -205,6 +211,7 @@ impl Type {
         Self::MAILB,
         Self::MAILA,
         Self::ANY,
+        Self::CAA,
     ];
 
     #[inline]
@@ -328,6 +335,7 @@ impl Type {
                 "PTR" => Ok(Type::PTR),
                 "ANY" => Ok(Type::ANY),
                 "WKS" => Ok(Type::WKS),
+                "CAA" => Ok(Type::CAA),
                 _ => Err(UnknownTypeName),
             },
             4 => match name {
@@ -491,6 +499,7 @@ mod tests {
         assert_eq!(Type::MAILB.name(), "MAILB");
         assert_eq!(Type::MAILA.name(), "MAILA");
         assert_eq!(Type::ANY.name(), "ANY");
+        assert_eq!(Type::CAA.name(), "CAA");
 
         for (i, name) in NAMES.iter().enumerate() {
             let type_ = Type::from(i as u16);
@@ -518,6 +527,7 @@ mod tests {
                 Type::MAILB => assert_eq!(Type::MAILB.name(), *name),
                 Type::MAILA => assert_eq!(Type::MAILA.name(), *name),
                 Type::ANY => assert_eq!(Type::ANY.name(), *name),
+                Type::CAA => assert_eq!(Type::CAA.name(), *name),
                 _ => assert_eq!("", *name),
             }
         }
@@ -548,6 +558,8 @@ mod tests {
         assert_eq!(Type::from_name("MAILB").unwrap(), Type::MAILB);
         assert_eq!(Type::from_name("MAILA").unwrap(), Type::MAILA);
         assert_eq!(Type::from_name("ANY").unwrap(), Type::ANY);
+        assert_eq!(Type::from_name("CAA").unwrap(), Type::CAA);
+        assert!(Type::from_name("caa").is_err());
 
         for (i, name) in NAMES.iter().enumerate() {
             if !name.is_empty() {
@@ -582,6 +594,8 @@ mod tests {
         assert_eq!(Type::from_str("MAILB").unwrap(), Type::MAILB);
         assert_eq!(Type::from_str("MAILA").unwrap(), Type::MAILA);
         assert_eq!(Type::from_str("ANY").unwrap(), Type::ANY);
+        assert_eq!(Type::from_str("CAA").unwrap(), Type::CAA);
+        assert_eq!(Type::from_str("TYPE257").unwrap(), Type::CAA);
 
         for (i, name) in NAMES.iter().enumerate() {
             if !name.is_empty() {
@@ -622,12 +636,15 @@ mod tests {
         assert!(Type::MAILB.is_defined());
         assert!(Type::MAILA.is_defined());
         assert!(Type::ANY.is_defined());
+        assert!(Type::CAA.is_defined());
+        assert!(!Type::from(256).is_defined());
+        assert!(!Type::from(258).is_defined());
 
         for (i, name) in NAMES.iter().enumerate() {
             assert_eq!(Type::from(i as u16).is_defined(), !name.is_empty());
         }
 
-        for i in 0..=256 {
+        for i in 0..=u16::MAX {
             assert_eq!(
                 Type::from(i).is_defined(),
                 Type::VALUES.iter().any(|v| *v == i),
